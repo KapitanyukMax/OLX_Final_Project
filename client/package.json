@@ -28,8 +28,5 @@
     "eslint-plugin-react-refresh": "^0.4.6",
     "typescript": "^5.2.2",
     "vite": "^5.2.0"
-  },
-  "overrides": {
-    "@types/react": "^18.0.0"
   }
 }

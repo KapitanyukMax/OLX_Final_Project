@@ -1,0 +1,39 @@
+.register-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    box-sizing: border-box;
+    background-color: #262626ce;
+    width: 500px;
+    height: 60vh;
+    padding: 20px;
+    text-align: center;
+    backdrop-filter: blur(19px);
+    border-radius: 20px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+input {
+    box-sizing: border-box;
+    height: 50px;
+    width: 400px;
+    padding: 10px;
+    margin-bottom: 20px;
+    margin-top: 10px;
+}
+
+button {
+    width: 200px;
+    height: 50px;
+    margin-bottom: 10px;
+}
+
+label {
+    align-self: self-start;
+    margin-left: 30px;
+}
