@@ -4,7 +4,7 @@ import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyA4xnF9v3DfcdQ5VYTB9L8W3VvOXMJXx74",
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: "olx-final-project-c6878.firebaseapp.com",
   projectId: "olx-final-project-c6878",
   storageBucket: "olx-final-project-c6878.appspot.com",
