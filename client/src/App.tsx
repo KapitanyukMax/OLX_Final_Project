@@ -1,28 +1,17 @@
-import { useEffect, useState } from 'react'
-import axios from "axios"
-import './App.css'
 import { Register } from './components/RegisterPage/Register';
-
-interface Data {
-  text: string;
-}
+import { Login } from './components/LoginPage/Login';
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import './App.css'
 
 function App() {
-  const [data, setData] = useState<Data>(null);
-
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     await axios.get<Data>("http://localhost:5000/test")
-  //     .then((res) => setData(res.data))
-  //     .catch((ex) => console.log(ex));
-  //   };
-
-  //   fetchData();
-  // }, [])
-
   return (
     <>
-      <Register/>
+      <Router>
+        <Routes>
+          <Route path="/register" element={<Register />} />
+          <Route path="/login" element={<Login />} />
+        </Routes>
+      </Router>
     </>
   )
 }
