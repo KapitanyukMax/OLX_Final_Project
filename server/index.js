@@ -1,6 +1,5 @@
 const express = require('express')
 const cors = require('cors')
-// const { initializeApp, cert } = require('firebase-admin/app')
 const swaggerUI = require('swagger-ui-express')
 const swaggerSpec = require('./swagger.js')
 const admin = require("firebase-admin")
@@ -12,6 +11,23 @@ const app = express()
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
+});
+
+const db = admin.firestore();
+
+const collectionRef = db.collection('categories');
+
+collectionRef.get().then((snapshot) => {
+  if (snapshot.empty) {
+    console.log('No matching documents.');
+    return;
+  }
+
+  snapshot.forEach((doc) => {
+    console.log(doc.id, '=>', doc.data());
+  });
+}).catch((error) => {
+  console.error('Error getting documents:', error);
 });
 
 app.use(express.json())
@@ -36,18 +52,20 @@ app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec))
  *                   type: string
  *                   example: Hello World!
  */
-app.get("/test", (req, res) => {
-  res.json({ "text": "Hello World!" });
+app.get("/test", async (req, res) => {
+  res.json({'text': 'Hello World!'});
 })
+
+
 
 /**
  * @swagger
  * /users:
  *   get:
- *     summary: Retrieve all users
+ *     summary: Retrieve all categories
  *     responses:
  *       200:
- *         description: A JSON array of user objects
+ *         description: A JSON array of category objects
  *         content:
  *           application/json:
  *             schema:
@@ -62,19 +80,19 @@ app.get("/test", (req, res) => {
  *                   displayName:
  *                     type: string
  */
-app.get('/users', async(req, res) => {
-    try{
-        const listUsersResult = await admin.auth().listUsers();
-        const users = listUsersResult.users.map(userRecord => ({
-            uid: userRecord.uid,
-            email: userRecord.email,
-            displayName: userRecord.displayName,
-        }));
-        res.status(200).json(users);
-    } catch (error) {
-        console.error('Error listing users:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
+app.get('/categories', async (req, res) => {
+  try {
+    const listCategoriesResult = await admin.auth().listUsers();
+    const users = listCategoriesResult.users.map(userRecord => ({
+      uid: userRecord.uid,
+      email: userRecord.email,
+      displayName: userRecord.displayName,
+    }));
+    res.status(200).json(users);
+  } catch (error) {
+    console.error('Error listing users:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
 })
 
 app.listen(PORT, (err) => {
