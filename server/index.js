@@ -4,13 +4,14 @@ const swaggerUI = require('swagger-ui-express')
 const swaggerSpec = require('./swagger.js')
 const admin = require("firebase-admin")
 const serviceAccount = require('./firebase/olx-final-project-c6878-firebase-adminsdk-n6vs0-285b84551f.json')
+const { v4: uuid } = require('uuid')
 
 const PORT = 5000
 
 const app = express()
 
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
+    credential: admin.credential.cert(serviceAccount)
 });
 
 const db = admin.firestore();
@@ -18,16 +19,16 @@ const db = admin.firestore();
 const collectionRef = db.collection('categories');
 
 collectionRef.get().then((snapshot) => {
-  if (snapshot.empty) {
-    console.log('No matching documents.');
-    return;
-  }
+    if (snapshot.empty) {
+        console.log('No matching documents.');
+        return;
+    }
 
-  snapshot.forEach((doc) => {
-    console.log(doc.id, '=>', doc.data());
-  });
+    snapshot.forEach((doc) => {
+        console.log(doc.id, '=>', doc.data());
+    });
 }).catch((error) => {
-  console.error('Error getting documents:', error);
+    console.error('Error getting documents:', error);
 });
 
 app.use(express.json())
@@ -53,10 +54,8 @@ app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec))
  *                   example: Hello World!
  */
 app.get("/test", async (req, res) => {
-  res.json({'text': 'Hello World!'});
+    res.json({ 'text': 'Hello World!' });
 })
-
-
 
 /**
  * @swagger
@@ -80,22 +79,52 @@ app.get("/test", async (req, res) => {
  *                   displayName:
  *                     type: string
  */
+app.get('/users', async (req, res) => {
+    try {
+        const listUsersResult = await admin.auth().listUsers();
+        const users = listUsersResult.users.map(userRecord => ({
+            uid: userRecord.uid,
+            email: userRecord.email,
+            displayName: userRecord.displayName,
+        }));
+        res.status(200).json(users);
+    } catch (error) {
+        console.error('Error listing users:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+// (async () => {
+//     try {
+//         const docRef = await db.collection("categories").add({
+//             id: uuid(),
+//             name: "Toys",
+//             picture: "https://cdn.firstcry.com/education/2022/11/06094158/Toy-Names-For-Kids.jpg",
+//         });
+//         console.log("Document written with ID: ", docRef.id);
+//     } catch (error) {
+//         console.error("Error adding document: ", error);
+//     }
+// })();
+
 app.get('/categories', async (req, res) => {
-  try {
-    const listCategoriesResult = await admin.auth().listUsers();
-    const users = listCategoriesResult.users.map(userRecord => ({
-      uid: userRecord.uid,
-      email: userRecord.email,
-      displayName: userRecord.displayName,
-    }));
-    res.status(200).json(users);
-  } catch (error) {
-    console.error('Error listing users:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-})
+    try {
+        const snapshot = await db.collection('categories').get();
+        if (snapshot.empty) {
+            throw new Error("No matching documents");
+        }
+        const result = [];
+        snapshot.forEach((doc) => {
+            result.push(doc.data());
+        });
+        res.status(200).json(result);
+    } catch (error) {
+        console.error('Error listing categories:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
 
 app.listen(PORT, (err) => {
-  if (err) console.log(err);
-  console.log(`Server listening on PORT: ${PORT}`);
+    if (err) console.log(err);
+    console.log(`Server listening on PORT: ${PORT}`);
 });
