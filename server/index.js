@@ -2,17 +2,12 @@ const express = require('express')
 const cors = require('cors')
 const swaggerUI = require('swagger-ui-express')
 const swaggerSpec = require('./swagger.js')
-const admin = require("firebase-admin")
 const serviceAccount = require('./firebase/olx-final-project-c6878-firebase-adminsdk-n6vs0-285b84551f.json')
-const { v4: uuid } = require('uuid')
+const admin = require('./database')
 
 const PORT = 5000
 
 const app = express()
-
-admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount)
-});
 
 const db = admin.firestore();
 
@@ -35,6 +30,8 @@ app.use(express.json())
 app.use(cors())
 
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec))
+
+app.use('/categories', require('./routes/categories'));
 
 /**
  * @swagger
@@ -106,23 +103,6 @@ app.get('/users', async (req, res) => {
 //         console.error("Error adding document: ", error);
 //     }
 // })();
-
-app.get('/categories', async (req, res) => {
-    try {
-        const snapshot = await db.collection('categories').get();
-        if (snapshot.empty) {
-            throw new Error("No matching documents");
-        }
-        const result = [];
-        snapshot.forEach((doc) => {
-            result.push(doc.data());
-        });
-        res.status(200).json(result);
-    } catch (error) {
-        console.error('Error listing categories:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
-});
 
 app.listen(PORT, (err) => {
     if (err) console.log(err);
