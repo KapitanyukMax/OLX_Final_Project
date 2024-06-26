@@ -2,7 +2,6 @@ const express = require('express')
 const cors = require('cors')
 const swaggerUI = require('swagger-ui-express')
 const swaggerSpec = require('./swagger.js')
-const serviceAccount = require('./firebase/olx-final-project-c6878-firebase-adminsdk-n6vs0-285b84551f.json')
 const admin = require('./database')
 
 const PORT = 5000
@@ -34,6 +33,7 @@ app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec))
 app.use('/categories', require('./routes/categories'));
 app.use('/adverts', require('./routes/adverts'));
 app.use('/subcategories', require('./routes/subcategories.js'));
+app.use('/users', require('./routes/users.js'));
 
 /**
  * @swagger
