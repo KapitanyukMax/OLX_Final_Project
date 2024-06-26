@@ -32,6 +32,7 @@ app.use(cors())
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec))
 
 app.use('/categories', require('./routes/categories'));
+app.use('/adverts', require('./routes/adverts'));
 app.use('/subcategories', require('./routes/subcategories.js'));
 
 /**
