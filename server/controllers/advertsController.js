@@ -1,4 +1,5 @@
 const admin = require('../database');
+const logger = require('../logs/logger');
 
 const db = admin.firestore();
 
@@ -11,7 +12,7 @@ const getAllAdverts = async (req, res) => {
         });
         res.status(200).json(result);
     } catch (error) {
-        console.error('Error listing adverts:', error);
+        logger.error(`Error listing adverts: ${error}`);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 };
@@ -27,7 +28,7 @@ const getAdvertById = async (req, res) => {
         const response = doc.data();
         res.status(200).json(response);
     } catch (error) {
-        console.error('Error listing adverts:', error);
+        logger.error(`Error listing adverts: ${error}`);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 };
@@ -66,10 +67,10 @@ const createAdvert = async (req, res) => {
             vipUntil: null
         };
         const docRef = await db.collection("adverts").add(newAdvert);
-        console.log("Document written with ID: ", docRef.id);
+        logger.info(`Document written with ID: ${docRef.id}`);
         res.status(201).json(newAdvert);
     } catch (error) {
-        console.error('Error listing adverts:', error);
+        logger.error(`Error listing adverts: ${error}`);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 };
@@ -108,9 +109,10 @@ const updateAdvert = async (req, res) => {
         });
         doc = await advertsRef.get();
         const data = doc.data();
+        logger.info(`Advert with ID ${id} updated`);
         res.status(200).json(data);
     } catch (error) {
-        console.error('Error listing adverts:', error);
+        logger.error(`Error listing adverts: ${error}`);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 };
@@ -124,9 +126,10 @@ const deleteAdvert = async (req, res) => {
             return res.status(404).json({ error: 'Advert not found' });
 
         const response = await db.collection('adverts').doc(req.params.id).delete();
+        logger.info(`Advert with ID ${req.params.id} deleted`);
         res.sendStatus(204);
     } catch (error) {
-        console.error('Error listing adverts:', error);
+        logger.error(`Error listing adverts: ${error}`);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 };
