@@ -39,6 +39,10 @@ const updateSubCategory = async(req, res)=>{
         let {id, name, picture, categoryId} = req.body;
         const subcategoriesRef = db.collection('subcategories').doc(id);
         let doc = await subcategoriesRef.get();
+
+        if (!id) {
+            return res.status(400).json({ error: 'Subcategory ID is required' });
+        }
         if(!doc.exists){
             res.status(404).json({error: 'Subcategory not found'});
             return;
@@ -57,6 +61,11 @@ const updateSubCategory = async(req, res)=>{
 const deleteSubCategory = async (req, res) => {
     try {
         const subCategoryId = req.params.id;
+
+        if (!id) {
+            return res.status(400).json({ error: 'Subcategory ID is required' });
+        }
+
         const subCategoryRef = db.collection('subcategories').doc(subCategoryId);
         const doc = await subCategoryRef.get();
 
@@ -81,6 +90,11 @@ const deleteSubCategory = async (req, res) => {
 };
 const getSubCategoryById= async(req, res)=>{
     try {
+
+        if (!id) {
+            return res.status(400).json({ error: 'Subcategory ID is required' });
+        }
+        
         const subcategoriesRef = db.collection('subcategories').doc(req.params.id);
         const doc = await subcategoriesRef.get();
         if (!doc.exists) {
