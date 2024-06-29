@@ -35,6 +35,7 @@ app.use('/adverts', require('./routes/adverts'));
 app.use('/subcategories', require('./routes/subcategories.js'));
 app.use('/users', require('./routes/users.js'));
 app.use('/messages', require('./routes/messages.js'));
+app.use('/chats', require('./routes/chats.js'));
 
 /**
  * @swagger
