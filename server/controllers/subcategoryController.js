@@ -62,7 +62,7 @@ const deleteSubCategory = async (req, res) => {
     try {
         const subCategoryId = req.params.id;
 
-        if (!id) {
+        if (!subCategoryId) {
             return res.status(400).json({ error: 'Subcategory ID is required' });
         }
 
@@ -91,7 +91,9 @@ const deleteSubCategory = async (req, res) => {
 const getSubCategoryById= async(req, res)=>{
     try {
 
-        if (!id) {
+        const subCategoryId = req.params.id;
+
+        if (!subCategoryId) {
             return res.status(400).json({ error: 'Subcategory ID is required' });
         }
         
