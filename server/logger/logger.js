@@ -10,8 +10,8 @@ const infoFilter = format((info, opts) => {
     return info.level !== 'error' ? info : false;
 });
 
-const infoLogPath = path.join('.', 'logs', 'info.log');
-const errorLogPath = path.join('.', 'logs', 'errors.log');
+const infoLogPath = path.join('.', 'logger', 'info.log');
+const errorLogPath = path.join('.', 'logger', 'errors.log');
 
 const logger = createLogger({
     level: 'info',

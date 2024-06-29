@@ -1,5 +1,5 @@
 const admin = require('../database');
-const logger = require('../logs/logger');
+const logger = require('../logger/logger');
 
 const db = admin.firestore();
 
