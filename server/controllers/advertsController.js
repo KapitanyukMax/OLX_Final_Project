@@ -1,4 +1,5 @@
 const admin = require('../database');
+const logger = require('../logger/logger');
 
 const db = admin.firestore();
 
@@ -11,7 +12,7 @@ const getAllAdverts = async (req, res) => {
         });
         res.status(200).json(result);
     } catch (error) {
-        console.error('Error listing adverts:', error);
+        logger.error(`Error listing adverts: ${error}`);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 };
@@ -20,10 +21,14 @@ const getAdvertById = async (req, res) => {
     try {
         const advertsRef = await db.collection('adverts').doc(req.params.id);
         const doc = await advertsRef.get();
+
+        if (!doc.exists)
+            return res.status(404).json({ error: 'Advert not found' });
+
         const response = doc.data();
         res.status(200).json(response);
     } catch (error) {
-        console.error('Error listing adverts:', error);
+        logger.error(`Error listing adverts: ${error}`);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 };
@@ -43,7 +48,6 @@ const createAdvert = async (req, res) => {
     };
 
     try {
-
         const newAdvert = {
             userId: req.body.userId,
             subCategoryId: req.body.subCategoryId,
@@ -63,10 +67,10 @@ const createAdvert = async (req, res) => {
             vipUntil: null
         };
         const docRef = await db.collection("adverts").add(newAdvert);
-        console.log("Document written with ID: ", docRef.id);
+        logger.info(`Document written with ID: ${docRef.id}`);
         res.status(201).json(newAdvert);
     } catch (error) {
-        console.error('Error listing adverts:', error);
+        logger.error(`Error listing adverts: ${error}`);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 };
@@ -76,24 +80,27 @@ const updateAdvert = async (req, res) => {
         let { id, userId, subCategoryId, name, description, price, location, status, pictures, orderType, currency, delivery, isHidden, viewsCount, favoritesCount, vipUntil } = req.body;
         const advertsRef = await db.collection('adverts').doc(id);
         let doc = await advertsRef.get();
+
+        if (!doc.exists)
+            return res.status(404).json({ error: 'Advert not found' });
+
         const advert = doc.data();
 
-        userId ||= advert.userId;
-        subCategoryId ||= advert.subCategoryId;
-        name ||= advert.name;
-        description ||= advert.description;
-        price ||= advert.price;
-        location ||= advert.location;
-        status ||= advert.status;
-        pictures ||= advert.pictures;
-        orderType ||= advert.orderType;
-        currency ||= advert.currency;
-        delivery ||= advert.delivery;
-        isHidden ||= advert.isHidden;
-        //creationDate ||= advert.creationDate;
-        viewsCount ||= advert.viewsCount;
-        favoritesCount ||= advert.favoritesCount;
-        vipUntil ||= advert.vipUntil;
+        userId ??= advert.userId;
+        subCategoryId ??= advert.subCategoryId;
+        name ??= advert.name;
+        description ??= advert.description;
+        price ??= advert.price;
+        location ??= advert.location;
+        status ??= advert.status;
+        pictures ??= advert.pictures;
+        orderType ??= advert.orderType;
+        currency ??= advert.currency;
+        delivery ??= advert.delivery;
+        isHidden ??= advert.isHidden;
+        viewsCount ??= advert.viewsCount;
+        favoritesCount ??= advert.favoritesCount;
+        vipUntil ??= advert.vipUntil;
 
         const creationDate = advert.creationDate;
 
@@ -102,9 +109,10 @@ const updateAdvert = async (req, res) => {
         });
         doc = await advertsRef.get();
         const data = doc.data();
+        logger.info(`Advert with ID ${id} updated`);
         res.status(200).json(data);
     } catch (error) {
-        console.error('Error listing adverts:', error);
+        logger.error(`Error listing adverts: ${error}`);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 };
@@ -113,12 +121,15 @@ const deleteAdvert = async (req, res) => {
     try {
         const advertRef = await db.collection('adverts').doc(req.params.id);
         const doc = await advertRef.get();
-        if (!doc.data())
-            return res.status(400).json({ error: `No category with id ${req.params.id}` });
+
+        if (!doc.exists)
+            return res.status(404).json({ error: 'Advert not found' });
+
         const response = await db.collection('adverts').doc(req.params.id).delete();
+        logger.info(`Advert with ID ${req.params.id} deleted`);
         res.sendStatus(204);
     } catch (error) {
-        console.error('Error listing categories:', error);
+        logger.error(`Error listing adverts: ${error}`);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 };
