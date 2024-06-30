@@ -2,7 +2,7 @@ const admin = require('../database');
 const db = admin.firestore();
 
 
-const getAllChats = async(req, res)=>{
+const getAllChats = async(req, res,next)=>{
     try{
         const snapshot = await db.collection('chats').get();
         const result = [];
@@ -12,13 +12,12 @@ const getAllChats = async(req, res)=>{
         res.status(200).json(result);
     }
     catch(error){
-        console.error('Error listing chats:', error);
-        res.status(500).json({error: 'Internal Server Error'});
+        next(error);
     }
 }
 
 
-const createChat = async(req, res)=>{
+const createChat = async(req, res,next)=>{
     try{
         const newChat = {
             buyerId: req.body.buyerId,
@@ -30,13 +29,12 @@ const createChat = async(req, res)=>{
         res.status(201).json(newChat);
     }
     catch(error){
-        console.error('Error listing chats:', error);
-        res.status(500).json({error: 'Internal Server Error'});
+        next(error);
     }
 };
 
 
-const updateChat = async(req, res)=>{
+const updateChat = async(req, res,next)=>{
     try{
         let {id, buyerId, sellerId, messageIds} = req.body;
         const chatRef = db.collection('chats').doc(id);
@@ -54,13 +52,12 @@ const updateChat = async(req, res)=>{
         res.status(200).json(updateDoc.data());
     }
     catch(error){
-        console.error('Error listing chats:', error);
-        res.status(500).json({error: 'Internal Server Error'});
+        next(error);
     }
 };
 
 
-const deleteChat = async (req, res) => {
+const deleteChat = async (req, res,next) => {
     try {
         const chatId = req.params.id;
 
@@ -87,7 +84,6 @@ const deleteChat = async (req, res) => {
 
             const messageRefs = chatData.messageIds.map(messageId => db.collection('messages').doc(messageId));
             
-            // Delete each message associated with the chat
             for (const messageRef of messageRefs) {
                 await messageRef.delete();
             }
@@ -97,13 +93,12 @@ const deleteChat = async (req, res) => {
 
         res.sendStatus(204);
     } catch (error) {
-        console.error('Error deleting chat:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        next(error);
     }
 };
 
 
-const getChatById = async (req, res) => {
+const getChatById = async (req, res,next) => {
     try {
         const { id } = req.params;
 
@@ -120,8 +115,7 @@ const getChatById = async (req, res) => {
 
         res.status(200).json({ id: doc.id, ...doc.data() });
     } catch (error) {
-        console.error('Error getting chat:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        next(error);
     }
 };
 

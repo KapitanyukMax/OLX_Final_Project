@@ -3,7 +3,7 @@ const db = admin.firestore();
 const { formatDate } = require('../utils/dateUtils')
 
 
-const getAllMessages = async(req, res)=>{
+const getAllMessages = async(req, res, next)=>{
     try{
         const snapshot = await db.collection('messages').get();
         const result = [];
@@ -13,14 +13,13 @@ const getAllMessages = async(req, res)=>{
         res.status(200).json(result);
     }
     catch(error){
-        console.error('Error listing messages:', error);
-        res.status(500).json({error: 'Internal Server Error'});
+        next(error);
     }
 
 }
 
 
-const createMessage = async(req, res)=>{
+const createMessage = async(req, res,next)=>{
     try{
         const newMessage = {
             text: req.body.text,
@@ -33,13 +32,12 @@ const createMessage = async(req, res)=>{
         res.status(201).json(newMessage);
     }
     catch(error){
-        console.error('Error creating message:', error);
-        res.status(500).json({error: 'Internal Server Error'});
+        next(error);
     
     }
 };
 
-const updateMessage = async (req, res) => {
+const updateMessage = async (req, res,next) => {
     try {
         const { id, text, authorId, chatId } = req.body;
         const sendingDate = req.body.sendingDate ? new Date(req.body.sendingDate) : undefined;
@@ -66,12 +64,11 @@ const updateMessage = async (req, res) => {
         const updatedDoc = await messageRef.get();
         res.status(200).json({ id: updatedDoc.id, ...updatedDoc.data() });
     } catch (error) {
-        console.error('Error updating message:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        next(error);
     }
 };
 
-const deleteMessage = async (req, res) => {
+const deleteMessage = async (req, res,error) => {
     try {
         const { id } = req.params;
 
@@ -89,12 +86,11 @@ const deleteMessage = async (req, res) => {
         await messageRef.delete();
         res.sendStatus(204);
     } catch (error) {
-        console.error('Error deleting message:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        next(error);
     }
 };
 
-const getMessageById = async (req, res) => {
+const getMessageById = async (req, res,next) => {
     try {
         const { id } = req.params;
 
@@ -111,8 +107,7 @@ const getMessageById = async (req, res) => {
 
         res.status(200).json({ id: doc.id, ...doc.data() });
     } catch (error) {
-        console.error('Error getting message:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        next(error);
     }
 };
 

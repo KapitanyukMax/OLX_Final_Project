@@ -2,7 +2,7 @@ const admin = require('../database');
 const db = admin.firestore();
 
 
-const getAllSubcategories = async(req, res)=>{
+const getAllSubcategories = async(req, res, next)=>{
     try{
         const snapshot = await db.collection('subcategories').get();
         const result = [];
@@ -12,12 +12,11 @@ const getAllSubcategories = async(req, res)=>{
         res.status(200).json(result);
     }
     catch(error){
-        console.error('Error listing subcategories:', error);
-        res.status(500).json({error: 'Internal Server Error'});
+        next(error);
     }
 };
 
-const createSubCategories = async(req, res)=>{
+const createSubCategories = async(req, res,next)=>{
     try{
         const newSubcategory = {
             name: req.body.name,
@@ -29,12 +28,11 @@ const createSubCategories = async(req, res)=>{
         res.status(201).json(newSubcategory);
     }
     catch(error){
-        console.error('Error listing subcategories:', error);
-        res.status(500).json({error: 'Internal Server Error'});
+        next(error);
     }
 };
 
-const updateSubCategory = async(req, res)=>{
+const updateSubCategory = async(req, res,next)=>{
     try{
         let {id, name, picture, categoryId} = req.body;
         const subcategoriesRef = db.collection('subcategories').doc(id);
@@ -52,13 +50,12 @@ const updateSubCategory = async(req, res)=>{
         res.status(200).json(updateDoc.data());
     }
     catch(error){
-        console.error('Error listing subcategories:', error);
-        res.status(500).json({error: 'Internal Server Error'});
+        next(error);
     }
 };
 
 
-const deleteSubCategory = async (req, res) => {
+const deleteSubCategory = async (req, res,next) => {
     try {
         const subCategoryId = req.params.id;
 
@@ -72,23 +69,14 @@ const deleteSubCategory = async (req, res) => {
         if (!doc.data()) {
             return res.status(400).json({ error: `No subcategory with id ${subCategoryId}` });
         }
-
-        const subCategoryData = doc.data();
-
         await subCategoryRef.delete();
-        const categoryRef = db.collection('categories').doc(subCategoryData.categoryId);
-        
-        await categoryRef.update({
-            subCategoryIds: admin.firestore.FieldValue.arrayRemove(id)
-        });
 
         res.sendStatus(204);
     } catch (error) {
-        console.error('Error deleting subcategory:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        next(error);
     }
 };
-const getSubCategoryById= async(req, res)=>{
+const getSubCategoryById= async(req, res,next)=>{
     try {
 
         const subCategoryId = req.params.id;
@@ -104,8 +92,7 @@ const getSubCategoryById= async(req, res)=>{
         }
         res.status(200).json({ id: doc.id, ...doc.data() });
     } catch (error) {
-        console.error('Error getting subcategory:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        next(error);
     }
 }
 
