@@ -1,5 +1,6 @@
 const admin = require('../database');
 const db = admin.firestore();
+const { formatDate } = require('../utils/dateUtils')
 
 
 const getAllMessages = async(req, res)=>{
@@ -20,21 +21,7 @@ const getAllMessages = async(req, res)=>{
 
 
 const createMessage = async(req, res)=>{
-    const formatDate = (date) => {
-        const pad = (num) => num.toString().padStart(2, '0');
-
-        const year = date.getFullYear();
-        const month = pad(date.getMonth() + 1);
-        const day = pad(date.getDate());
-        const hours = pad(date.getHours());
-        const minutes = pad(date.getMinutes());
-        const seconds = pad(date.getSeconds());
-
-        return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-    };
     try{
-
-
         const newMessage = {
             text: req.body.text,
             sendingDate: formatDate(new Date()),
