@@ -1,88 +1,121 @@
 const admin = require('../database');
+const logger = require('../logger/logger');
 
 const db = admin.firestore();
 
-const getAllCategories = async (req, res) => {
+const getAllCategories = async (req, res, next) => {
     try {
-        const snapshot = await db.collection('categories').get();
-        const result = [];
-        snapshot.forEach((doc) => {
-            result.push(doc.data());
+        const collection = await db.collection('categories').get();
+        
+        logger.info('Categories received successfully');
+        res.status(200).json(collection.docs.map(doc => {
+            return {
+                id: doc.id,
+                ...doc.data()
+            };
+        }));
+    } catch (error) {
+        next(error);
+    }
+};
+
+const getCategoryById = async (req, res, next) => {
+    try {
+        const docRef = db.collection('categories').doc(req.params.id);
+        const doc = await docRef.get();
+        if (!doc.exists) {
+            logger.info(`Bad Request - category with id "${req.params.id}" does not exist`);
+            return res.status(400).json({ message: `The category with id "${req.params.id}" does not exist.` });
+        }
+
+        logger.info('Category received successfully');
+        res.status(200).json({
+            id: doc.id,
+            ...doc.data()
         });
-        res.status(200).json(result);
     } catch (error) {
-        console.error('Error listing categories:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        next(error);
     }
 };
 
-const createCategory = async (req, res) => {
+const createCategory = async (req, res, next) => {
     try {
-        const newCategory = {
-            name: req.body.name,
-            picture: req.body.picture
-        };
-        const docRef = await db.collection("categories").add(newCategory);
-        console.log("Document written with ID: ", docRef.id);
-        res.status(201).json(newCategory);
+        const { name, picture } = req.body;
+        if (!name) {
+            logger.info('Bad Request - category name is required');
+            return res.status(400).json({ message: 'Category name is required.' });
+        }
+        if (!picture) {
+            logger.info('Bad Request - category picture url is required');
+            return res.status(400).json({ message: 'Category picture url is required.' });
+        }
+
+        const docRef = await db.collection('categories').add({ name, picture });
+        const doc = await docRef.get();
+
+        logger.info('Category created successfully');
+        res.status(201).json({
+            id: doc.id,
+            ...doc.data()
+        });
     } catch (error) {
-        console.error('Error listing categories:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        next(error);
     }
 };
 
-const updateCategory = async (req, res) => {
+const updateCategory = async (req, res, next) => {
     try {
         let { id, name, picture } = req.body;
-        const categoriesRef = await db.collection('categories').doc(id);
-        let doc = await categoriesRef.get();
-        const category = doc.data();
+        if (!id) {
+            logger.info('Bad Request - category id is required');
+            return res.status(400).json({ message: 'Category id is required.' });
+        }
 
-        name ||= category.name;
-        picture ||= category.picture;
+        const docRef = db.collection('categories').doc(id);
+        let doc = await docRef.get();
+        if (!doc.exists) {
+            logger.info(`Bad Request - category with id "${id}" does not exist`);
+            return res.status(400).json({ message: `The category with id "${id}" does not exist.` });
+        }
 
-        await categoriesRef.update({
-            name, picture
+        name ??= doc.data().name;
+        picture ??= doc.data().picture;
+
+        await docRef.update({ name, picture });
+        doc = await docRef.get();
+
+        logger.info('Category updated successfully');
+        res.status(200).json({
+            id: doc.id,
+            ...doc.data()
         });
-        doc = await categoriesRef.get();
-        const data = doc.data();
-        res.status(200).json(data);
     } catch (error) {
-        console.error('Error listing categories:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        next(error);
     }
 };
 
-const deleteCategory = async (req, res) => {
+const deleteCategory = async (req, res, next) => {
     try {
-        const categoriesRef = await db.collection('categories').doc(req.params.id);
-        const doc = await categoriesRef.get();
-        if (!doc.data())
-            return res.status(400).json({ error: `No category with id ${req.params.id}` });
-        const response = await db.collection('categories').doc(req.params.id).delete();
+        const docRef = db.collection('categories').doc(req.params.id);
+        const doc = await docRef.get();
+        if (!doc.exists) {
+            logger.info(`Bad Request - category with id "${req.params.id}" does not exist`);
+            return res.status(400).json({ message: `The category with id "${req.params.id}" does not exist.` });
+        }
+
+        await docRef.delete();
+
+        logger.info('Category deleted successfully');
         res.sendStatus(204);
     } catch (error) {
-        console.error('Error listing categories:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
-};
-
-const getCategoryById = async (req, res) => {
-    try {
-        const categoriesRef = await db.collection('categories').doc(req.params.id);
-        const doc = await categoriesRef.get();
-        const response = doc.data();
-        res.status(200).json(response);
-    } catch (error) {
-        console.error('Error listing categories:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        next(error);
     }
 };
 
 module.exports = {
     getAllCategories,
+    getCategoryById,
     createCategory,
     updateCategory,
-    deleteCategory,
-    getCategoryById
+    deleteCategory
 };
