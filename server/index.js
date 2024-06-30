@@ -1,7 +1,5 @@
 const express = require('express')
 const cors = require('cors')
-const swaggerUI = require('swagger-ui-express')
-const swaggerSpec = require('./swagger')
 const requestLogger = require('./middleware/requestLogger')
 const errorHandler = require('./middleware/errorHandler')
 
@@ -13,8 +11,6 @@ app.use(express.json());
 app.use(cors());
 
 app.use(requestLogger);
-
-app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
 
 app.use('/categories', require('./routes/categories'));
 app.use('/adverts', require('./routes/adverts'));
