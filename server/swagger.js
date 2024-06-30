@@ -1,17 +1,17 @@
 const swaggerJSDoc = require('swagger-jsdoc');
 
 const swaggerDefinition = {
-  openapi: '3.0.0',
+  openapi: '3.1.0',
   info: {
-    title: 'My API',
+    title: 'DealDex Server API',
     version: '1.0.0',
-    description: 'My API Description',
-  },
+    description: 'DealDex Server API'
+  }
 };
 
 const options = {
   swaggerDefinition,
-  apis: ['./index.js'], // Path to the API routes in your Node.js application
+  apis: ['./routes/*.js']
 };
 
 const swaggerSpec = swaggerJSDoc(options);
