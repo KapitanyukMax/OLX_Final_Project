@@ -3,10 +3,10 @@ const logger = require('../logger/logger');
 
 const db = admin.firestore();
 
-const getAllCategories = async (req, res) => {
+const getAllCategories = async (req, res, next) => {
     try {
         const collection = await db.collection('categories').get();
-
+        
         logger.info('Categories received successfully');
         res.status(200).json(collection.docs.map(doc => {
             return {
@@ -15,12 +15,11 @@ const getAllCategories = async (req, res) => {
             };
         }));
     } catch (error) {
-        logger.error(`Error getting categories: ${error}`);
-        res.status(500).json({ error: 'Internal Server Error' });
+        next(error);
     }
 };
 
-const getCategoryById = async (req, res) => {
+const getCategoryById = async (req, res, next) => {
     try {
         const docRef = db.collection('categories').doc(req.params.id);
         const doc = await docRef.get();
@@ -35,12 +34,11 @@ const getCategoryById = async (req, res) => {
             ...doc.data()
         });
     } catch (error) {
-        logger.error(`Error getting category: ${error}`);
-        res.status(500).json({ error: 'Internal Server Error' });
+        next(error);
     }
 };
 
-const createCategory = async (req, res) => {
+const createCategory = async (req, res, next) => {
     try {
         const { name, picture } = req.body;
         if (!name) {
@@ -61,12 +59,11 @@ const createCategory = async (req, res) => {
             ...doc.data()
         });
     } catch (error) {
-        logger.error(`Error creating category: ${error}`);
-        res.status(500).json({ error: 'Internal Server Error' });
+        next(error);
     }
 };
 
-const updateCategory = async (req, res) => {
+const updateCategory = async (req, res, next) => {
     try {
         let { id, name, picture } = req.body;
         if (!id) {
@@ -93,12 +90,11 @@ const updateCategory = async (req, res) => {
             ...doc.data()
         });
     } catch (error) {
-        logger.error(`Error updating category: ${error}`);
-        res.status(500).json({ error: 'Internal Server Error' });
+        next(error);
     }
 };
 
-const deleteCategory = async (req, res) => {
+const deleteCategory = async (req, res, next) => {
     try {
         const docRef = db.collection('categories').doc(req.params.id);
         const doc = await docRef.get();
@@ -112,8 +108,7 @@ const deleteCategory = async (req, res) => {
         logger.info('Category deleted successfully');
         res.sendStatus(204);
     } catch (error) {
-        logger.error(`Error deleting category: ${error}`);
-        res.status(500).json({ error: 'Internal Server Error' });
+        next(error);
     }
 };
 

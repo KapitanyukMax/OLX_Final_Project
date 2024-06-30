@@ -3,7 +3,7 @@ const logger = require('../logger/logger');
 
 const db = admin.firestore();
 
-const getAllUsers = async (req, res) => {
+const getAllUsers = async (req, res, next) => {
     try {
         const collection = await db.collection('users').get();
 
@@ -15,12 +15,11 @@ const getAllUsers = async (req, res) => {
             };
         }));
     } catch (error) {
-        logger.error(`Error getting users: ${error}`);
-        res.status(500).json({ error: 'Internal Server Error' });
+        next(error);
     }
 };
 
-const getUserById = async (req, res) => {
+const getUserById = async (req, res, next) => {
     try {
         const docRef = db.collection('users').doc(req.params.id);
         const doc = await docRef.get();
@@ -35,12 +34,11 @@ const getUserById = async (req, res) => {
             ...doc.data()
         });
     } catch (error) {
-        logger.error(`Error getting users: ${error}`);
-        res.status(500).json({ error: 'Internal Server Error' });
+        next(error);
     }
 };
 
-const createUser = async (req, res) => {
+const createUser = async (req, res, next) => {
     try {
         const { name, email, phone, isAdmin, picture, rating } = req.body;
         if (!name) {
@@ -69,12 +67,11 @@ const createUser = async (req, res) => {
             ...doc.data()
         });
     } catch (error) {
-        logger.error(`Error creating user: ${error}`);
-        res.status(500).json({ error: 'Internal Server Error' });
+        next(error);
     }
 };
 
-const updateUser = async (req, res) => {
+const updateUser = async (req, res, next) => {
     try {
         let { id, name, email, phone, isAdmin, picture, rating } = req.body;
         if (!id) {
@@ -105,12 +102,11 @@ const updateUser = async (req, res) => {
             ...doc.data()
         });
     } catch (error) {
-        logger.error(`Error updating user: ${error}`);
-        res.status(500).json({ error: 'Internal Server Error' });
+        next(error);
     }
 };
 
-const deleteUser = async (req, res) => {
+const deleteUser = async (req, res, next) => {
     try {
         const docRef = db.collection('users').doc(req.params.id);
         const doc = await docRef.get();
@@ -124,8 +120,7 @@ const deleteUser = async (req, res) => {
         logger.info('User deleted successfully');
         res.sendStatus(204);
     } catch (error) {
-        logger.error(`Error deleting user: ${error}`);
-        res.status(500).json({ error: 'Internal Server Error' });
+        next(error);
     }
 };
 
