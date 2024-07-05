@@ -11,4 +11,13 @@ router.route('/:id')
     .get(advertsController.getAdvertById)
     .delete(advertsController.deleteAdvert);
 
+router.route('/subcategory/:id')
+    .get(advertsController.getAdvertsBySubcategoryId);
+
+router.route('/category/:id')
+    .get(advertsController.getAdvertsByCategoryId);
+
+router.route('/user/:id')
+    .get(advertsController.getAdvertsByUserId);
+
 module.exports = router;
