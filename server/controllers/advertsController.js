@@ -33,6 +33,71 @@ const getAdvertById = async (req, res) => {
     }
 };
 
+const getAdvertsByCategoryId = async (req, res) => {
+    try {
+        const snapshot = await db.collection('subcategories').where('categoryId', '==', req.params.id).get();
+
+        if (snapshot.empty) {
+            return res.status(404).json({ error: 'Adverts not found' });
+        }
+
+        const subCategories = [];
+        snapshot.forEach((doc) => {
+            subCategories.push(doc.id);
+        });
+
+        const result = [];
+        for (let i = 0; i < subCategories.length; i++) {
+            const advertsSnapshot = await db.collection('adverts').where('subCategoryId', '==', subCategories[i]).get();
+            advertsSnapshot.forEach((doc) => {
+                result.push(doc.data());
+            });
+        }
+        res.status(200).json(result);
+    } catch (error) {
+        logger.error(`Error listing adverts: ${error}`);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+
+const getAdvertsByUserId = async (req, res) => {
+    try {
+        const snapshot = await db.collection('adverts').where('userId', '==', req.params.id).get();
+
+        if (snapshot.empty) {
+            return res.status(404).json({ error: 'Adverts not found' });
+        }
+
+        const result = [];
+        snapshot.forEach((doc) => {
+            result.push(doc.data());
+        });
+        res.status(200).json(result);
+    } catch (error) {
+        logger.error(`Error listing adverts: ${error}`);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
+
+const getAdvertsBySubcategoryId = async (req, res) => {
+    try {
+        const snapshot = await db.collection('adverts').where('subCategoryId', '==', req.params.id).get();
+
+        if (snapshot.empty) {
+            return res.status(404).json({ error: 'Adverts not found' });
+        }
+
+        const result = [];
+        snapshot.forEach((doc) => {
+            result.push(doc.data());
+        });
+        res.status(200).json(result);
+    } catch (error) {
+        logger.error(`Error listing adverts: ${error}`);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+
 const createAdvert = async (req, res) => {
     const formatDate = (date) => {
         const pad = (num) => num.toString().padStart(2, '0');
@@ -139,5 +204,8 @@ module.exports = {
     getAdvertById,
     createAdvert,
     updateAdvert,
-    deleteAdvert
+    deleteAdvert,
+    getAdvertsBySubcategoryId,
+    getAdvertsByCategoryId,
+    getAdvertsByUserId
 };
