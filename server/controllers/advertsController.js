@@ -19,7 +19,7 @@ const getAllAdverts = async (req, res) => {
 
 const getAdvertById = async (req, res) => {
     try {
-        const advertsRef = await db.collection('adverts').doc(req.params.id);
+        const advertsRef = await db.collection('adverts').doc(req.query.id);
         const doc = await advertsRef.get();
 
         if (!doc.exists)
@@ -35,7 +35,7 @@ const getAdvertById = async (req, res) => {
 
 const getAdvertsByCategoryId = async (req, res) => {
     try {
-        const snapshot = await db.collection('subcategories').where('categoryId', '==', req.params.id).get();
+        const snapshot = await db.collection('subcategories').where('categoryId', '==', req.query.id).get();
 
         if (snapshot.empty) {
             return res.status(404).json({ error: 'Adverts not found' });
@@ -62,7 +62,7 @@ const getAdvertsByCategoryId = async (req, res) => {
 
 const getAdvertsByUserId = async (req, res) => {
     try {
-        const snapshot = await db.collection('adverts').where('userId', '==', req.params.id).get();
+        const snapshot = await db.collection('adverts').where('userId', '==', req.query.id).get();
 
         if (snapshot.empty) {
             return res.status(404).json({ error: 'Adverts not found' });
@@ -81,7 +81,7 @@ const getAdvertsByUserId = async (req, res) => {
 
 const getAdvertsBySubcategoryId = async (req, res) => {
     try {
-        const snapshot = await db.collection('adverts').where('subCategoryId', '==', req.params.id).get();
+        const snapshot = await db.collection('adverts').where('subCategoryId', '==', req.query.id).get();
 
         if (snapshot.empty) {
             return res.status(404).json({ error: 'Adverts not found' });
@@ -184,14 +184,14 @@ const updateAdvert = async (req, res) => {
 
 const deleteAdvert = async (req, res) => {
     try {
-        const advertRef = await db.collection('adverts').doc(req.params.id);
+        const advertRef = await db.collection('adverts').doc(req.query.id);
         const doc = await advertRef.get();
 
         if (!doc.exists)
             return res.status(404).json({ error: 'Advert not found' });
 
-        const response = await db.collection('adverts').doc(req.params.id).delete();
-        logger.info(`Advert with ID ${req.params.id} deleted`);
+        const response = await db.collection('adverts').doc(req.query.id).delete();
+        logger.info(`Advert with ID ${req.query.id} deleted`);
         res.sendStatus(204);
     } catch (error) {
         logger.error(`Error listing adverts: ${error}`);
