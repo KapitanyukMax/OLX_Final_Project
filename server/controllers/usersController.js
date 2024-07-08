@@ -38,6 +38,33 @@ const getUserById = async (req, res, next) => {
     }
 };
 
+const getUserByEmail = async (req, res, next) => {
+    try {
+        const collection = await db.collection('users').get();
+
+        let foundDoc;
+        for (const doc of collection.docs) {
+            if (doc.data().email == req.query.email) {
+                foundDoc = doc;
+                break;
+            }
+        }
+
+        if (!foundDoc) {
+            logger.info(`Bad Request - user with email "${req.query.email}" does not exist`);
+            return res.status(400).json({ message: `The user with email "${req.query.email}" does not exist.` });
+        }
+
+        logger.info('User received successfully');
+        res.status(200).json({
+            id: foundDoc.id,
+            ...foundDoc.data()
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
 const createUser = async (req, res, next) => {
     try {
         const { name, email, phone, isAdmin, picture, rating } = req.body;
@@ -55,6 +82,18 @@ const createUser = async (req, res, next) => {
         }
         isAdmin ??= false;
         rating ??= 0;
+
+        const collection = await db.collection('users').get();
+        for (const doc of collection.docs) {
+            if (doc.data().email == email) {
+                logger.info(`Conflict - user with email "${email}" already exists`);
+                return res.status(409).json({ message: `The user with email "${email}" already exists.` });
+            }
+            if (doc.data().phone == phone) {
+                logger.info(`Conflict - user with phone "${phone}" already exists`);
+                return res.status(409).json({ message: `The user with phone "${phone}" already exists.` });
+            }
+        }
 
         const docRef = await db.collection('users').add({
             name, email, phone, isAdmin, picture, rating
@@ -84,6 +123,24 @@ const updateUser = async (req, res, next) => {
         if (!doc.exists) {
             logger.info(`Bad Request - user with id "${id}" does not exist`);
             return res.status(400).json({ message: `The user with id "${id}" does not exist.` });
+        }
+
+        const collection = await db.collection('users').get();
+        if (email) {
+            for (const doc of collection.docs) {
+                if (doc.data().email == email && doc.id != id) {
+                    logger.info(`Conflict - user with email "${email}" already exists`);
+                    return res.status(409).json({ message: `The user with email "${email}" already exists.` });
+                }
+            }
+        }
+        if (phone) {
+            for (const doc of collection.docs) {
+                if (doc.data().phone == phone && doc.id != id) {
+                    logger.info(`Conflict - user with phone "${phone}" already exists`);
+                    return res.status(409).json({ message: `The user with phone "${phone}" already exists.` });
+                }
+            }
         }
 
         name ??= doc.data().name;
@@ -127,6 +184,7 @@ const deleteUser = async (req, res, next) => {
 module.exports = {
     getAllUsers,
     getUserById,
+    getUserByEmail,
     createUser,
     updateUser,
     deleteUser
