@@ -7,6 +7,9 @@ router.route('/')
     .post(usersController.createUser)
     .put(usersController.updateUser);
 
+router.route('/email')
+    .get(usersController.getUserByEmail);
+
 router.route('/:id')
     .get(usersController.getUserById)
     .delete(usersController.deleteUser);
