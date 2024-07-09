@@ -7,8 +7,15 @@ router.route('/')
     .post(feedbackController.createFeedback)
     .put(feedbackController.updateFeedback);
     
-    router.route('/:id')
+router.route('/:userId')
+    .get(feedbackController.getFeedbacksByUserId);
+
+router.route('/:authorId')
+    .get(feedbackController.getFeedbacksByAuthorId);
+
+router.route('/:id')
     .get(feedbackController.getFeedbackById)
     .delete(feedbackController.deleteFeedback);
+
 
 module.exports = router;
