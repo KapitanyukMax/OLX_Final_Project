@@ -7,17 +7,18 @@ router.route('/')
     .post(advertsController.createAdvert)
     .put(advertsController.updateAdvert);
 
+router.route('/subcategoryId')
+    .get(advertsController.getAdvertsBySubcategoryId);
+
+router.route('/categoryId')
+    .get(advertsController.getAdvertsByCategoryId);
+
+router.route('/userId')
+    .get(advertsController.getAdvertsByUserId);
+
 router.route('/:id')
     .get(advertsController.getAdvertById)
     .delete(advertsController.deleteAdvert);
 
-router.route('/subcategory')
-    .get(advertsController.getAdvertsBySubcategoryId);
-
-router.route('/category')
-    .get(advertsController.getAdvertsByCategoryId);
-
-router.route('/user')
-    .get(advertsController.getAdvertsByUserId);
 
 module.exports = router;
