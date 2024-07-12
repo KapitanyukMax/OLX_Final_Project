@@ -3,29 +3,14 @@ const db = admin.firestore();
 const { formatDate } = require('../utils/dateUtils')
 
 
-const getAllMessages = async(req, res, next)=>{
-    try{
-        const snapshot = await db.collection('messages').get();
-        const result = [];
-        snapshot.forEach((doc)=>{
-            result.push({id:doc.id, ...doc.data()});
-        });
-        res.status(200).json(result);
-    }
-    catch(error){
-        next(error);
-    }
-
-}
-
-
 const createMessage = async(req, res,next)=>{
     try{
         const newMessage = {
             text: req.body.text,
             sendingDate: formatDate(new Date()),
             authorId: req.body.authorId,
-            chatId: req.body.chatId
+            chatId: req.body.chatId,
+            advertId: req.body.advertId,
         };
         const docRef = await db.collection("messages").add(newMessage);
         console.log("Document written with ID: ", docRef.id);
@@ -39,7 +24,7 @@ const createMessage = async(req, res,next)=>{
 
 const updateMessage = async (req, res,next) => {
     try {
-        const { id, text, authorId, chatId } = req.body;
+        const { id, text, authorId, chatId, advertId } = req.body;
         const sendingDate = req.body.sendingDate ? new Date(req.body.sendingDate) : undefined;
         
 
@@ -59,6 +44,7 @@ const updateMessage = async (req, res,next) => {
         if (sendingDate !== undefined) updatedMessage.sendingDate = sendingDate;
         if (authorId !== undefined) updatedMessage.authorId = authorId;
         if (chatId !== undefined) updatedMessage.chatId = chatId;
+        if(advertId!== undefined) updatedMessage.advertId = advertId;
 
         await messageRef.update(updatedMessage);
         const updatedDoc = await messageRef.get();
@@ -112,7 +98,6 @@ const getMessageById = async (req, res,next) => {
 };
 
 module.exports ={
-    getAllMessages,
     createMessage,
     updateMessage,
     deleteMessage,

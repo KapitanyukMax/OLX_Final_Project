@@ -11,4 +11,7 @@ router.route('/:id')
     .get(subcategoriesController.getSubCategoryById)
     .delete(subcategoriesController.deleteSubCategory);
 
+router.route('/by-category/:categoryId')
+    .get(subcategoriesController.getSubcategoriesByCategoryId);
+
 module.exports = router;

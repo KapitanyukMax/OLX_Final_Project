@@ -96,11 +96,33 @@ const getSubCategoryById= async(req, res,next)=>{
     }
 }
 
+const getSubcategoriesByCategoryId = async (req, res) => {
+    try {
+        const { categoryId } = req.params;
+
+        if (!categoryId) {
+            return res.status(400).json({ error: 'Category ID is required' });
+        }
+
+        const subcategoriesRef = db.collection('subcategories');
+        const snapshot = await subcategoriesRef.where('categoryId', '==', categoryId).get();
+
+        if (snapshot.empty) {
+            return res.status(404).json({ error: `No subcategories found for category id ${categoryId}` });
+        }
+
+        const subcategories = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        res.status(200).json(subcategories);
+    } catch (error) {
+        next(error);
+    }
+};
 
 module.exports = {
     getAllSubcategories,
     createSubCategories,
     updateSubCategory,
     deleteSubCategory,
-    getSubCategoryById
+    getSubCategoryById,
+    getSubcategoriesByCategoryId
 }
