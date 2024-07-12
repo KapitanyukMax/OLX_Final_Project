@@ -13,10 +13,7 @@ const getAllFeedbacks = async(req, res, next) => {
             return res.status(400).json({ error: 'No matching feedback documents.' });
         }
 
-        const feedbacks = [];
-        snapshot.forEach((doc)=>{
-            feedbacks.push({id:doc.id, ...doc.data()});
-        });
+        const feedbacks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         
         logger.info("Feedbacks received successfully!");
         return res.status(200).json(feedbacks);
@@ -28,33 +25,11 @@ const getAllFeedbacks = async(req, res, next) => {
 
 const createFeedback = async(req, res, next) => {
     try {
-        const { rating, authorId, userId } = req.body;
+        const feedback = req.body;
+        const docRef = await db.collection('feedbacks').add(feedback);
 
-        if (!rating) {
-            logger.error("rating is required.");
-            return res.status(400).json({error: "rating is required."})
-        }
-
-        if (!authorId) {
-            logger.error("authorId is required.");
-            return res.status(400).json({error: "authorId is required."})
-        }
-
-        if (!userId) {
-            logger.error("userId is required.");
-            return res.status(400).json({error: "userId is required."})
-        }
-
-        const newFeedback = {
-            creationDate: formatDate(new Date()),
-            rating: rating,
-            authorId: authorId,
-            userId: userId
-        };
-        
-        const docRef = await db.collection("feedbacks").add(newFeedback);
         logger.info(`Feedback document written with ID: ${docRef.id}`);
-        return res.status(201).json(newFeedback);
+        res.status(201).send(`Feedback created with ID: ${docRef.id}`);
     }
     catch (error) {
         next(error);
@@ -63,31 +38,11 @@ const createFeedback = async(req, res, next) => {
 
 const updateFeedback = async (req, res, next) => {
     try {
-        const { id, rating, authorId, userId } = req.body;
-        const creationDate = req.body.creationDate ? new Date(req.body.creationDate) : undefined;
-
-        if (!id) {
-            return res.status(400).json({ error: 'Feedback ID is required' });
-        }
-
-        const feedbackRef = db.collection('feedbacks').doc(id);
-        const doc = await feedbackRef.get();
-
-        if (!doc.exists) {
-            return res.status(404).json({ error: `No feedback with id ${id}` });
-        }
-
-        const updatedFeedback = {};
-        if (rating !== undefined) updatedFeedback.rating = rating;
-        if (creationDate !== undefined) updatedFeedback.creationDate = creationDate;
-        if (authorId !== undefined) updatedFeedback.authorId = authorId;
-        if (userId !== undefined) updatedFeedback.userId = userId;
-
-        await feedbackRef.update(updatedFeedback);
-        const updatedDoc = await feedbackRef.get();
+        const feedback = req.body;
+        await db.collection('feedbacks').doc(req.body.id).update(feedback);
         
         logger.info("Feedback document successfully updated!");
-        return res.status(200).json({ id: updatedDoc.id, ...updatedDoc.data() });
+        return res.status(200).json({ id: feedback.id, ...feedback.data() });
     } catch (error) {
         next(error);
     }
@@ -95,15 +50,9 @@ const updateFeedback = async (req, res, next) => {
 
 const deleteFeedback = async (req, res, next) => {
     try {
-        const docRef = db.collection('feedbacks').doc(req.params.id);
-        const doc = await docRef.get();
-        if (!doc.exists) {
-            logger.error(`feedback with id "${req.params.id}" does not exist`);
-            return res.status(400).json({ error: `feedback with id "${req.params.id}" does not exist` });
-        }
+        await db.collection('feedbacks').doc(req.params.id).delete();
 
         logger.info("Feedback document successfully deleted.")
-        await docRef.delete();
         res.sendStatus(200);
     } catch (error) {
         next(error);
@@ -118,8 +67,7 @@ const getFeedbackById = async (req, res, next) => {
             return res.status(400).json({ error: 'Feedback ID is required' });
         }
         
-        const feedbackRef = db.collection('feedbacks').doc(id);
-        const doc = await feedbackRef.get();
+        const doc = await db.collection('feedbacks').doc(id).get();
         
         if (!doc.exists) {
             logger.error(`No matching feedback document with id: ${id}`);
@@ -141,10 +89,7 @@ const getFeedbacksByUserId = async (req, res, next) => {
             return res.status(400).json({ message: "No matching documents." });
         }
         
-        const feedbacks = [];
-        snapshot.forEach(doc => {
-            feedbacks.push(doc.data());
-        });
+        const feedbacks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
         logger.info("Feedbacks received successfully!");
         return res.status(200).json(feedbacks);
@@ -162,10 +107,7 @@ const getFeedbacksByAuthorId = async (req, res, next) => {
             return res.status(400).json({ message: "No matching documents." });
         }
         
-        const feedbacks = [];
-        snapshot.forEach(doc => {
-            feedbacks.push(doc.data());
-        });
+        const feedbacks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
         logger.info("Feedbacks received successfully!");
         return res.status(200).json(feedbacks);
