@@ -3,7 +3,6 @@ const router = express.Router()
 const messageController = require('../controllers/messageController')
 
 router.route('/')
-    .get(messageController.getAllMessages)
     .post(messageController.createMessage)
     .put(messageController.updateMessage);
 

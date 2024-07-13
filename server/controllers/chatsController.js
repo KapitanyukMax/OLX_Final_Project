@@ -2,21 +2,6 @@ const admin = require('../database');
 const db = admin.firestore();
 
 
-const getAllChats = async(req, res,next)=>{
-    try{
-        const snapshot = await db.collection('chats').get();
-        const result = [];
-        snapshot.forEach((doc)=>{
-            result.push({id:doc.id, ...doc.data()});
-        });
-        res.status(200).json(result);
-    }
-    catch(error){
-        next(error);
-    }
-}
-
-
 const createChat = async(req, res,next)=>{
     try{
         const newChat = {
@@ -120,11 +105,59 @@ const getChatById = async (req, res,next) => {
 };
 
 
+const getChatsByUserIdAsSeller = async (req, res, next) => {
+    try {
+        const userId = req.params.userId;
+
+        if (!userId) {
+            return res.status(400).json({ error: 'User ID is required' });
+        }
+
+        const chatsRef = db.collection('chats');
+
+        const sellerSnapshot = await chatsRef.where('sellerId', '==', userId).get();
+        const sellerChats = sellerSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        console.log(`Seller chats for userId ${userId}:`, sellerChats);
+
+        const result = [...sellerChats];
+
+        res.status(200).json(result);
+    } catch (error) {
+        next(error);
+    }
+};
+
+const getChatsByUserIdAsBuyer = async (req, res, next) => {
+    try {
+        const userId = req.params.userId;
+
+        if (!userId) {
+            return res.status(400).json({ error: 'User ID is required' });
+        }
+
+        const chatsRef = db.collection('chats');
+
+        const buyerSnapshot = await chatsRef.where('buyerId', '==', userId).get();
+        const buyerChats = buyerSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        console.log(`Buyer chats for userId ${userId}:`, buyerChats);
+
+        const result = [...buyerChats];
+
+        res.status(200).json(result);
+    } catch (error) {
+        next(error);
+    }
+};
+
+
+
+
 
 module.exports = {
-    getAllChats,
     createChat,
     updateChat,
     deleteChat,
-    getChatById
+    getChatById,
+    getChatsByUserIdAsSeller,
+    getChatsByUserIdAsBuyer
 }
