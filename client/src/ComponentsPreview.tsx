@@ -1,6 +1,7 @@
 import React from 'react';
 import StyledLabel from './components/label';
 import {Container, Box, Typography} from '@mui/material';
+import HomeIcon from '@mui/icons-material/Home';
 
 
 const ComponentsPreview = () => {
@@ -29,7 +30,16 @@ const ComponentsPreview = () => {
             <Typography sx={{
                 fontSize: '10px'
             }}>Label :</Typography>
-                <StyledLabel text='Label for display info'/>
+            <Box sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '5px'
+            }}>
+                <StyledLabel text='Primary Label for display info' type='primary'/>
+                <StyledLabel text='Head Label for display info' type='head'/>
+                <StyledLabel text='Label with icon for display info' type='with-icon' icon={HomeIcon}/>
+            </Box>
+                
             </Box>
         </Container>
     )
