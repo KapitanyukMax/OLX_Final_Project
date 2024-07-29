@@ -1,5 +1,5 @@
-import { Register } from './components/RegisterPage/Register';
-import { Login } from './components/LoginPage/Login';
+import { Register } from './pages/RegisterPage/Register';
+import { Login } from './pages/LoginPage/Login';
 import ComponentsPreview from './ComponentsPreview';
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import './App.css'
