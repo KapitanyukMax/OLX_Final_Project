@@ -1,9 +1,9 @@
 import React from 'react';
 import StyledLabel from './components/label';
+import StyledButton from './components/button';
 import { Container, Box, Typography } from '@mui/material';
 import { StyledInput } from './components/input';
-import HomeIcon from '@mui/icons-material/Home';
-import { Mail, RemoveRedEye, Password } from '@mui/icons-material';
+import { Mail, RemoveRedEye, Password, Home } from '@mui/icons-material';
 
 
 const ComponentsPreview = () => {
@@ -45,7 +45,7 @@ const ComponentsPreview = () => {
                     */}
                     <StyledLabel text='Primary Label for display info' type='primary' />
                     <StyledLabel text='Head Label for display info' type='head' />
-                    <StyledLabel text='Label with icon for display info' type='with-icon' icon={HomeIcon} />
+                    <StyledLabel text='Label with icon for display info' type='with-icon' icon={Home} />
                 </Box>
 
             </Box>
@@ -88,6 +88,45 @@ const ComponentsPreview = () => {
                                 console.log('Icon end clicked');
                             }
                         } />
+                </Box>
+            </Box>
+            <Box
+                sx={{
+                    marginTop: '350px',
+                    position: 'absolute',
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    gap: '8px',
+                    border: '2px solid black',
+                    padding: '3px',
+                    backgroundColor: 'lightgrey'
+                }}>
+                <Typography sx={{
+                    fontSize: '10px',
+                    color: 'black'
+                }}>Button :</Typography>
+                <Box sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '5px'
+                }}>
+                    {/* 
+                        Button має такі поля:
+                            text: string;
+                            type: 'contained' | 'outlined';
+                            primaryColor?: string;
+                            secondaryColor?: string;
+                            hoverColor?: string;
+                            icon?: React.ElementType<SvgIconProps>;
+                            onClick?: () => void;
+                    */}
+                    <StyledButton text='Home' type='outlined' icon={Home} />
+                    <StyledButton text='Home' type='contained'
+                        onClick={() => {
+                            console.log('Button clicked')
+                        }} />
                 </Box>
             </Box>
         </Container>
