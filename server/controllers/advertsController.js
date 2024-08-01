@@ -108,14 +108,14 @@ const getAdvertsBySubcategoryId = async (req, res, next) => {
 
 const createAdvert = async (req, res, next) => {
     try {
-        const { userId, subCategoryId, name, description, price, location, status, pictures, orderType, currency, delivery, isHidden } = req.body;
+        const { userId, subCategoryId, name, description, price, location, status, pictures, orderType, currencyId, delivery, isHidden } = req.body;
         creationDate = formatDate.formatDate(new Date());
         viewsCount = 0;
         favoritesCount = 0;
         vipUntil = null;
 
         const docRef = await db.collection("adverts").add({
-            userId, subCategoryId, name, description, price, location, status, pictures, orderType, currency, delivery, isHidden, creationDate, viewsCount, favoritesCount, vipUntil
+            userId, subCategoryId, name, description, price, location, status, pictures, orderType, currencyId, delivery, isHidden, creationDate, viewsCount, favoritesCount, vipUntil
         });
         doc = await docRef.get();
 
@@ -131,7 +131,7 @@ const createAdvert = async (req, res, next) => {
 
 const updateAdvert = async (req, res, next) => {
     try {
-        let { id, userId, subCategoryId, name, description, price, location, status, pictures, orderType, currency, delivery, isHidden, viewsCount, favoritesCount, vipUntil } = req.body;
+        let { id, userId, subCategoryId, name, description, price, location, status, pictures, orderType, currencyId, delivery, isHidden, viewsCount, favoritesCount, vipUntil } = req.body;
         if (!id) {
             logger.info('Bad Request - advert id is required');
             return res.status(400).json({ message: 'Advert id is required.' });
@@ -154,7 +154,7 @@ const updateAdvert = async (req, res, next) => {
         status ??= advert.status;
         pictures ??= advert.pictures;
         orderType ??= advert.orderType;
-        currency ??= advert.currency;
+        currencyId ??= advert.currencyId;
         delivery ??= advert.delivery;
         isHidden ??= advert.isHidden;
         viewsCount ??= advert.viewsCount;
@@ -164,7 +164,7 @@ const updateAdvert = async (req, res, next) => {
         const creationDate = advert.creationDate;
 
         await advertsRef.update({
-            userId, subCategoryId, name, description, price, location, status, pictures, orderType, currency, delivery, isHidden, creationDate, viewsCount, favoritesCount, vipUntil
+            userId, subCategoryId, name, description, price, location, status, pictures, orderType, currencyId, delivery, isHidden, creationDate, viewsCount, favoritesCount, vipUntil
         });
         doc = await advertsRef.get();
 
