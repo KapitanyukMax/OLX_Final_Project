@@ -1,34 +1,20 @@
 import React from 'react';
-import { Box, Input, InputLabel, InputAdornment } from '@mui/material';
+import { Box, Input, InputLabel, InputAdornment, IconButton } from '@mui/material';
 import { SvgIconComponent } from '@mui/icons-material';
 import { StyledEngineProvider } from '@mui/material/styles';
 import './styles.css';
 
-interface BasicInputProps {
-    label: string;
-    value: string;
-}
-
-const BasicInput: React.FC<BasicInputProps> = ({ label, value }) => {
-    return (
-        <StyledEngineProvider injectFirst>
-            <Box className='box'>
-                <InputLabel htmlFor='input' className='label'>{label}</InputLabel>
-                <Input id='input' defaultValue={value} className='basic-input' />
-            </Box>
-        </StyledEngineProvider>
-    );
-};
-
-interface InputWithIconProps {
+interface StyledInputProps {
     label: string;
     value: string;
     isPassword?: boolean;
     iconStart?: SvgIconComponent;
     iconEnd?: SvgIconComponent;
+    iconStartClick?: () => void;
+    iconEndClick?: () => void;
 }
 
-const InputWithIcon: React.FC<InputWithIconProps> = ({ label, value, isPassword, iconStart: IconStart, iconEnd: IconEnd }) => {
+const StyledInput: React.FC<StyledInputProps> = ({ label, value, isPassword, iconStart: IconStart, iconEnd: IconEnd, iconEndClick, iconStartClick }) => {
     return (
         <StyledEngineProvider injectFirst>
             <Box className='box'>
@@ -40,12 +26,24 @@ const InputWithIcon: React.FC<InputWithIconProps> = ({ label, value, isPassword,
                     className='basic-input'
                     startAdornment={IconStart ? (
                         <InputAdornment position="start">
-                            <IconStart />
+                            {iconStartClick ? (
+                                <IconButton onClick={iconStartClick}>
+                                    <IconStart />
+                                </IconButton>
+                            ) : (
+                                <IconStart />
+                            )}
                         </InputAdornment>
                     ) : undefined}
                     endAdornment={IconEnd ? (
                         <InputAdornment position="end">
-                            <IconEnd />
+                            {iconEndClick ? (
+                                <IconButton onClick={iconEndClick}>
+                                    <IconEnd />
+                                </IconButton>
+                            ) : (
+                                <IconEnd />
+                            )}
                         </InputAdornment>
                     ) : undefined}
                 />
@@ -55,6 +53,5 @@ const InputWithIcon: React.FC<InputWithIconProps> = ({ label, value, isPassword,
 };
 
 export {
-    BasicInput,
-    InputWithIcon
+    StyledInput
 };
