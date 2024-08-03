@@ -4,8 +4,7 @@ import StyledButton from './components/button';
 import { Container, Box, Typography } from '@mui/material';
 import { StyledInput } from './components/input';
 import { Mail, RemoveRedEye, Password, Home } from '@mui/icons-material';
-import { StyledTextArea } from './components/textArea';
-
+import { StyledCheckBox, StyledTextArea } from './components/textArea';
 
 const ComponentsPreview = () => {
     return (
@@ -163,6 +162,42 @@ const ComponentsPreview = () => {
                     */}
                     <StyledTextArea label='Введіть опис' value='Будь ласка, введіть опис оголошення' required maxLength={9000} />
                     <StyledTextArea label='Введіть опис' value='Будь ласка, введіть опис оголошення' />
+                </Box>
+            </Box>
+            <Box
+                sx={{
+                    marginTop: '900px',
+                    position: 'absolute',
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    gap: '8px',
+                    border: '2px solid black',
+                    padding: '3px',
+                    backgroundColor: 'lightgrey'
+                }}>
+                <Typography sx={{
+                    fontSize: '10px',
+                    color: 'black'
+                }}>CheckBox :</Typography>
+                <Box sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '5px'
+                }}>
+                    {
+                        // CheckBox має такі поля:
+                        //     label: string;
+                        //     checked?: boolean;
+                        //     disabled?: boolean;
+                        //     required?: boolean;
+                        //     onChange?: () => void;
+                    }
+                    <StyledCheckBox label='Basic CheckBox' />
+                    <StyledCheckBox label='Checked CheckBox' checked />
+                    <StyledCheckBox label='Required CheckBox' required />
+                    <StyledCheckBox label='Disabled CheckBox' disabled />
                 </Box>
             </Box>
         </Container>
