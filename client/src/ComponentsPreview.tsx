@@ -4,7 +4,8 @@ import StyledButton from './components/button';
 import { Container, Box, Typography } from '@mui/material';
 import { StyledInput } from './components/input';
 import { Mail, RemoveRedEye, Password, Home } from '@mui/icons-material';
-import { StyledCheckBox, StyledTextArea } from './components/textArea';
+import { StyledCheckBox } from './components/checkBox';
+import { StyledTextArea } from './components/textArea';
 
 const ComponentsPreview = () => {
     return (
@@ -131,7 +132,7 @@ const ComponentsPreview = () => {
             </Box>
             <Box
                 sx={{
-                    marginTop: '650px',
+                    marginTop: '450px',
                     position: 'absolute',
                     display: 'flex',
                     flexDirection: 'row',
@@ -166,7 +167,7 @@ const ComponentsPreview = () => {
             </Box>
             <Box
                 sx={{
-                    marginTop: '900px',
+                    marginTop: '700px',
                     position: 'absolute',
                     display: 'flex',
                     flexDirection: 'row',
