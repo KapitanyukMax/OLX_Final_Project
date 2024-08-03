@@ -1,9 +1,10 @@
 import React from 'react';
 import StyledLabel from './components/label';
 import StyledButton from './components/button';
+import StyledIcon from './components/icon';
 import { Container, Box, Typography } from '@mui/material';
 import { StyledInput } from './components/input';
-import { Mail, RemoveRedEye, Password, Home } from '@mui/icons-material';
+import { Mail, RemoveRedEye, Password, Home, Favorite, Chat } from '@mui/icons-material';
 import { StyledCheckBox } from './components/checkBox';
 import { StyledTextArea } from './components/textArea';
 
@@ -199,6 +200,40 @@ const ComponentsPreview = () => {
                     <StyledCheckBox label='Checked CheckBox' checked />
                     <StyledCheckBox label='Required CheckBox' required />
                     <StyledCheckBox label='Disabled CheckBox' disabled />
+                </Box>
+            </Box>
+            <Box
+                sx={{
+                    marginTop: '900px',
+                    position: 'absolute',
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    gap: '8px',
+                    border: '2px solid black',
+                    padding: '3px',
+                    backgroundColor: 'lightgrey'
+                }}>
+                <Typography sx={{
+                    fontSize: '10px',
+                    color: 'black'
+                }}>Icon :</Typography>
+                <Box sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '5px'
+                }}>
+                    {
+                        // Icon має такі поля:
+                        //     icon: React.ElementType<SvgIconProps>;
+                        //     type?: 'default' | 'button';
+                        //     onClick?: () => void;
+                        //     disabled?: boolean;
+                    }
+                    <StyledIcon icon={Home} />
+                    <StyledIcon icon={Favorite} type='button' color='#f73378' hoverColor='#f50057' />
+                    <StyledIcon icon={Chat} type='button' color='#2196f3' disabled />
                 </Box>
             </Box>
         </Container>
