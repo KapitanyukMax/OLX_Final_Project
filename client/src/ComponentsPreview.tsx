@@ -1,4 +1,3 @@
-import React from 'react';
 import StyledLabel from './components/label';
 import StyledButton from './components/button';
 import StyledIcon from './components/icon';
@@ -121,14 +120,15 @@ const ComponentsPreview = () => {
                             primaryColor?: string;
                             secondaryColor?: string;
                             hoverColor?: string;
+                            disabled?: boolean;
                             icon?: React.ElementType<SvgIconProps>;
                             onClick?: () => void;
                     */}
-                    <StyledButton text='Home' type='outlined' icon={Home} />
-                    <StyledButton text='Home' type='contained'
+                    <StyledButton text='Home' type='outlined' icon={Home}
                         onClick={() => {
                             console.log('Button clicked')
                         }} />
+                    <StyledButton text='Home' type='contained' disabled />
                 </Box>
             </Box>
             <Box
@@ -228,11 +228,15 @@ const ComponentsPreview = () => {
                         // Icon має такі поля:
                         //     icon: React.ElementType<SvgIconProps>;
                         //     type?: 'default' | 'button';
+                        //     color?: string;
+                        //     hoverColor?: string;
                         //     onClick?: () => void;
                         //     disabled?: boolean;
                     }
                     <StyledIcon icon={Home} />
-                    <StyledIcon icon={Favorite} type='button' color='#f73378' hoverColor='#f50057' />
+                    <StyledIcon icon={Favorite} type='button' color='#f73378' hoverColor='#f50057' onClick={() => {
+                        console.log('Liked');
+                    }} />
                     <StyledIcon icon={Chat} type='button' color='#2196f3' disabled />
                 </Box>
             </Box>

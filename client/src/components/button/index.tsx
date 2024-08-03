@@ -7,40 +7,35 @@ interface StyledButtonProps {
     primaryColor?: string;
     secondaryColor?: string;
     hoverColor?: string;
+    disabled?: boolean;
     icon?: React.ElementType<SvgIconProps>;
     onClick?: () => void;
 };
 
-const StyledButton: React.FC<StyledButtonProps> = ({ text, type, primaryColor, secondaryColor, hoverColor, icon: Icon, onClick }) => {
+const StyledButton: React.FC<StyledButtonProps> = ({ text, type, primaryColor, secondaryColor, hoverColor, disabled, icon: Icon, onClick }) => {
     primaryColor ??= '#fff';
     secondaryColor ??= '#000';
     hoverColor ??= '#ddd';
 
     const getStyle = () => {
         switch (type) {
-            case 'contained':
-                return {
-                    color: secondaryColor,
-                    backgroundColor: primaryColor,
-                    boxShadow: 'none',
-                    '&:hover': {
-                        backgroundColor: hoverColor,
-                        boxShadow: 'none'
-                    }
-                };
             case 'outlined':
                 return {
                     color: primaryColor,
                     backgroundColor: alpha('#fff', 0),
                     borderColor: primaryColor,
-                    borderWidth: 1,
+                    border: 1,
                     boxShadow: 'none',
                     '&:hover': {
                         backgroundColor: alpha('#fff', 0),
                         borderColor: hoverColor,
                         boxShadow: 'none'
+                    },
+                    '&:focus': {
+                        outline: 'none'
                     }
                 };
+            case 'contained':
             default:
                 return {
                     color: secondaryColor,
@@ -49,6 +44,9 @@ const StyledButton: React.FC<StyledButtonProps> = ({ text, type, primaryColor, s
                     '&:hover': {
                         backgroundColor: hoverColor,
                         boxShadow: 'none'
+                    },
+                    '&:focus': {
+                        outline: 'none'
                     }
                 };
         }
@@ -56,7 +54,7 @@ const StyledButton: React.FC<StyledButtonProps> = ({ text, type, primaryColor, s
 
     return (
         <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Button sx={getStyle()} variant={type} startIcon={Icon && <Icon />} onClick={onClick}>
+            <Button sx={getStyle()} startIcon={Icon && <Icon />} onClick={onClick} disabled={disabled} >
                 {text}
             </Button>
         </Box>
