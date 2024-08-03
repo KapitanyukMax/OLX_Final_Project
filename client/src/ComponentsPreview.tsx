@@ -1,10 +1,12 @@
 import React from 'react';
 import StyledLabel from './components/label';
 import StyledButton from './components/button';
+import StyledIcon from './components/icon';
 import { Container, Box, Typography } from '@mui/material';
 import { StyledInput } from './components/input';
-import { Mail, RemoveRedEye, Password, Home } from '@mui/icons-material';
-
+import { Mail, RemoveRedEye, Password, Home, Favorite, Chat } from '@mui/icons-material';
+import { StyledCheckBox } from './components/checkBox';
+import { StyledTextArea } from './components/textArea';
 
 const ComponentsPreview = () => {
     return (
@@ -127,6 +129,111 @@ const ComponentsPreview = () => {
                         onClick={() => {
                             console.log('Button clicked')
                         }} />
+                </Box>
+            </Box>
+            <Box
+                sx={{
+                    marginTop: '450px',
+                    position: 'absolute',
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    gap: '8px',
+                    border: '2px solid black',
+                    padding: '3px',
+                    backgroundColor: 'lightgrey'
+                }}>
+                <Typography sx={{
+                    fontSize: '10px',
+                    color: 'black'
+                }}>Text Area :</Typography>
+                <Box sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '5px'
+                }}>
+                    {/* 
+                        TextArea має такі поля:
+                            label: string;
+                            value: string;
+                            minRows?: number;
+                            maxRows?: number;
+                            maxLength?: number;
+                            required?: boolean;
+                    */}
+                    <StyledTextArea label='Введіть опис' value='Будь ласка, введіть опис оголошення' required maxLength={9000} />
+                    <StyledTextArea label='Введіть опис' value='Будь ласка, введіть опис оголошення' />
+                </Box>
+            </Box>
+            <Box
+                sx={{
+                    marginTop: '700px',
+                    position: 'absolute',
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    gap: '8px',
+                    border: '2px solid black',
+                    padding: '3px',
+                    backgroundColor: 'lightgrey'
+                }}>
+                <Typography sx={{
+                    fontSize: '10px',
+                    color: 'black'
+                }}>CheckBox :</Typography>
+                <Box sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '5px'
+                }}>
+                    {
+                        // CheckBox має такі поля:
+                        //     label: string;
+                        //     checked?: boolean;
+                        //     disabled?: boolean;
+                        //     required?: boolean;
+                        //     onChange?: () => void;
+                    }
+                    <StyledCheckBox label='Basic CheckBox' />
+                    <StyledCheckBox label='Checked CheckBox' checked />
+                    <StyledCheckBox label='Required CheckBox' required />
+                    <StyledCheckBox label='Disabled CheckBox' disabled />
+                </Box>
+            </Box>
+            <Box
+                sx={{
+                    marginTop: '900px',
+                    position: 'absolute',
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    gap: '8px',
+                    border: '2px solid black',
+                    padding: '3px',
+                    backgroundColor: 'lightgrey'
+                }}>
+                <Typography sx={{
+                    fontSize: '10px',
+                    color: 'black'
+                }}>Icon :</Typography>
+                <Box sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '5px'
+                }}>
+                    {
+                        // Icon має такі поля:
+                        //     icon: React.ElementType<SvgIconProps>;
+                        //     type?: 'default' | 'button';
+                        //     onClick?: () => void;
+                        //     disabled?: boolean;
+                    }
+                    <StyledIcon icon={Home} />
+                    <StyledIcon icon={Favorite} type='button' color='#f73378' hoverColor='#f50057' />
+                    <StyledIcon icon={Chat} type='button' color='#2196f3' disabled />
                 </Box>
             </Box>
         </Container>
