@@ -19,6 +19,7 @@ app.use('/users', require('./routes/users'));
 app.use('/messages', require('./routes/messages.js'));
 app.use('/chats', require('./routes/chats.js'));
 app.use('/feedbacks', require('./routes/feedbacks.js'));
+app.use('/wallets', require('./routes/wallets.js'));
 
 app.use(errorHandler);
 
