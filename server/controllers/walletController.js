@@ -42,6 +42,39 @@ const getWalletById = async (req, res, next) => {
     }
 }
 
+const createNewWallet = async (reqBody) => {
+    try {
+        userId = reqBody.userId;
+        currencyId = reqBody.currencyId;
+        balance = 0;
+        bonuses = 0;
+
+        const collection = await db.collection('wallets').get();
+        for (const doc of collection.docs) {
+            if (doc.data().userId == userId) {
+                logger.info('Bad Request - wallet already exists');
+                return 'Wallet already exists.';
+            }
+        }
+
+        const docRef = await db.collection('wallets').add({
+            userId,
+            currencyId,
+            balance,
+            bonuses
+        });
+        doc = await docRef.get();
+
+        logger.info(`Wallet created successfully`);
+        return {
+            id: doc.id,
+            ...doc.data()
+        };
+    } catch (error) {
+        next(error);
+    }
+};
+
 const createWallet = async (req, res, next) => {
     try {
         const { userId, currencyId } = req.body;
@@ -112,7 +145,7 @@ const updateWallet = async (req, res, next) => {
 
 const deleteWallet = async (req, res, next) => {
     try {
-        const walletRef = db.collection('wallets').doc(req.query.id);
+        const walletRef = db.collection('wallets').doc(req.params.id);
         let doc = await walletRef.get();
 
         if (!doc.exists)
@@ -121,7 +154,7 @@ const deleteWallet = async (req, res, next) => {
         const response = await db.collection('wallets').doc(req.query.id).delete();
 
         logger.info(`Wallet deleted successfully`);
-        res.status(204);
+        res.sendStatus(204);
     } catch (error) {
         next(error);
     }
@@ -132,5 +165,6 @@ module.exports = {
     getWalletById,
     createWallet,
     updateWallet,
-    deleteWallet
+    deleteWallet,
+    createNewWallet
 };
