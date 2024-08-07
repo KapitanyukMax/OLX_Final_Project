@@ -13,9 +13,10 @@ interface StyledButtonProps {
 };
 
 const StyledButton: React.FC<StyledButtonProps> = ({ text, type, primaryColor, secondaryColor, hoverColor, disabled, icon: Icon, onClick }) => {
-    primaryColor ??= '#fff';
-    secondaryColor ??= '#000';
-    hoverColor ??= '#ddd';
+    // primaryColor ??= '#fff';
+    primaryColor ??= 'var(--dark-blue)';
+    secondaryColor ??= 'white';
+    hoverColor ??= 'var(--green)';
 
     const getStyle = () => {
         switch (type) {
@@ -29,6 +30,7 @@ const StyledButton: React.FC<StyledButtonProps> = ({ text, type, primaryColor, s
                     '&:hover': {
                         backgroundColor: alpha('#fff', 0),
                         borderColor: hoverColor,
+                        color: hoverColor,
                         boxShadow: 'none'
                     },
                     '&:focus': {
@@ -54,7 +56,7 @@ const StyledButton: React.FC<StyledButtonProps> = ({ text, type, primaryColor, s
 
     return (
         <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Button sx={getStyle()} startIcon={Icon && <Icon />} onClick={onClick} disabled={disabled} >
+            <Button sx={getStyle()} startIcon={Icon && <Icon />} onClick={onClick} disabled={disabled}>
                 {text}
             </Button>
         </Box>
