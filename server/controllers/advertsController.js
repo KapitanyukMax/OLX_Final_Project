@@ -180,7 +180,7 @@ const updateAdvert = async (req, res, next) => {
 
 const deleteAdvert = async (req, res, next) => {
     try {
-        const advertRef = await db.collection('adverts').doc(req.query.id);
+        const advertRef = await db.collection('adverts').doc(req.params.id);
         const doc = await advertRef.get();
 
         if (!doc.exists)
