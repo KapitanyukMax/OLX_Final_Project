@@ -21,14 +21,14 @@ const ComponentsPreview = () => {
             <Typography variant="h3">Components Preview</Typography>
             <Box
                 sx={{
-                    position: 'absolute',
                     display: 'flex',
                     flexDirection: 'row',
                     justifyContent: 'center',
                     alignItems: 'center',
                     gap: '8px',
                     border: '2px solid black',
-                    padding: '3px'
+                    padding: '3px',
+                    margin: '5px'
                 }}>
                 <Typography sx={{
                     fontSize: '10px'
@@ -36,16 +36,18 @@ const ComponentsPreview = () => {
                 <Box sx={{
                     display: 'flex',
                     flexDirection: 'column',
-                    gap: '5px'
+                    gap: '5px',
+                    margin: '5px',
                 }}>
                     {/* 
                         Label має такі поля:
                             text: string;
-                            type: 'primary'| 'head' | 'with-icon';
+                            type: 'primary'| 'head' | 'with-icon' | 'no-background';
                             icon?:React.ElementType<SvgIconProps>;
                     */}
                     <StyledLabel text='Primary Label for display info' type='primary' />
                     <StyledLabel text='Head Label for display info' type='head' />
+                    <StyledLabel text='Label with no background' type='no-background'/>
                     <StyledLabel text='Label with icon for display info' type='with-icon' icon={Home} />
                 </Box>
 

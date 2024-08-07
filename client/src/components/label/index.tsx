@@ -5,7 +5,7 @@ import { SvgIconProps } from '@mui/material';
 
 interface StyledLabelProps {
   text: string;
-  type: 'primary'| 'head' | 'with-icon';
+  type: 'primary'| 'head' | 'with-icon' | 'no-background';
   icon?:React.ElementType<SvgIconProps>;
 }
 
@@ -36,6 +36,12 @@ const StyledLabel: React.FC<StyledLabelProps> = ({ text, type, icon: Icon }) => 
                     flexDirection: 'row',
                     alignItems: 'center',
                     gap: '5px',
+                }
+            case 'no-background':
+                    return {
+                        color: 'black',
+                        padding: '5px',
+                        borderRadius: '5px',
                 }
             default:
                 return {
