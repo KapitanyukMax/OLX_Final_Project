@@ -6,6 +6,7 @@ import { StyledInput } from './components/input';
 import { Mail, RemoveRedEye, Password, Home, Favorite, Chat } from '@mui/icons-material';
 import { StyledCheckBox } from './components/checkBox';
 import { StyledTextArea } from './components/textArea';
+import ImageComponent from './components/image';
 
 const ComponentsPreview = () => {
     return (
@@ -241,6 +242,25 @@ const ComponentsPreview = () => {
                     }} />
                     <StyledIcon icon={Chat} type='button' color='#2196f3' disabled />
                 </Box>
+            </Box>
+            <Box sx={{
+                display:'flex',
+                flexDirection:'row',
+                border: '2px solid black',
+                width: 'fit-content',
+                justifyContent: 'center',
+                alignItems: 'center',
+            }}>
+                <Typography fontSize='10px'>Image component</Typography>
+                
+                {/*Image має такі поля:
+                 src: string;
+                alt: string;
+                width?: string;
+                height?: string;
+                borderRadius?:string;
+                onClick?: () =>void; */}
+                <ImageComponent src='https://5.imimg.com/data5/RV/NK/MY-45718396/ape-auto-501.png' alt='auto' width='150px' height='150px'/>
             </Box>
         </Container>
     )
