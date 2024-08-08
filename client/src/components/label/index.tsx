@@ -4,18 +4,18 @@ import Box from '@mui/material/Box';
 import { SvgIconProps } from '@mui/material';
 
 interface StyledLabelProps {
-  text: string;
-  type: 'primary'| 'head' | 'with-icon' | 'no-background';
-  icon?:React.ElementType<SvgIconProps>;
+    text: string;
+    type: 'primary' | 'head' | 'with-icon' | 'no-background';
+    icon?: React.ElementType<SvgIconProps>;
 }
 
 const StyledLabel: React.FC<StyledLabelProps> = ({ text, type, icon: Icon }) => {
-    const getStyle =()=>{
-        switch(type){
+    const getStyle = () => {
+        switch (type) {
             case 'primary':
                 return {
-                    color: 'black',
-                    backgroundColor: 'grey',
+                    color: 'white',
+                    backgroundColor: 'var(--dark-blue)',
                     padding: '5px',
                     borderRadius: '5px'
                 }
@@ -38,10 +38,10 @@ const StyledLabel: React.FC<StyledLabelProps> = ({ text, type, icon: Icon }) => 
                     gap: '5px',
                 }
             case 'no-background':
-                    return {
-                        color: 'black',
-                        padding: '5px',
-                        borderRadius: '5px',
+                return {
+                    color: 'black',
+                    padding: '5px',
+                    borderRadius: '5px',
                 }
             default:
                 return {
@@ -49,15 +49,15 @@ const StyledLabel: React.FC<StyledLabelProps> = ({ text, type, icon: Icon }) => 
                     backgroundColor: 'white',
                     padding: '5px',
                     borderRadius: '5px'
+                };
+        }
     };
-}
-};
     return (
-    <Box sx={{display:'flex', alignItems:'center', gap:'8px'}}>
-        {Icon && <Icon/>}
-      <Typography sx={getStyle()}>{text}</Typography>
-    </Box>
-  );
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            {Icon && <Icon />}
+            <Typography sx={getStyle()}>{text}</Typography>
+        </Box>
+    );
 };
 
 export default StyledLabel;
