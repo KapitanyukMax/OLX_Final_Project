@@ -1,62 +1,42 @@
 import React from 'react';
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
+import NewTypography from '../typography';
 import { SvgIconProps } from '@mui/material';
+import {LabelContainer, LabelTextBlock, LabelIconBlock} from './label.styles';
+
 
 interface StyledLabelProps {
+    textColor?:string;
     text: string;
     type: 'primary' | 'head' | 'with-icon' | 'no-background';
     icon?: React.ElementType<SvgIconProps>;
 }
 
-const StyledLabel: React.FC<StyledLabelProps> = ({ text, type, icon: Icon }) => {
-    const getStyle = () => {
+const StyledLabel: React.FC<StyledLabelProps> = ({ textColor, text, type, icon: Icon }) => {
+    const getClassName = (): 'primaryLabel' | 'headLabel' | 'withIconLabel' | 'noBackgroundLabel' => {
         switch (type) {
-            case 'primary':
-                return {
-                    color: 'white',
-                    backgroundColor: 'var(--dark-blue)',
-                    padding: '5px',
-                    borderRadius: '5px'
-                }
-            case 'head':
-                return {
-                    color: 'white',
-                    backgroundColor: 'black',
-                    padding: '5px',
-                    borderRadius: '5px'
-                }
-            case 'with-icon':
-                return {
-                    color: 'black',
-                    backgroundColor: 'white',
-                    padding: '5px',
-                    borderRadius: '5px',
-                    display: 'flex',
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    gap: '5px',
-                }
-            case 'no-background':
-                return {
-                    color: 'black',
-                    padding: '5px',
-                    borderRadius: '5px',
-                }
-            default:
-                return {
-                    color: 'black',
-                    backgroundColor: 'white',
-                    padding: '5px',
-                    borderRadius: '5px'
-                };
+          case 'primary':
+            return 'primaryLabel';
+          case 'head':
+            return 'headLabel';
+          case 'with-icon':
+            return 'withIconLabel';
+          case 'no-background':
+            return 'noBackgroundLabel';
+          default:
+            return 'primaryLabel';
         }
-    };
+      };
     return (
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            {Icon && <Icon />}
-            <Typography sx={getStyle()}>{text}</Typography>
-        </Box>
+        <LabelContainer>
+            {Icon && (
+                <LabelIconBlock>
+                    <Icon sx={{ color: 'var(--dark-blue)' }} />
+                </LabelIconBlock>
+            )}
+            <LabelTextBlock>
+                <NewTypography className={getClassName()} color={textColor}>{text}</NewTypography>
+            </LabelTextBlock>
+        </LabelContainer>
     );
 };
 

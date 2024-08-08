@@ -9,6 +9,7 @@ import { StyledTextArea } from './components/textArea';
 import ImageComponent from './components/image';
 import  ArrowDown  from './components/icons/arrowDown';
 import  Search  from './components/icons/search';
+import StyledLabel1 from './components/lebak';
 
 const ComponentsPreview = () => {
     return (
@@ -47,12 +48,17 @@ const ComponentsPreview = () => {
                             type: 'primary'| 'head' | 'with-icon' | 'no-background';
                             icon?:React.ElementType<SvgIconProps>;
                     */}
-                    <StyledLabel text='Primary Label for display info' type='primary' />
-                    <StyledLabel text='Head Label for display info' type='head' />
+                    <StyledLabel text='Primary Label for display info' type='primary' textColor='white'/>
+                    <StyledLabel text='Head Label for display info' type='head' textColor='white'/>
                     <StyledLabel text='Label with no background' type='no-background' />
                     <StyledLabel text='Label with icon for display info' type='with-icon' icon={Home} />
                 </Box>
-
+                <Box>
+                    <StyledLabel1 text='Primary Label for display info' type='primary' textType='small'/>
+                    <StyledLabel1 text='Head Label for display info' type='head' textType='middle' />
+                    <StyledLabel1 text='Label with no background' type='no-background' textType='big'/>
+                    <StyledLabel1 text='Label with icon for display info' type='with-icon' icon={Home} textType='middle'/>
+                </Box>
             </Box>
             <Box
                 sx={{
