@@ -14,14 +14,13 @@ const ComponentsPreview = () => {
             sx={{
                 display: 'block',
                 position: 'sticky',
-                top: '50px',
-                left: '50px',
                 minWidth: '100vw',
                 minHeight: '100vh'
             }}>
             <Typography variant="h3">Components Preview</Typography>
             <Box
                 sx={{
+                    width: 'fit-content',
                     display: 'flex',
                     flexDirection: 'row',
                     justifyContent: 'center',
@@ -48,15 +47,14 @@ const ComponentsPreview = () => {
                     */}
                     <StyledLabel text='Primary Label for display info' type='primary' />
                     <StyledLabel text='Head Label for display info' type='head' />
-                    <StyledLabel text='Label with no background' type='no-background'/>
+                    <StyledLabel text='Label with no background' type='no-background' />
                     <StyledLabel text='Label with icon for display info' type='with-icon' icon={Home} />
                 </Box>
 
             </Box>
             <Box
                 sx={{
-                    marginTop: '130px',
-                    position: 'absolute',
+                    width: 'fit-content',
                     display: 'flex',
                     flexDirection: 'row',
                     justifyContent: 'center',
@@ -96,8 +94,7 @@ const ComponentsPreview = () => {
             </Box>
             <Box
                 sx={{
-                    marginTop: '350px',
-                    position: 'absolute',
+                    width: 'fit-content',
                     display: 'flex',
                     flexDirection: 'row',
                     justifyContent: 'center',
@@ -130,14 +127,13 @@ const ComponentsPreview = () => {
                     <StyledButton text='Home' type='outlined' icon={Home}
                         onClick={() => {
                             console.log('Button clicked')
-                        }} />
-                    <StyledButton text='Home' type='contained' disabled />
+                        }} data-theme='base' />
+                    <StyledButton text='Home' type='contained' />
                 </Box>
             </Box>
             <Box
                 sx={{
-                    marginTop: '450px',
-                    position: 'absolute',
+                    width: 'fit-content',
                     display: 'flex',
                     flexDirection: 'row',
                     justifyContent: 'center',
@@ -171,8 +167,7 @@ const ComponentsPreview = () => {
             </Box>
             <Box
                 sx={{
-                    marginTop: '700px',
-                    position: 'absolute',
+                    width: 'fit-content',
                     display: 'flex',
                     flexDirection: 'row',
                     justifyContent: 'center',
@@ -207,8 +202,7 @@ const ComponentsPreview = () => {
             </Box>
             <Box
                 sx={{
-                    marginTop: '900px',
-                    position: 'absolute',
+                    width: 'fit-content',
                     display: 'flex',
                     flexDirection: 'row',
                     justifyContent: 'center',
@@ -244,15 +238,15 @@ const ComponentsPreview = () => {
                 </Box>
             </Box>
             <Box sx={{
-                display:'flex',
-                flexDirection:'row',
+                display: 'flex',
+                flexDirection: 'row',
                 border: '2px solid black',
                 width: 'fit-content',
                 justifyContent: 'center',
                 alignItems: 'center',
             }}>
                 <Typography fontSize='10px'>Image component</Typography>
-                
+
                 {/*Image має такі поля:
                  src: string;
                 alt: string;
@@ -260,7 +254,7 @@ const ComponentsPreview = () => {
                 height?: string;
                 borderRadius?:string;
                 onClick?: () =>void; */}
-                <ImageComponent src='https://5.imimg.com/data5/RV/NK/MY-45718396/ape-auto-501.png' alt='auto' width='150px' height='150px'/>
+                <ImageComponent src='https://5.imimg.com/data5/RV/NK/MY-45718396/ape-auto-501.png' alt='auto' width='150px' height='150px' />
             </Box>
         </Container>
     )
