@@ -7,6 +7,8 @@ import { Mail, RemoveRedEye, Password, Home, Favorite, Chat } from '@mui/icons-m
 import { StyledCheckBox } from './components/checkBox';
 import { StyledTextArea } from './components/textArea';
 import ImageComponent from './components/image';
+import  ArrowDown  from './components/icons/arrowDown';
+import  Search  from './components/icons/search';
 
 const ComponentsPreview = () => {
     return (
@@ -255,6 +257,19 @@ const ComponentsPreview = () => {
                 borderRadius?:string;
                 onClick?: () =>void; */}
                 <ImageComponent src='https://5.imimg.com/data5/RV/NK/MY-45718396/ape-auto-501.png' alt='auto' width='150px' height='150px' />
+            </Box>
+            <Box>
+                <Typography variant='h5'>Icons</Typography>
+                <Box sx={{
+                    display:'flex',
+                    flexDirection:'row',
+                    backgroundColor:'green',
+                }}
+                >
+                    <ArrowDown />
+                    <Search />
+                </Box>
+                
             </Box>
         </Container>
     )
