@@ -1,8 +1,8 @@
 import React from 'react';
-import search from '../../../assets/icons/search.svg';
+import microphone from '../../../assets/icons/microphone.svg';
 import { Box } from '@mui/material';
 
-const SearchIcon = () => {
+const Microphone = () => {
     return(
         <Box
         sx={{
@@ -13,9 +13,9 @@ const SearchIcon = () => {
             height:'25px',
 
         }}>
-            <img src={search} alt="searchIcon"/>
+            <img src={microphone} alt="microphoneIcon"/>
         </Box>
     )
 }
 
-export default SearchIcon;
+export default Microphone;

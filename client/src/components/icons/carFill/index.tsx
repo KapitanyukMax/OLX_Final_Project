@@ -1,8 +1,8 @@
 import React from 'react';
-import search from '../../../assets/icons/search.svg';
+import carFill from '../../../assets/icons/car-fill.svg';
 import { Box } from '@mui/material';
 
-const SearchIcon = () => {
+const CarFillIcon = () => {
     return(
         <Box
         sx={{
@@ -13,9 +13,9 @@ const SearchIcon = () => {
             height:'25px',
 
         }}>
-            <img src={search} alt="searchIcon"/>
+            <img src={carFill} alt="carFillIcon"/>
         </Box>
     )
 }
 
-export default SearchIcon;
+export default CarFillIcon;

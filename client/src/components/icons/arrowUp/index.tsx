@@ -1,8 +1,8 @@
 import React from 'react';
-import search from '../../../assets/icons/search.svg';
+import arrowUp from '../../../assets/icons/ph_arrow-up.svg';
 import { Box } from '@mui/material';
 
-const SearchIcon = () => {
+const ArrowUpIcon = () => {
     return(
         <Box
         sx={{
@@ -13,9 +13,9 @@ const SearchIcon = () => {
             height:'25px',
 
         }}>
-            <img src={search} alt="searchIcon"/>
+            <img src={arrowUp} alt="arrowUpIcon"/>
         </Box>
     )
 }
 
-export default SearchIcon;
+export default ArrowUpIcon;
