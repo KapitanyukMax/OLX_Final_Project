@@ -3,7 +3,7 @@ import StyledButton from './components/button';
 import StyledIcon from './components/icon';
 import { Container, Box, Typography } from '@mui/material';
 import { StyledInput } from './components/input';
-import { Mail, RemoveRedEye, Password, Home, Favorite, Chat } from '@mui/icons-material';
+import { Mail, RemoveRedEye, Password, Home, Favorite, Chat, SearchOffRounded } from '@mui/icons-material';
 import { StyledCheckBox } from './components/checkBox';
 import { StyledTextArea } from './components/textArea';
 import ImageComponent from './components/image';
@@ -183,8 +183,8 @@ const ComponentsPreview = () => {
                             type: 'primary'| 'head' | 'with-icon' | 'no-background';
                             icon?:React.ElementType<SvgIconProps>;
                     */}
-                    <StyledLabel text='Primary Label for display info' type='primary' textColor='white'/>
-                    <StyledLabel text='Head Label for display info' type='head' textColor='white'/>
+                    <StyledLabel text='Primary Label for display info' type='primary' textColor='white' />
+                    <StyledLabel text='Head Label for display info' type='head' textColor='white' />
                     <StyledLabel text='Label with no background' type='no-background' />
                     <StyledLabel text='Label with icon for display info' type='with-icon' icon={Home} />
                 </Box>
@@ -194,10 +194,10 @@ const ComponentsPreview = () => {
                     flexDirection: 'column',
                     gap: '5px',
                 }}>
-                    <StyledLabel1 text='Primary Label for display info' type='primary' textType='small'/>
+                    <StyledLabel1 text='Primary Label for display info' type='primary' textType='small' />
                     <StyledLabel1 text='Head Label for display info' type='head' textType='middle' />
-                    <StyledLabel1 text='Label with no background' type='no-background' textType='big'/>
-                    <StyledLabel1 text='Label with icon for display info' type='with-icon' icon={Home} textType='middle'/>
+                    <StyledLabel1 text='Label with no background' type='no-background' textType='big' />
+                    <StyledLabel1 text='Label with icon for display info' type='with-icon' icon={Home} textType='middle' />
                 </Box>
             </Box>
             <Box
@@ -223,21 +223,31 @@ const ComponentsPreview = () => {
                 }}>
                     {/* 
                         Input має такі поля:
-                            label: string;
+                            label?: string;
                             value: string;
+                            required?: boolean;
+                            maxLength?: number;
                             isPassword?: boolean;
-                            iconStart?: SvgIconComponent;
-                            iconEnd?: SvgIconComponent;
-                            iconEndClick?: () => void;
+                            iconStart?: React.ElementType<SvgIconProps>;
+                            iconEnd?: React.ElementType<SvgIconProps>;
                             iconStartClick?: () => void;
+                            iconEndClick?: () => void;
                     */}
-                    <StyledInput label='Пошта' value='test@gmail.com' iconStart={Mail} />
-                    <StyledInput label='Пароль' value='password' isPassword iconStart={Password} iconEnd={RemoveRedEye}
+                    <StyledInput label='Пошта' widthType='middle' value='test@gmail.com' iconStart={Mail} />
+                    <StyledInput label='Пароль' widthType='small' value='password' isPassword iconStart={Password} iconEnd={RemoveRedEye}
                         iconEndClick={
                             () => {
                                 console.log('Icon end clicked');
                             }
                         } />
+                    <StyledInput value='Пошук' widthType='big' iconEnd={SearchOffRounded}
+                        iconEndClick={
+                            () => {
+                                console.log('Icon end clicked');
+                            }
+                        }
+                    />
+                    <StyledInput value='Продається фотоапарат...' widthType='big' label='Вкажіть назву' required maxLength={80} />
                 </Box>
             </Box>
             <Box
@@ -404,7 +414,6 @@ const ComponentsPreview = () => {
                 onClick?: () =>void; */}
                 <ImageComponent src='https://5.imimg.com/data5/RV/NK/MY-45718396/ape-auto-501.png' alt='auto' width='150px' height='150px' />
             </Box>
-            
         </Container>
     )
 }
