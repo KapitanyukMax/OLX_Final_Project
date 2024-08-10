@@ -1,21 +1,21 @@
 import React from 'react';
-import search from '../../../assets/icons/search.svg';
+import generator from '../../../assets/icons/generator.svg';
 import { Box } from '@mui/material';
 
-const SearchIcon = () => {
+const GeneratorIcon = () => {
     return(
         <Box
         sx={{
             display: 'flex',
             alignItems: 'center',
             justifyContent:'center',
-            width:'25px',
-            height:'25px',
+            width:'58px',
+            height:'58px',
 
         }}>
-            <img src={search} alt="searchIcon"/>
+            <img src={generator} alt="generatorIcon"/>
         </Box>
     )
 }
 
-export default SearchIcon;
+export default GeneratorIcon;

@@ -7,9 +7,48 @@ import { Mail, RemoveRedEye, Password, Home, Favorite, Chat, SearchOffRounded } 
 import { StyledCheckBox } from './components/checkBox';
 import { StyledTextArea } from './components/textArea';
 import ImageComponent from './components/image';
-import ArrowDown from './components/icons/arrowDown';
-import Search from './components/icons/search';
+import  ArrowDownIcon  from './components/icons/arrowDown';
+import  SearchIcon  from './components/icons/search';
+import MicrophoneIcon from './components/icons/microphone';
 import StyledLabel1 from './components/lebak';
+import PlusIcon from './components/icons/plus';
+import UserProfileIcon from './components/icons/userProfile';
+import MessageIcon from './components/icons/message';
+import HeartIcon from './components/icons/heart';
+import LocationIcon from './components/icons/location';
+import CalendarSolidIcon from './components/icons/calendarSolid';
+import CarFillIcon from './components/icons/carFill';
+import AreaIcon from './components/icons/area';
+import PasswordIcon from './components/icons/password';
+import FacebookIcon from './components/icons/facebook';
+import GoogleIcon from './components/icons/google';
+import AppleIcon from './components/icons/apple';
+import CheckBoxIcon from './components/icons/checkbox';
+import ArrowUpIcon from './components/icons/arrowUp';
+import GeneratorIcon from './components/icons/generator';
+import TransportSparePartIcon from './components/icons/transportSparePart';
+import BusinessManIcon from './components/icons/businessman';
+import HeartFilledIcon from './components/icons/heartFilled';
+import FurnitureIcon from './components/icons/furniture';
+import ClothesIcon from './components/icons/clothes';
+import SportsIcon from './components/icons/sports';
+import CarIcon from './components/icons/car';
+import HomeAndGardenIcon from './components/icons/homeAndGarden';
+import CalendarIcon from './components/icons/calendar';
+import ChildrenToyIcon from './components/icons/childrenToy';
+import PhoneIcon from './components/icons/phone';
+import WorkIcon from './components/icons/work';
+import RealEstateAgentIcon from './components/icons/realEstateAgent';
+import CatIcon from './components/icons/cat';
+import HandIcon from './components/icons/hand';
+import MaterialSymbolIcon from './components/icons/materialSymbol';
+import BaselineFacebookIcon from './components/icons/baselineFacebook';
+import InstagramIcon from './components/icons/instagram';
+import TwitterIcon from './components/icons/twitter';
+import YoutubeIcon from './components/icons/youtube';
+import DownloadGooglePlay from './components/icons/downloadGooglePlay';
+import DownloadAppStore from './components/icons/downloadAppStore';
+
 
 const ComponentsPreview = () => {
     return (
@@ -21,6 +60,102 @@ const ComponentsPreview = () => {
                 minHeight: '100vh'
             }}>
             <Typography variant="h3">Components Preview</Typography>
+            <Box>
+                <Typography variant='h5'>Icons</Typography>
+                <Box sx={{
+                    display:'flex',
+                    flexDirection:'column',
+                    backgroundColor:'var(--green)',
+                    padding: '5px',
+                    gap: '5px',
+                    alignItems: 'center',
+                }}
+                >
+                    <Box
+                    sx={{
+                        display:'flex',
+                        flexDirection:'row',
+                        gap: '8px',
+                        justifyContent:'space-between',
+                    }}>
+
+                        <ArrowDownIcon />
+                        <SearchIcon />
+                        <MicrophoneIcon/>
+                        <PlusIcon/>
+                        <UserProfileIcon/>
+                        <MessageIcon/>
+                        <HeartIcon/>
+                        <LocationIcon/>
+                        <CalendarSolidIcon/>
+                        <CarFillIcon/>
+                        <AreaIcon/>
+                        <PasswordIcon/>
+                        <FacebookIcon/>
+                        <GoogleIcon/> 
+                        <AppleIcon/>  
+                        <CheckBoxIcon/>
+                        <ArrowUpIcon/>
+                    </Box>
+                    
+                        <Box
+                        sx={{
+                            display:'flex',
+                            flexDirection:'column',
+                        }}>
+
+                        
+                            <Box
+                            sx={{
+                                display:'flex',
+                                flexDirection:'row',
+                                gap: '8px',
+                                justifyContent:'space-between',
+                            }}>
+                                <GeneratorIcon/>
+                                <TransportSparePartIcon/>
+                                <BusinessManIcon/>
+                                <HeartFilledIcon/>
+                                <FurnitureIcon/>
+                                <ClothesIcon/>
+                                <SportsIcon/>
+                                <CarIcon/>
+                            </Box>
+                            <Box
+                            sx={{
+                                display:'flex',
+                                flexDirection:'row',
+                                gap: '8px',
+                                justifyContent:'space-between',
+                            }}>
+                                <HomeAndGardenIcon/>
+                                <CalendarIcon/>
+                                <ChildrenToyIcon/>
+                                <PhoneIcon/>
+                                <WorkIcon/>
+                                <RealEstateAgentIcon/>
+                                <CatIcon/>
+                                <HandIcon/>
+                            </Box>
+                            <Box
+                            sx={{
+                                display:'flex',
+                                flexDirection:'row',
+                                gap: '8px',
+                                justifyContent:'left',
+                                marginTop:'25px',
+                            }}>
+                                <BaselineFacebookIcon/>
+                                <InstagramIcon/>
+                                <TwitterIcon/>
+                                <YoutubeIcon/>
+                                <DownloadGooglePlay/>
+                                <DownloadAppStore/>
+                            </Box>
+                        </Box>
+                    </Box>
+                        <MaterialSymbolIcon/>
+                </Box>
             <Box
                 sx={{
                     width: 'fit-content',
@@ -53,7 +188,12 @@ const ComponentsPreview = () => {
                     <StyledLabel text='Label with no background' type='no-background' />
                     <StyledLabel text='Label with icon for display info' type='with-icon' icon={Home} />
                 </Box>
-                <Box>
+                <Box 
+                sx={{
+                    display:'flex',
+                    flexDirection: 'column',
+                    gap: '5px',
+                }}>
                     <StyledLabel1 text='Primary Label for display info' type='primary' textType='small' />
                     <StyledLabel1 text='Head Label for display info' type='head' textType='middle' />
                     <StyledLabel1 text='Label with no background' type='no-background' textType='big' />
@@ -273,19 +413,6 @@ const ComponentsPreview = () => {
                 borderRadius?:string;
                 onClick?: () =>void; */}
                 <ImageComponent src='https://5.imimg.com/data5/RV/NK/MY-45718396/ape-auto-501.png' alt='auto' width='150px' height='150px' />
-            </Box>
-            <Box>
-                <Typography variant='h5'>Icons</Typography>
-                <Box sx={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    backgroundColor: 'green',
-                }}
-                >
-                    <ArrowDown />
-                    <Search />
-                </Box>
-
             </Box>
         </Container>
     )

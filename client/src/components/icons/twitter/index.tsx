@@ -1,21 +1,21 @@
 import React from 'react';
-import search from '../../../assets/icons/search.svg';
+import twitter from '../../../assets/icons/twitter-x.svg';
 import { Box } from '@mui/material';
 
-const SearchIcon = () => {
+const TwitterIcon = () => {
     return(
         <Box
         sx={{
             display: 'flex',
             alignItems: 'center',
             justifyContent:'center',
-            width:'25px',
-            height:'25px',
+            width:'30px',
+            height:'30px',
 
         }}>
-            <img src={search} alt="searchIcon"/>
+            <img src={twitter} alt="twitterIcon"/>
         </Box>
     )
 }
 
-export default SearchIcon;
+export default TwitterIcon;

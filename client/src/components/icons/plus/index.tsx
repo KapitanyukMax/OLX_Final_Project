@@ -1,8 +1,8 @@
 import React from 'react';
-import search from '../../../assets/icons/search.svg';
+import plus from '../../../assets/icons/plus.svg';
 import { Box } from '@mui/material';
 
-const SearchIcon = () => {
+const Plus = () => {
     return(
         <Box
         sx={{
@@ -13,9 +13,9 @@ const SearchIcon = () => {
             height:'25px',
 
         }}>
-            <img src={search} alt="searchIcon"/>
+            <img src={plus} alt="plusIcon"/>
         </Box>
     )
 }
 
-export default SearchIcon;
+export default Plus;

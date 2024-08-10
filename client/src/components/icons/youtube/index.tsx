@@ -1,21 +1,21 @@
 import React from 'react';
-import search from '../../../assets/icons/search.svg';
+import youtube from '../../../assets/icons/youtube-fill.svg';
 import { Box } from '@mui/material';
 
-const SearchIcon = () => {
+const YoutubeIcon = () => {
     return(
         <Box
         sx={{
             display: 'flex',
             alignItems: 'center',
             justifyContent:'center',
-            width:'25px',
-            height:'25px',
+            width:'30px',
+            height:'30px',
 
         }}>
-            <img src={search} alt="searchIcon"/>
+            <img src={youtube} alt="youtubeIcon"/>
         </Box>
     )
 }
 
-export default SearchIcon;
+export default YoutubeIcon;
