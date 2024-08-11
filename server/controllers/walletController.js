@@ -71,7 +71,9 @@ const createNewWallet = async (reqBody) => {
             ...doc.data()
         };
     } catch (error) {
-        next(error);
+        const message = err?.message ?? 'Unknown server error';
+        logger.error(message);
+        res.status(500).json({ message });
     }
 };
 
