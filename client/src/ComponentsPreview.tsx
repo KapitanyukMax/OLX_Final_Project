@@ -1,4 +1,4 @@
-import StyledLabel from './components/label';
+import StyledLabel from './components/lable';
 import StyledButton from './components/button';
 import StyledIcon from './components/icon';
 import { Container, Box, Typography } from '@mui/material';
@@ -10,7 +10,6 @@ import ImageComponent from './components/image';
 import ArrowDownIcon from './components/icons/arrowDown';
 import SearchIcon from './components/icons/search';
 import MicrophoneIcon from './components/icons/microphone';
-import StyledLabel1 from './components/lebak';
 import PlusIcon from './components/icons/plus';
 import UserProfileIcon from './components/icons/userProfile';
 import MessageIcon from './components/icons/message';
@@ -183,21 +182,18 @@ const ComponentsPreview = () => {
                             type: 'primary'| 'head' | 'with-icon' | 'no-background';
                             icon?:React.ElementType<SvgIconProps>;
                     */}
-                    <StyledLabel text='Primary Label for display info' type='primary' textColor='white' />
-                    <StyledLabel text='Head Label for display info' type='head' textColor='white' />
-                    <StyledLabel text='Label with no background' type='no-background' />
-                    <StyledLabel text='Label with icon for display info' type='with-icon' icon={Home} />
-                </Box>
-                <Box
+                    <StyledLabel text='Primary Label' type='primary' textType='middle' textColor='var(--dark-blue)'/>
+                    <StyledLabel text='Head Label' type='head' textType='head' textColor='var(--light-blue)'/>
+                    <Box
                     sx={{
-                        display: 'flex',
-                        flexDirection: 'column',
+                        display:'flex',
+                        flexDirection: 'row',
                         gap: '5px',
                     }}>
-                    <StyledLabel1 text='Primary Label for display info' type='primary' textType='small' />
-                    <StyledLabel1 text='Head Label for display info' type='head' textType='middle' />
-                    <StyledLabel1 text='Label with no background' type='no-background' textType='big' />
-                    <StyledLabel1 text='Label with icon for display info' type='with-icon' icon={Home} textType='middle' />
+                        <StyledLabel text='TOP' type='status' textType='status' backgroundColor='var(--light-blue)'/>
+                        <StyledLabel text='VIP' type='status' textType='status' backgroundColor='var(--green)'/>
+                    </Box>
+                    <StyledLabel text='Label with icon' type='with-icon' icon={Home} textType='small'/>
                 </Box>
             </Box>
             <Box

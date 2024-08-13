@@ -2,7 +2,7 @@ import React from 'react';
 import microphone from '../../../assets/icons/microphone.svg';
 import { Box } from '@mui/material';
 
-const Microphone = () => {
+const MicrophoneIcon = () => {
     return(
         <Box
         sx={{
@@ -18,4 +18,4 @@ const Microphone = () => {
     )
 }
 
-export default Microphone;
+export default MicrophoneIcon;
