@@ -3,7 +3,7 @@ import StyledButton from './components/button';
 import StyledIcon from './components/icon';
 import { Container, Box, Typography } from '@mui/material';
 import { StyledInput } from './components/input';
-import { Mail, RemoveRedEye, Password, Home, Favorite, Chat } from '@mui/icons-material';
+import { Mail, RemoveRedEye, Password, Home, Favorite, Chat, SearchOffRounded } from '@mui/icons-material';
 import { StyledCheckBox } from './components/checkBox';
 import { StyledTextArea } from './components/textArea';
 import ImageComponent from './components/image';
@@ -219,21 +219,31 @@ const ComponentsPreview = () => {
                 }}>
                     {/* 
                         Input має такі поля:
-                            label: string;
+                            label?: string;
                             value: string;
+                            required?: boolean;
+                            maxLength?: number;
                             isPassword?: boolean;
-                            iconStart?: SvgIconComponent;
-                            iconEnd?: SvgIconComponent;
-                            iconEndClick?: () => void;
+                            iconStart?: React.ElementType<SvgIconProps>;
+                            iconEnd?: React.ElementType<SvgIconProps>;
                             iconStartClick?: () => void;
+                            iconEndClick?: () => void;
                     */}
-                    <StyledInput label='Пошта' value='test@gmail.com' iconStart={Mail} />
-                    <StyledInput label='Пароль' value='password' isPassword iconStart={Password} iconEnd={RemoveRedEye}
+                    <StyledInput label='Пошта' widthType='middle' value='test@gmail.com' iconStart={Mail} />
+                    <StyledInput label='Пароль' widthType='small' value='password' isPassword iconStart={Password} iconEnd={RemoveRedEye}
                         iconEndClick={
                             () => {
                                 console.log('Icon end clicked');
                             }
                         } />
+                    <StyledInput value='Пошук' widthType='big' iconEnd={SearchOffRounded}
+                        iconEndClick={
+                            () => {
+                                console.log('Icon end clicked');
+                            }
+                        }
+                    />
+                    <StyledInput value='Продається фотоапарат...' widthType='big' label='Вкажіть назву' required maxLength={80} />
                 </Box>
             </Box>
             <Box
@@ -400,7 +410,6 @@ const ComponentsPreview = () => {
                 onClick?: () =>void; */}
                 <ImageComponent src='https://5.imimg.com/data5/RV/NK/MY-45718396/ape-auto-501.png' alt='auto' width='150px' height='150px' />
             </Box>
-            
         </Container>
     )
 }
