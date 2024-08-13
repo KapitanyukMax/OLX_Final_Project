@@ -1,5 +1,6 @@
 const admin = require('../database');
 const logger = require('../logger/logger');
+const { createNewWallet } = require('./walletController');
 
 const db = admin.firestore();
 
@@ -67,7 +68,7 @@ const getUserByEmail = async (req, res, next) => {
 
 const createUser = async (req, res, next) => {
     try {
-        const { name, email, phone, isAdmin, picture, rating } = req.body;
+        const { name, email, phone, currencyId, isAdmin, picture, rating } = req.body;
         if (!name) {
             logger.info('Bad Request - user name is required');
             return res.status(400).json({ message: 'User name is required.' });
@@ -95,15 +96,19 @@ const createUser = async (req, res, next) => {
             }
         }
 
-        const docRef = await db.collection('users').add({
+        const userDocRef = await db.collection('users').add({
             name, email, phone, isAdmin, picture, rating
         });
-        const doc = await docRef.get();
+        let userDoc = await userDocRef.get();
+
+        const { id: walletId } = await createNewWallet({ userId: userDoc.id, currencyId });
+        userDocRef.update({ walletId });
+        userDoc = await userDocRef.get();
 
         logger.info('User created successfully');
         res.status(201).json({
-            id: doc.id,
-            ...doc.data()
+            id: userDoc.id,
+            ...userDoc.data()
         });
     } catch (error) {
         next(error);
