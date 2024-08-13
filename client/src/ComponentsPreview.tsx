@@ -7,8 +7,8 @@ import { Mail, RemoveRedEye, Password, Home, Favorite, Chat, SearchOffRounded } 
 import { StyledCheckBox } from './components/checkBox';
 import { StyledTextArea } from './components/textArea';
 import ImageComponent from './components/image';
-import  ArrowDownIcon  from './components/icons/arrowDown';
-import  SearchIcon  from './components/icons/search';
+import ArrowDownIcon from './components/icons/arrowDown';
+import SearchIcon from './components/icons/search';
 import MicrophoneIcon from './components/icons/microphone';
 import StyledLabel1 from './components/lebak';
 import PlusIcon from './components/icons/plus';
@@ -48,7 +48,7 @@ import TwitterIcon from './components/icons/twitter';
 import YoutubeIcon from './components/icons/youtube';
 import DownloadGooglePlay from './components/icons/downloadGooglePlay';
 import DownloadAppStore from './components/icons/downloadAppStore';
-
+import './global.css';
 
 const ComponentsPreview = () => {
     return (
@@ -63,99 +63,99 @@ const ComponentsPreview = () => {
             <Box>
                 <Typography variant='h5'>Icons</Typography>
                 <Box sx={{
-                    display:'flex',
-                    flexDirection:'column',
-                    backgroundColor:'var(--green)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    backgroundColor: 'var(--green)',
                     padding: '5px',
                     gap: '5px',
                     alignItems: 'center',
                 }}
                 >
                     <Box
-                    sx={{
-                        display:'flex',
-                        flexDirection:'row',
-                        gap: '8px',
-                        justifyContent:'space-between',
-                    }}>
+                        sx={{
+                            display: 'flex',
+                            flexDirection: 'row',
+                            gap: '8px',
+                            justifyContent: 'space-between',
+                        }}>
 
                         <ArrowDownIcon />
                         <SearchIcon />
-                        <MicrophoneIcon/>
-                        <PlusIcon/>
-                        <UserProfileIcon/>
-                        <MessageIcon/>
-                        <HeartIcon/>
-                        <LocationIcon/>
-                        <CalendarSolidIcon/>
-                        <CarFillIcon/>
-                        <AreaIcon/>
-                        <PasswordIcon/>
-                        <FacebookIcon/>
-                        <GoogleIcon/> 
-                        <AppleIcon/>  
-                        <CheckBoxIcon/>
-                        <ArrowUpIcon/>
+                        <MicrophoneIcon />
+                        <PlusIcon />
+                        <UserProfileIcon />
+                        <MessageIcon />
+                        <HeartIcon />
+                        <LocationIcon />
+                        <CalendarSolidIcon />
+                        <CarFillIcon />
+                        <AreaIcon />
+                        <PasswordIcon />
+                        <FacebookIcon />
+                        <GoogleIcon />
+                        <AppleIcon />
+                        <CheckBoxIcon />
+                        <ArrowUpIcon />
                     </Box>
-                    
-                        <Box
+
+                    <Box
                         sx={{
-                            display:'flex',
-                            flexDirection:'column',
+                            display: 'flex',
+                            flexDirection: 'column',
                         }}>
 
-                        
-                            <Box
+
+                        <Box
                             sx={{
-                                display:'flex',
-                                flexDirection:'row',
+                                display: 'flex',
+                                flexDirection: 'row',
                                 gap: '8px',
-                                justifyContent:'space-between',
+                                justifyContent: 'space-between',
                             }}>
-                                <GeneratorIcon/>
-                                <TransportSparePartIcon/>
-                                <BusinessManIcon/>
-                                <HeartFilledIcon/>
-                                <FurnitureIcon/>
-                                <ClothesIcon/>
-                                <SportsIcon/>
-                                <CarIcon/>
-                            </Box>
-                            <Box
+                            <GeneratorIcon />
+                            <TransportSparePartIcon />
+                            <BusinessManIcon />
+                            <HeartFilledIcon />
+                            <FurnitureIcon />
+                            <ClothesIcon />
+                            <SportsIcon />
+                            <CarIcon />
+                        </Box>
+                        <Box
                             sx={{
-                                display:'flex',
-                                flexDirection:'row',
+                                display: 'flex',
+                                flexDirection: 'row',
                                 gap: '8px',
-                                justifyContent:'space-between',
+                                justifyContent: 'space-between',
                             }}>
-                                <HomeAndGardenIcon/>
-                                <CalendarIcon/>
-                                <ChildrenToyIcon/>
-                                <PhoneIcon/>
-                                <WorkIcon/>
-                                <RealEstateAgentIcon/>
-                                <CatIcon/>
-                                <HandIcon/>
-                            </Box>
-                            <Box
+                            <HomeAndGardenIcon />
+                            <CalendarIcon />
+                            <ChildrenToyIcon />
+                            <PhoneIcon />
+                            <WorkIcon />
+                            <RealEstateAgentIcon />
+                            <CatIcon />
+                            <HandIcon />
+                        </Box>
+                        <Box
                             sx={{
-                                display:'flex',
-                                flexDirection:'row',
+                                display: 'flex',
+                                flexDirection: 'row',
                                 gap: '8px',
-                                justifyContent:'left',
-                                marginTop:'25px',
+                                justifyContent: 'left',
+                                marginTop: '25px',
                             }}>
-                                <BaselineFacebookIcon/>
-                                <InstagramIcon/>
-                                <TwitterIcon/>
-                                <YoutubeIcon/>
-                                <DownloadGooglePlay/>
-                                <DownloadAppStore/>
-                            </Box>
+                            <BaselineFacebookIcon />
+                            <InstagramIcon />
+                            <TwitterIcon />
+                            <YoutubeIcon />
+                            <DownloadGooglePlay />
+                            <DownloadAppStore />
                         </Box>
                     </Box>
-                        <MaterialSymbolIcon/>
                 </Box>
+                <MaterialSymbolIcon />
+            </Box>
             <Box
                 sx={{
                     width: 'fit-content',
@@ -188,12 +188,12 @@ const ComponentsPreview = () => {
                     <StyledLabel text='Label with no background' type='no-background' />
                     <StyledLabel text='Label with icon for display info' type='with-icon' icon={Home} />
                 </Box>
-                <Box 
-                sx={{
-                    display:'flex',
-                    flexDirection: 'column',
-                    gap: '5px',
-                }}>
+                <Box
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '5px',
+                    }}>
                     <StyledLabel1 text='Primary Label for display info' type='primary' textType='small' />
                     <StyledLabel1 text='Head Label for display info' type='head' textType='middle' />
                     <StyledLabel1 text='Label with no background' type='no-background' textType='big' />
@@ -255,7 +255,7 @@ const ComponentsPreview = () => {
                     width: 'fit-content',
                     display: 'flex',
                     flexDirection: 'row',
-                    justifyContent: 'center',
+                    justifyContent: 'flex-start',
                     alignItems: 'center',
                     gap: '8px',
                     border: '2px solid black',
@@ -275,6 +275,7 @@ const ComponentsPreview = () => {
                         Button має такі поля:
                             text: string;
                             type: 'contained' | 'outlined';
+                            className: string;
                             primaryColor?: string;
                             secondaryColor?: string;
                             hoverColor?: string;
@@ -282,11 +283,26 @@ const ComponentsPreview = () => {
                             icon?: React.ElementType<SvgIconProps>;
                             onClick?: () => void;
                     */}
-                    <StyledButton text='Home' type='outlined' icon={Home}
+                    <StyledButton text='Поповнити гаманець' type='contained' className='button-fit'
                         onClick={() => {
-                            console.log('Button clicked')
-                        }} data-theme='base' />
-                    <StyledButton text='Home' type='contained' />
+                            console.log('Button 1 clicked')
+                        }} />
+                    <StyledButton text='Додати оголошення' type='contained' icon={PlusIcon} primaryColor='var(--green)' secondaryColor='black' hoverBackColor='var(--light-blue)' className='button-fit'
+                        onClick={() => {
+                            console.log('Button 2 clicked')
+                        }} />
+                    <StyledButton text='Пошук' type='contained' primaryColor='var(--dark-blue)' hoverColor='black' className='button-small'
+                        onClick={() => {
+                            console.log('Button 3 clicked')
+                        }} />
+                    <StyledButton text='Більше' type='outlined' className='button-medium'
+                        onClick={() => {
+                            console.log('Button 4 clicked')
+                        }} />
+                    <StyledButton text='Зареєструватися' type='contained' className='button-large'
+                        onClick={() => {
+                            console.log('Button 5 clicked')
+                        }} />
                 </Box>
             </Box>
             <Box
