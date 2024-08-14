@@ -5,22 +5,27 @@
     padding: 15px;
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
     gap: 15px;
     background-color: #fff;
+    cursor: pointer;
 }
 
 .advertText {
-    height: 100%;
+    height: 56px;
 }
 
 .imageContainer {
+    overflow: hidden;
     width: 297px;
     height: 266px;
     position: relative;
 }
 
-.vip {
+.vip-top {
     position: absolute;
+    display: flex;
+    flex-direction: row;
     top: 234px;
     left: 10px;
 }
