@@ -26,11 +26,11 @@ const StyledTextArea: React.FC<TextAreaProps> = ({ label, value, minRows, maxRow
                     {required ? `${label} *` : label}
                 </label>
                 <TextareaAutosize
-                    value={currentValue}
                     maxLength={maxLength}
                     minRows={minRows}
                     maxRows={maxRows}
                     required={required}
+                    placeholder={currentValue}
                     onChange={handleChange}
                     className='textArea'
                 />

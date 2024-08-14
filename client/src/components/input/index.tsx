@@ -49,7 +49,7 @@ const StyledInput: React.FC<StyledInputProps> = ({ label, value, required, width
                 }
                 <Input
                     id='input'
-                    defaultValue={value}
+                    placeholder={currentValue}
                     type={isPassword ? 'password' : 'text'}
                     className='basic-input'
                     onChange={handleChange}

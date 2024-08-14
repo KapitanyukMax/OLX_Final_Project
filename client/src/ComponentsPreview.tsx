@@ -48,6 +48,7 @@ import YoutubeIcon from './components/icons/youtube';
 import DownloadGooglePlay from './components/icons/downloadGooglePlay';
 import DownloadAppStore from './components/icons/downloadAppStore';
 import './global.css';
+import { StyledAdvert } from './components/advert';
 
 const ComponentsPreview = () => {
     return (
@@ -182,18 +183,18 @@ const ComponentsPreview = () => {
                             type: 'primary'| 'head' | 'with-icon' | 'no-background';
                             icon?:React.ElementType<SvgIconProps>;
                     */}
-                    <StyledLabel text='Primary Label' type='primary' textType='middle' textColor='var(--dark-blue)'/>
-                    <StyledLabel text='Head Label' type='head' textType='head' textColor='var(--light-blue)'/>
+                    <StyledLabel text='Primary Label' type='primary' textType='middle' textColor='var(--dark-blue)' />
+                    <StyledLabel text='Head Label' type='head' textType='head' textColor='var(--light-blue)' />
                     <Box
-                    sx={{
-                        display:'flex',
-                        flexDirection: 'row',
-                        gap: '5px',
-                    }}>
-                        <StyledLabel text='TOP' type='status' textType='status' backgroundColor='var(--light-blue)'/>
-                        <StyledLabel text='VIP' type='status' textType='status' backgroundColor='var(--green)'/>
+                        sx={{
+                            display: 'flex',
+                            flexDirection: 'row',
+                            gap: '5px',
+                        }}>
+                        <StyledLabel text='TOP' type='status' textType='status' backgroundColor='var(--light-blue)' />
+                        <StyledLabel text='VIP' type='status' textType='status' backgroundColor='var(--green)' />
                     </Box>
-                    <StyledLabel text='Label with icon' type='with-icon' icon={Home} textType='small'/>
+                    <StyledLabel text='Label with icon' type='with-icon' icon={Home} textType='small' />
                 </Box>
             </Box>
             <Box
@@ -425,6 +426,31 @@ const ComponentsPreview = () => {
                 borderRadius?:string;
                 onClick?: () =>void; */}
                 <ImageComponent src='https://5.imimg.com/data5/RV/NK/MY-45718396/ape-auto-501.png' alt='auto' width='150px' height='150px' />
+            </Box>
+            <Box sx={{
+                backgroundColor: 'lightgrey',
+                padding: '10px',
+                display: 'flex',
+                flexDirection: 'row',
+                border: '2px solid black',
+                width: 'fit-content',
+                justifyContent: 'center',
+                alignItems: 'center',
+                gap: '8px'
+            }}>
+                <Typography fontSize='10px'>Advert :</Typography>
+
+                {
+                    // Advert має такі поля:
+                    //     title: string;
+                    //     location: string;
+                    //     date: string;
+                    //     image: string;
+                    //     isVIP?: boolean;
+                    //     price: number;
+                }
+                <StyledAdvert title='Продам британських кошенят' image='https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Cat03.jpg/1200px-Cat03.jpg' location='Рівне' date='27.06.2024' price={6000} />
+                <StyledAdvert title='Продам 3-кімнатну квартиру 98 м²' isVIP image='https://www.ownitkenya.com/wp-content/uploads/2023/05/apartment-for-sale-in-westland-nairobi.jpg' location='Хмельницьк' date='27.06.2024' price={4665859} />
             </Box>
         </Container>
     )

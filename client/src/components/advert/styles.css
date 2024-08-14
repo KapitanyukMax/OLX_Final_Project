@@ -1,0 +1,32 @@
+.advert {
+    box-sizing: border-box;
+    width: 327px;
+    height: 505px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    background-color: #fff;
+}
+
+.advertText {
+    height: 100%;
+}
+
+.imageContainer {
+    width: 297px;
+    height: 266px;
+    position: relative;
+}
+
+.vip {
+    position: absolute;
+    top: 234px;
+    left: 10px;
+}
+
+.heart {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
