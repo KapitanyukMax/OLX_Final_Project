@@ -447,10 +447,31 @@ const ComponentsPreview = () => {
                     //     date: string;
                     //     image: string;
                     //     isVIP?: boolean;
+                    //     isTOP?: boolean;
+                    //     onClick: () => void;
+                    //     onHeartClick?: () => void;
                     //     price: number;
                 }
-                <StyledAdvert title='Продам британських кошенят' image='https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Cat03.jpg/1200px-Cat03.jpg' location='Рівне' date='27.06.2024' price={6000} />
-                <StyledAdvert title='Продам 3-кімнатну квартиру 98 м²' isVIP image='https://www.ownitkenya.com/wp-content/uploads/2023/05/apartment-for-sale-in-westland-nairobi.jpg' location='Хмельницьк' date='27.06.2024' price={4665859} />
+                <StyledAdvert title='Продам британських кошенят' image='https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Cat03.jpg/1200px-Cat03.jpg' location='Рівне' date='27.06.2024' price={6000} onClick={
+                    () => {
+                        console.log('Advert clicked');
+                    }
+                } />
+                <StyledAdvert title='Продам 3-кімнатну квартиру 98 м²' isVIP isTOP image='https://www.ownitkenya.com/wp-content/uploads/2023/05/apartment-for-sale-in-westland-nairobi.jpg' location='Хмельницьк' date='27.06.2024' price={4665859} onClick={
+                    () => {
+                        console.log('Advert clicked');
+                    }
+                } />
+                <StyledAdvert title='Продам 3-кімнатну квартиру 98 м²' isVIP image='https://www.ownitkenya.com/wp-content/uploads/2023/05/apartment-for-sale-in-westland-nairobi.jpg' location='Хмельницьк' date='27.06.2024' price={4665859} onClick={
+                    () => {
+                        console.log('Advert clicked');
+                    }
+                } />
+                <StyledAdvert title='Продам 3-кімнатну квартиру 98 м²' isTOP image='https://www.ownitkenya.com/wp-content/uploads/2023/05/apartment-for-sale-in-westland-nairobi.jpg' location='Хмельницьк' date='27.06.2024' price={4665859} onClick={
+                    () => {
+                        console.log('Advert clicked');
+                    }
+                } />
             </Box>
         </Container>
     )

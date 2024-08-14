@@ -7,6 +7,7 @@ import LocationIcon from "../icons/location";
 import CalendarIcon from "../icons/calendarSolid";
 import HeartIcon from "../icons/heart";
 import "./styles.css";
+import StyledIcon from "../icon";
 
 interface StyledAdvertProps {
     title: string;
@@ -14,23 +15,47 @@ interface StyledAdvertProps {
     date: string;
     image: string;
     isVIP?: boolean;
+    isTOP?: boolean;
+    onClick: () => void;
+    onHeartClick?: () => void;
     price: number;
 };
 
-const StyledAdvert: React.FC<StyledAdvertProps> = ({ title, location, date, image, isVIP, price }) => {
+const StyledAdvert: React.FC<StyledAdvertProps> = ({ title, location, date, image, isVIP, isTOP, price, onClick, onHeartClick }) => {
     return (
         <StyledEngineProvider injectFirst>
-            <Box className='advert'>
+            <Box className='advert' onClick={onClick} style={{ cursor: 'pointer' }}>
                 <Box className='imageContainer'>
-                    <ImageComponent src={image} alt={title} height="266px" width="297px" />
+                    <ImageComponent src={image} alt={title} />
                     {
-                        isVIP &&
-                        <Box className='vip'>
+                        isVIP && isTOP &&
+                        <Box className='vip-top'>
+                            <Box>
+                                <StyledLabel text={isVIP ? "VIP" : ""} textType="small" type="status" textColor="white" backgroundColor="#61d85a" />
+                            </Box>
+                            <Box>
+                                <StyledLabel text={isTOP ? "TOP" : ""} textType="small" type="status" textColor="white" backgroundColor="#049ce4" />
+                            </Box>
+                        </Box>
+                    }
+                    {
+                        isVIP && !isTOP &&
+                        <Box className='vip-top'>
                             <StyledLabel text={isVIP ? "VIP" : ""} textType="small" type="status" textColor="white" backgroundColor="#61d85a" />
                         </Box>
                     }
-                    <Box className='heart'>
-                        <HeartIcon />
+                    {
+                        !isVIP && isTOP &&
+                        <Box className='vip-top'>
+                            <StyledLabel text={isTOP ? "TOP" : ""} textType="small" type="status" textColor="white" backgroundColor="#049ce4" />
+                        </Box>
+                    }
+                    <Box className='heart' onClick={
+                        (event) => {
+                            event.stopPropagation();
+                        }
+                    }>
+                        <StyledIcon icon={HeartIcon} type="button" onClick={onHeartClick} />
                     </Box>
                 </Box>
                 <Box className='advertText'>
