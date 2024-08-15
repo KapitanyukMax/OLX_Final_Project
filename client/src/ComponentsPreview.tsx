@@ -194,7 +194,7 @@ const ComponentsPreview = () => {
                         <StyledLabel text='TOP' type='status' textType='status' backgroundColor='var(--light-blue)' />
                         <StyledLabel text='VIP' type='status' textType='status' backgroundColor='var(--green)' />
                     </Box>
-                    <StyledLabel text='Label with icon' type='with-icon' icon={Home} textType='small' />
+                    <StyledLabel text='Label with icon' type='with-icon' icon={LocationIcon} textType='small'/>
                 </Box>
             </Box>
             <Box
