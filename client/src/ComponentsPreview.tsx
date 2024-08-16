@@ -49,6 +49,7 @@ import DownloadGooglePlay from './components/icons/downloadGooglePlay';
 import DownloadAppStore from './components/icons/downloadAppStore';
 import './global.css';
 import { StyledAdvert } from './components/advert';
+import InformationSection from './components/informationSection';
 
 const ComponentsPreview = () => {
     return (
@@ -60,6 +61,12 @@ const ComponentsPreview = () => {
                 minHeight: '100vh'
             }}>
             <Typography variant="h3">Components Preview</Typography>
+            <Box>
+                <Typography variant='h5'>Information Section</Typography>
+                <Box>
+                    <InformationSection></InformationSection>
+                </Box>
+            </Box>
             <Box>
                 <Typography variant='h5'>Icons</Typography>
                 <Box sx={{
