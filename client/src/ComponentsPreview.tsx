@@ -1,9 +1,9 @@
 import StyledLabel from './components/lable';
 import StyledButton from './components/button';
-import StyledIcon from './components/icon';
+import StyledIconButton from './components/iconButton';
 import { Container, Box, Typography } from '@mui/material';
 import { StyledInput } from './components/input';
-import { Mail, RemoveRedEye, Password, Home, Favorite, Chat, SearchOffRounded } from '@mui/icons-material';
+import { Mail, RemoveRedEye, Password, Favorite, FavoriteBorderOutlined, SearchOffRounded } from '@mui/icons-material';
 import { StyledCheckBox } from './components/checkBox';
 import { StyledTextArea } from './components/textArea';
 import ImageComponent from './components/image';
@@ -400,19 +400,14 @@ const ComponentsPreview = () => {
                     gap: '5px'
                 }}>
                     {
-                        // Icon має такі поля:
+                        // IconButton має такі поля:
                         //     icon: React.ElementType<SvgIconProps>;
-                        //     type?: 'default' | 'button';
-                        //     color?: string;
-                        //     hoverColor?: string;
+                        //     checkedIcon?: React.ElementType<SvgIconProps>;
                         //     onClick?: () => void;
                         //     disabled?: boolean;
                     }
-                    <StyledIcon icon={Home} />
-                    <StyledIcon icon={Favorite} type='button' color='#f73378' hoverColor='#f50057' onClick={() => {
-                        console.log('Liked');
-                    }} />
-                    <StyledIcon icon={Chat} type='button' color='#2196f3' disabled />
+                    <StyledIconButton icon={PlusIcon} onClick={() => console.log('Hi')}/>
+                    <StyledIconButton icon={FavoriteBorderOutlined} checkedIcon={Favorite} />
                 </Box>
             </Box>
             <Box sx={{

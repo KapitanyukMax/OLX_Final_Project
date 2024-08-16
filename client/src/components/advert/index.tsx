@@ -7,7 +7,7 @@ import LocationIcon from "../icons/location";
 import CalendarIcon from "../icons/calendarSolid";
 import HeartIcon from "../icons/heart";
 import "./styles.css";
-import StyledIcon from "../icon";
+import StyledIconButton from "../iconButton";
 
 interface StyledAdvertProps {
     title: string;
@@ -55,7 +55,7 @@ const StyledAdvert: React.FC<StyledAdvertProps> = ({ title, location, date, imag
                             event.stopPropagation();
                         }
                     }>
-                        <StyledIcon icon={HeartIcon} type="button" onClick={onHeartClick} />
+                        {/* <StyledIconButton icon={HeartIcon} type="button" onClick={onHeartClick} /> */}
                     </Box>
                 </Box>
                 <Box className='advertText'>
