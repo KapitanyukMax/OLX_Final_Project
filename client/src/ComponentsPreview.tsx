@@ -411,19 +411,14 @@ const ComponentsPreview = () => {
                         gap: '5px'
                     }}>
                         {
-                            // Icon має такі поля:
+                            // IconButton має такі поля:
                             //     icon: React.ElementType<SvgIconProps>;
-                            //     type?: 'default' | 'button';
-                            //     color?: string;
-                            //     hoverColor?: string;
+                            //     checkedIcon?: React.ElementType<SvgIconProps>;
                             //     onClick?: () => void;
                             //     disabled?: boolean;
                         }
-                        <StyledIcon icon={Home} />
-                        <StyledIcon icon={Favorite} type='button' color='#f73378' hoverColor='#f50057' onClick={() => {
-                            console.log('Liked');
-                        }} />
-                        <StyledIcon icon={Chat} type='button' color='#2196f3' disabled />
+                        <StyledIconButton icon={PlusIcon} onClick={() => console.log('Hi')} />
+                        <StyledIconButton icon={FavoriteBorderOutlined} checkedIcon={Favorite} />
                     </Box>
                 </Box>
                 <Box sx={{
@@ -435,7 +430,7 @@ const ComponentsPreview = () => {
                     alignItems: 'center',
                 }}>
                     <Typography fontSize='10px'>Image component</Typography>
-        
+
                     {/*Image має такі поля:
                  src: string;
                 alt: string;

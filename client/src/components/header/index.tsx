@@ -3,7 +3,7 @@ import { StyledEngineProvider } from '@mui/material/styles'
 import { Box, Link } from "@mui/material";
 import StyledImage from '../image';
 import { Typography } from '@mui/material';
-import StyledIcon from '../icon';
+import StyledIconButton from '../iconButton';
 import HeartIcon from '../icons/heart';
 import MessageIcon from '../icons/message';
 import UserProfileIcon from '../icons/userProfile';
@@ -54,11 +54,11 @@ const Header: React.FC = () => {
                     </Box>
                     <Box sx={{
                         display: 'flex',
-                        gap: '14px',
+                        gap: '30px',
                     }}>
-                        <StyledIcon icon={HeartIcon} type='button' color='white' />
-                        <StyledIcon icon={MessageIcon} type='button' color='white' />
-                        <StyledIcon icon={UserProfileIcon} type='button' color='white' />
+                        <StyledIconButton icon={HeartIcon} />
+                        <StyledIconButton icon={MessageIcon} />
+                        <StyledIconButton icon={UserProfileIcon} />
                     </Box>
                     <StyledButton text='Додати оголошення' type='contained' icon={PlusIcon} primaryColor='var(--green)' secondaryColor='black' hoverBackColor='var(--light-blue)' className='button-fit'
                         onClick={() => {

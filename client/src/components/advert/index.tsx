@@ -55,7 +55,7 @@ const StyledAdvert: React.FC<StyledAdvertProps> = ({ title, location, date, imag
                             event.stopPropagation();
                         }
                     }>
-                        {/* <StyledIconButton icon={HeartIcon} type="button" onClick={onHeartClick} /> */}
+                        <StyledIconButton icon={HeartIcon} onClick={onHeartClick} />
                     </Box>
                 </Box>
                 <Box className='advertText'>
