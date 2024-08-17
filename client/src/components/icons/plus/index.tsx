@@ -2,7 +2,7 @@ import React from 'react';
 import plus from '../../../assets/icons/plus.svg';
 import { Box } from '@mui/material';
 
-const Plus = () => {
+const PlusIcon = () => {
     return(
         <Box
         sx={{
@@ -18,4 +18,4 @@ const Plus = () => {
     )
 }
 
-export default Plus;
+export default PlusIcon;
