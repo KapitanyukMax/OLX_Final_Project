@@ -7,7 +7,7 @@ import { Mail, RemoveRedEye, Password, Home, Favorite, Chat, SearchOffRounded } 
 import { StyledCheckBox } from './components/checkBox';
 import { StyledTextArea } from './components/textArea';
 import ImageComponent from './components/image';
-import  ArrowDownIcon  from './components/icons/arrowDown';
+import  { ArrowDownBlackIcon, ArrowDownWhiteIcon }  from './components/icons/arrowDown';
 import  SearchIcon  from './components/icons/search';
 import MicrophoneIcon from './components/icons/microphone';
 import StyledLabel1 from './components/lebak';
@@ -80,7 +80,8 @@ const ComponentsPreview = () => {
                         justifyContent:'space-between',
                     }}>
 
-                        <ArrowDownIcon />
+                        <ArrowDownBlackIcon />
+                        <ArrowDownWhiteIcon />
                         <SearchIcon />
                         <MicrophoneIcon/>
                         <PlusIcon/>

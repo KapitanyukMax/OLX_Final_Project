@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Box, Select, MenuItem, SelectChangeEvent, Typography } from '@mui/material';
 import { StyledEngineProvider } from '@mui/material/styles';
-import ArrowDownIcon from '../icons/arrowDown';
+import { ArrowDownBlackIcon } from '../icons/arrowDown';
 import "./styles.css";
 
 interface StyledDropdownProps {
@@ -47,7 +47,7 @@ const StyledDropdown: React.FC<StyledDropdownProps> = ({ value, values, widthTyp
                         <Typography sx={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                             {value}
                         </Typography>
-                        <ArrowDownIcon color='black'/>
+                        <ArrowDownBlackIcon/>
                     </Box>
                     )}
             >
