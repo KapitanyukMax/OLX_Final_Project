@@ -18,3 +18,8 @@
     height: fit-content;
     padding: 7px 20px;
 }
+
+.container {
+    padding-left: 0%;
+    padding-right: 0%;
+}
