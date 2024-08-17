@@ -1,9 +1,9 @@
 import StyledLabel from './components/lable';
 import StyledButton from './components/button';
-import StyledIcon from './components/icon';
+import StyledIconButton from './components/iconButton';
 import { Container, Box, Typography } from '@mui/material';
 import { StyledInput } from './components/input';
-import { Mail, RemoveRedEye, Password, Home, Favorite, Chat, SearchOffRounded } from '@mui/icons-material';
+import { Mail, RemoveRedEye, Password, Home, Favorite, Chat, FavoriteBorderOutlined, SearchOffRounded } from '@mui/icons-material';
 import { StyledEngineProvider } from '@mui/system';
 import { StyledCheckBox } from './components/checkBox';
 import { StyledTextArea } from './components/textArea';
@@ -435,7 +435,7 @@ const ComponentsPreview = () => {
                     alignItems: 'center',
                 }}>
                     <Typography fontSize='10px'>Image component</Typography>
-
+        
                     {/*Image має такі поля:
                  src: string;
                 alt: string;

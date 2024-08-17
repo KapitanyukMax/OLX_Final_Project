@@ -15,6 +15,7 @@ const InformationSection: React.FC = () => {
                 alignItems: 'center',
                 gap: '148px',
                 backgroundColor: 'var(--dark-blue)',
+                boxSizing:'border-box'
             }}>
                 <Box
                     sx={{
