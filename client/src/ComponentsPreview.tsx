@@ -8,8 +8,8 @@ import { StyledEngineProvider } from '@mui/system';
 import { StyledCheckBox } from './components/checkBox';
 import { StyledTextArea } from './components/textArea';
 import ImageComponent from './components/image';
-import ArrowDownIcon from './components/icons/arrowDown';
-import SearchIcon from './components/icons/search';
+import  { ArrowDownBlackIcon, ArrowDownWhiteIcon }  from './components/icons/arrowDown';
+import  SearchIcon  from './components/icons/search';
 import MicrophoneIcon from './components/icons/microphone';
 import PlusIcon from './components/icons/plus';
 import UserProfileIcon from './components/icons/userProfile';
@@ -52,6 +52,7 @@ import './global.css';
 import { StyledAdvert } from './components/advert';
 import InformationSection from './components/informationSection';
 import { Header } from './components/header';
+import { StyledDropdown } from './components/dropdown';
 
 const ComponentsPreview = () => {
     return (
@@ -97,23 +98,24 @@ const ComponentsPreview = () => {
                                 justifyContent: 'space-between',
                             }}>
 
-                            <ArrowDownIcon />
+                            <ArrowDownBlackIcon />
+                            <ArrowDownWhiteIcon />
                             <SearchIcon />
-                            <MicrophoneIcon />
-                            <PlusIcon />
-                            <UserProfileIcon />
-                            <MessageIcon />
-                            <HeartIcon />
-                            <LocationIcon />
-                            <CalendarSolidIcon />
-                            <CarFillIcon />
-                            <AreaIcon />
-                            <PasswordIcon />
-                            <FacebookIcon />
-                            <GoogleIcon />
-                            <AppleIcon />
-                            <CheckBoxIcon />
-                            <ArrowUpIcon />
+                            <MicrophoneIcon/>
+                            <PlusIcon/>
+                            <UserProfileIcon/>
+                            <MessageIcon/>
+                            <HeartIcon/>
+                            <LocationIcon/>
+                            <CalendarSolidIcon/>
+                            <CarFillIcon/>
+                            <AreaIcon/>
+                            <PasswordIcon/>
+                            <FacebookIcon/>
+                            <GoogleIcon/> 
+                            <AppleIcon/>  
+                            <CheckBoxIcon/>
+                            <ArrowUpIcon/>
                         </Box>
 
                         <Box
@@ -438,8 +440,31 @@ const ComponentsPreview = () => {
                 height?: string;
                 borderRadius?:string;
                 onClick?: () =>void; */}
-                    <ImageComponent src='https://5.imimg.com/data5/RV/NK/MY-45718396/ape-auto-501.png' alt='auto' width='150px' height='150px' />
+                <ImageComponent src='https://5.imimg.com/data5/RV/NK/MY-45718396/ape-auto-501.png' alt='auto' width='150px' height='150px' />
+            </Box>
+            <Box sx={{
+                width: 'fit-content',
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'center',
+                alignItems: 'center',
+                gap: '8px',
+                border: '2px solid black',
+                padding: '10px',
+                margin: '10px 0px',
+            }}>
+                <Typography fontSize='10px'>Dropdown:</Typography>
+                <Box sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'flex-start',
+                    gap: '10px',
+                }}>
+                    <StyledDropdown value='Виберіть категорію' values={["Hello", "World", "e11fd31"]} widthType='small'/>
+                    <StyledDropdown value='Виберіть категорію' values={["Hello", "World", "e11fd31"]} widthType='middle'/>
+                    <StyledDropdown value='Виберіть категорію' values={["Hello", "World", "e11fd31"]} widthType='big'/>
                 </Box>
+            </Box>
                 <Box sx={{
                     backgroundColor: 'lightgrey',
                     padding: '10px',

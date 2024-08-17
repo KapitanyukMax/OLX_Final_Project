@@ -1,21 +1,23 @@
 import React from 'react';
-import arrow from '../../../assets/icons/arrow.svg';
+import arrowBlack from '../../../assets/icons/arrowBlack.svg';
+import arrowWhite from '../../../assets/icons/arrowWhite.svg';
 import { Box } from '@mui/material';
 
-const ArrowDownIcon = () => {
-    return(
-        <Box
-        sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent:'center',
-            width:'25px',
-            height:'25px',
 
-        }}>
-            <img src={arrow} alt="arrowDown"/>
+const ArrowDownBlackIcon = () => {
+    return (
+        <Box>
+            <img src={arrowBlack} alt="arrowDownBlack"/>
         </Box>
     )
 }
 
-export default ArrowDownIcon;
+const ArrowDownWhiteIcon = () => {
+    return (
+        <Box>
+            <img src={arrowWhite} alt="arrowDownWhite"/>
+        </Box>
+    )
+}
+
+export { ArrowDownBlackIcon, ArrowDownWhiteIcon };
