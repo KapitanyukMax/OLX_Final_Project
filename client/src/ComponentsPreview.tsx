@@ -48,6 +48,7 @@ import TwitterIcon from './components/icons/twitter';
 import YoutubeIcon from './components/icons/youtube';
 import DownloadGooglePlay from './components/icons/downloadGooglePlay';
 import DownloadAppStore from './components/icons/downloadAppStore';
+import { StyledDropdown } from './components/dropdown';
 
 
 const ComponentsPreview = () => {
@@ -413,6 +414,29 @@ const ComponentsPreview = () => {
                 borderRadius?:string;
                 onClick?: () =>void; */}
                 <ImageComponent src='https://5.imimg.com/data5/RV/NK/MY-45718396/ape-auto-501.png' alt='auto' width='150px' height='150px' />
+            </Box>
+            <Box sx={{
+                width: 'fit-content',
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'center',
+                alignItems: 'center',
+                gap: '8px',
+                border: '2px solid black',
+                padding: '10px',
+                margin: '10px 0px',
+            }}>
+                <Typography fontSize='10px'>Dropdown:</Typography>
+                <Box sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'flex-start',
+                    gap: '10px',
+                }}>
+                    <StyledDropdown value='Виберіть категорію' values={["Hello", "World", "e11fd31"]} widthType='small'/>
+                    <StyledDropdown value='Виберіть категорію' values={["Hello", "World", "e11fd31"]} widthType='middle'/>
+                    <StyledDropdown value='Виберіть категорію' values={["Hello", "World", "e11fd31"]} widthType='big'/>
+                </Box>
             </Box>
         </Container>
     )
