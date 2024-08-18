@@ -51,32 +51,74 @@ import DownloadAppStore from './components/icons/downloadAppStore';
 import './global.css';
 import { StyledAdvert } from './components/advert';
 import InformationSection from './components/informationSection';
-import { Header } from './components/header';
-import { StyledDropdown } from './components/dropdown';
+import StyledFooter from './components/footer';
+import HeartWhiteIcon from './components/icons/heartWhite';
+import MessageWhiteIcon from './components/icons/messageWhite';
+import UserProfileWhiteIcon from './components/icons/userProfileWhite';
 
 const ComponentsPreview = () => {
     return (
-        <StyledEngineProvider injectFirst>
-            <Container className='container'
-                sx={{
-                    display: 'block',
-                    position: 'sticky',
-                    minWidth: '100vw',
-                    minHeight: '100vh',
-                    margin: '0 auto',
-                    padding: '0'
-                }}>
-                <Typography variant="h3">Components Preview</Typography>
+        <Container
+            sx={{
+                display: 'block',
+                position: 'sticky',
+                minWidth: '100vw',
+                minHeight: '100vh'
+            }}>
+            <Typography variant="h3">Components Preview</Typography>
+            <Box>
+                <Typography variant='h5' textAlign='start'>Information Section</Typography>
                 <Box>
                     <Typography variant='h5'>Header</Typography>
                     <Box>
                         <Header></Header>
                     </Box>
                 </Box>
+            </Box>
+            <Box>
+            <Typography variant='h5' textAlign='start'>Footer</Typography>
                 <Box>
-                    <Typography variant='h5'>Information Section</Typography>
-                    <Box>
-                        <InformationSection></InformationSection>
+                    <StyledFooter></StyledFooter>
+                </Box>
+            </Box>
+            <Box>
+                <Typography variant='h5'>Icons</Typography>
+                <Box sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    backgroundColor: 'var(--green)',
+                    padding: '5px',
+                    gap: '5px',
+                    alignItems: 'center',
+                }}
+                >
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            flexDirection: 'row',
+                            gap: '8px',
+                            justifyContent: 'space-between',
+                        }}>
+                        <HeartWhiteIcon/>
+                        <MessageWhiteIcon/>
+                        <UserProfileWhiteIcon/>
+                        <ArrowDownIcon />
+                        <SearchIcon />
+                        <MicrophoneIcon />
+                        <PlusIcon />
+                        <UserProfileIcon />
+                        <MessageIcon />
+                        <HeartIcon />
+                        <LocationIcon />
+                        <CalendarSolidIcon />
+                        <CarFillIcon />
+                        <AreaIcon />
+                        <PasswordIcon />
+                        <FacebookIcon />
+                        <GoogleIcon />
+                        <AppleIcon />
+                        <CheckBoxIcon />
+                        <ArrowUpIcon />
                     </Box>
                 </Box>
                 <Box>
