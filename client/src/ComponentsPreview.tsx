@@ -50,6 +50,10 @@ import DownloadAppStore from './components/icons/downloadAppStore';
 import './global.css';
 import { StyledAdvert } from './components/advert';
 import InformationSection from './components/informationSection';
+import StyledFooter from './components/footer';
+import HeartWhiteIcon from './components/icons/heartWhite';
+import MessageWhiteIcon from './components/icons/messageWhite';
+import UserProfileWhiteIcon from './components/icons/userProfileWhite';
 
 const ComponentsPreview = () => {
     return (
@@ -62,9 +66,15 @@ const ComponentsPreview = () => {
             }}>
             <Typography variant="h3">Components Preview</Typography>
             <Box>
-                <Typography variant='h5'>Information Section</Typography>
+                <Typography variant='h5' textAlign='start'>Information Section</Typography>
                 <Box>
                     <InformationSection></InformationSection>
+                </Box>
+            </Box>
+            <Box>
+            <Typography variant='h5' textAlign='start'>Footer</Typography>
+                <Box>
+                    <StyledFooter></StyledFooter>
                 </Box>
             </Box>
             <Box>
@@ -85,7 +95,9 @@ const ComponentsPreview = () => {
                             gap: '8px',
                             justifyContent: 'space-between',
                         }}>
-
+                        <HeartWhiteIcon/>
+                        <MessageWhiteIcon/>
+                        <UserProfileWhiteIcon/>
                         <ArrowDownIcon />
                         <SearchIcon />
                         <MicrophoneIcon />
