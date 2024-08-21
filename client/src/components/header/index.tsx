@@ -14,10 +14,13 @@ const Header: React.FC = () => {
     return (
         <StyledEngineProvider injectFirst>
             <Box sx={{
-                width: '100%',
+                width: '100vw',
                 height: '90px',
                 textAlign: 'center',
                 backgroundColor: 'var(--dark-blue)',
+                position: 'sticky',
+                top: '0',
+                zIndex: 1000,
             }}>
                 <Box sx={{
                     display: 'flex',

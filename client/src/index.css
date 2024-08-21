@@ -1,5 +1,11 @@
 :root {
-    font-family: "Nunito", sans-serif;
+  font-family: "Nunito", sans-serif;
+  overflow-x: hidden;
+}
+
+body {
+  margin: 0;
+  padding: 0;
 }
 
 [data-theme='base'] {
