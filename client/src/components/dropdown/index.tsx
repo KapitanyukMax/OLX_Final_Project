@@ -101,10 +101,6 @@ const StyledHeaderDropdown: React.FC<StyledDropdownProps> = ({ value, values }) 
     const [currentValue, setCurrentValue] = useState(value);
     const [items, setItems] = useState(values);
     
-    // const handleChange = (event: SelectChangeEvent) => {
-        //     setCurrentValue(event.target.value);
-        // };
-        
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
     const handleMouseEnter = (event: React.MouseEvent<HTMLElement>) => {
@@ -122,49 +118,6 @@ const StyledHeaderDropdown: React.FC<StyledDropdownProps> = ({ value, values }) 
 
     return (
         <StyledEngineProvider injectFirst>
-            {/* <Select
-                defaultValue={value}
-                value={currentValue}
-                onChange={handleChange}
-                IconComponent={() => null}
-                renderValue={(value) => (
-                    <Box sx={{ 
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                    }}>
-                        <Typography sx={{ 
-                            fontFamily: "Nunito",
-                            fontSize: "20px",
-                        }}>
-                            {value}</Typography>
-                        <ArrowDownWhiteIcon/>
-                    </Box>
-                    )}
-                sx={{
-                    textAlign: 'left',
-                    color: '#fff',
-                    backgroundColor: 'transparent',
-                    border: 'none',
-                    outline: 'none',
-                    boxShadow: "none",
-                    width: "120px",
-                    ".MuiOutlinedInput-notchedOutline": { border: 0 },
-                    "&.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline": { border: 0 },
-                    "&.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": { border: 0 },
-                }}
-            >
-                {items.map((item: string, index: number) => (
-                    <MenuItem
-                        key={index}
-                        value={item}
-                        sx={{
-                            fontFamily: "Nunito",
-                            fontSize: "18px",
-                        }}
-                    >{item}</MenuItem>
-                ))}
-            </Select> */}
             <div onMouseLeave={handleMouseLeave} style={{ display: 'inline-block' }}>
                 <Button
                     aria-controls="hover-select-menu"
