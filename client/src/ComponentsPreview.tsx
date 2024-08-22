@@ -52,7 +52,7 @@ import './global.css';
 import { StyledAdvert } from './components/advert';
 import InformationSection from './components/informationSection';
 import { Header } from './components/header';
-import { StyledDropdown } from './components/dropdown';
+import { StyledDropdown, StyledHeaderDropdown } from './components/dropdown';
 
 const ComponentsPreview = () => {
     return (
@@ -452,6 +452,7 @@ const ComponentsPreview = () => {
                 border: '2px solid black',
                 padding: '10px',
                 margin: '10px 0px',
+                backgroundColor: 'lightgray',
             }}>
                 <Typography fontSize='10px'>Dropdown:</Typography>
                 <Box sx={{
@@ -460,9 +461,10 @@ const ComponentsPreview = () => {
                     alignItems: 'flex-start',
                     gap: '10px',
                 }}>
-                    <StyledDropdown value='Виберіть категорію' values={["Hello", "World", "e11fd31"]} widthType='small'/>
-                    <StyledDropdown value='Виберіть категорію' values={["Hello", "World", "e11fd31"]} widthType='middle'/>
-                    <StyledDropdown value='Виберіть категорію' values={["Hello", "World", "e11fd31"]} widthType='big'/>
+                    <StyledHeaderDropdown value='Категорії' values={["Hello", "World", "e11fd31"]} />
+                    <StyledDropdown value='Виберіть категорію' values={["Hello", "World", "e11fd31"]} type='small'/>
+                    <StyledDropdown value='Виберіть категорію' values={["Hello", "World", "e11fd31"]} type='middle'/>
+                    <StyledDropdown value='Виберіть категорію' values={["Hello", "World", "e11fd31"]} type='large'/>
                 </Box>
             </Box>
                 <Box sx={{
