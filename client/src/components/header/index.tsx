@@ -1,7 +1,6 @@
 import React from 'react';
 import { StyledEngineProvider } from '@mui/material/styles'
 import { Box, Link } from "@mui/material";
-import StyledImage from '../image';
 import { Typography } from '@mui/material';
 import StyledIconButton from '../iconButton';
 import HeartWhiteIcon from '../icons/heartWhite';
@@ -9,6 +8,8 @@ import MessageWhiteIcon from '../icons/messageWhite';
 import UserProfileWhiteIcon from '../icons/userProfileWhite';
 import StyledButton from '../button';
 import PlusIcon from '../icons/plus';
+import { StyledHeaderDropdown } from '../dropdown';
+import DDXLogoIcon from '../icons/ddxLogo';
 
 const Header: React.FC = () => {
     return (
@@ -31,7 +32,9 @@ const Header: React.FC = () => {
                     justifyContent: 'space-between',
                     alignItems: 'center',
                 }}>
-                    <StyledImage src='https://via.placeholder.com/145x45' alt='logo' width='145px' height='45px' />
+                    <Link href="/components-preview" >
+                        <StyledIconButton icon={DDXLogoIcon} />
+                    </Link>
                     <Box sx={{
                         display: 'flex',
                         gap: '40px',
@@ -45,15 +48,7 @@ const Header: React.FC = () => {
                         }}>
                             Головна
                         </Link>
-                        <Link href="/components-preview" sx={{
-                            color: 'white',
-                            fontSize: '20px',
-                            fontWeight: '400',
-                            textDecoration: 'none',
-                            alignSelf: 'center',
-                        }}>
-                            Категорії
-                        </Link>
+                        <StyledHeaderDropdown value='Категорії' values={["Категорія 1", "Категорія 2", "Категорія 3"]} />
                     </Box>
                     <Box sx={{
                         display: 'flex',
@@ -63,7 +58,7 @@ const Header: React.FC = () => {
                         <StyledIconButton icon={MessageWhiteIcon} />
                         <StyledIconButton icon={UserProfileWhiteIcon} />
                     </Box>
-                    <StyledButton text='Додати оголошення' type='contained' icon={PlusIcon} primaryColor='var(--green)' secondaryColor='black' hoverBackColor='var(--light-blue)' className='button-fit'
+                    <StyledButton text='Додати оголошення' type='contained' icon={PlusIcon} primaryColor='var(--green)' secondaryColor='white' hoverBackColor='var(--light-blue)' className='button-fit'
                         onClick={() => {
                             console.log('Button 2 clicked')
                         }} />
