@@ -57,6 +57,26 @@ import MessageWhiteIcon from './components/icons/messageWhite';
 import UserProfileWhiteIcon from './components/icons/userProfileWhite';
 import { Header } from './components/header';
 import { StyledDropdown } from './components/dropdown';
+import AddPhotoIcon from './components/icons/addPhotoIcon';
+import VipCrownIcon from './components/icons/vipCrown';
+import FilterFillIcon from './components/icons/filterFill';
+import ShareRoundIcon from './components/icons/shareRound';
+import TopFluentIcon from './components/icons/topFluent';
+import IInCircleIcon from './components/icons/iInCircle';
+import TimeFillIcon from './components/icons/timeFill';
+import PenFluentIcon from './components/icons/penFluent';
+import MenuDotsIcon from './components/icons/menuDots';
+import CrossStyledIcon from './components/icons/cross';
+import PhotoBaselineIcon from './components/icons/photoBaseline';
+import PaperClipIcon from './components/icons/paperClip';
+import EmojiSmileIcon from './components/icons/emoji';
+import DDXLogoIcon from './components/icons/ddxLogo';
+import CardWithHandIcon from './components/icons/cardWithHand';
+import Privat24Icon from './components/icons/private24';
+import MonobankIcon from './components/icons/monobank';
+import MastercardIcon from './components/icons/mastercard';
+import ApplePayIcon from './components/icons/applePay';
+import OComponentIcon from './components/icons/oicon';
 
 const ComponentsPreview = () => {
     return (
@@ -103,6 +123,7 @@ const ComponentsPreview = () => {
                                 gap: '8px',
                                 justifyContent: 'space-between',
                             }}>
+                                
                             <HeartWhiteIcon />
                             <MessageWhiteIcon />
                             <UserProfileWhiteIcon />
@@ -215,6 +236,52 @@ const ComponentsPreview = () => {
                                     <YoutubeIcon />
                                     <DownloadGooglePlay />
                                     <DownloadAppStore />
+                                </Box>
+                                <Box sx={{
+                                        display: 'flex',
+                                        flexDirection: 'row',
+                                        gap: '8px',
+                                        justifyContent: 'left',
+                                        marginTop: '25px',
+                                    }}>
+                                    <Box sx={{
+                                        background:'var(--dark-blue)',
+                                    }}>
+                                        <DDXLogoIcon/>
+                                    </Box>
+                                    <Box sx={{
+                                        background:'white',
+                                    }}>
+                                        <VipCrownIcon/>
+                                    </Box>
+                                        <OComponentIcon/>
+                                        <ApplePayIcon/>
+                                        <MastercardIcon/>
+                                        <MonobankIcon/>
+                                        <Privat24Icon/>
+                                        <CardWithHandIcon/>
+                                </Box>
+                                <Box sx={{
+                                        display: 'flex',
+                                        flexDirection: 'row',
+                                        gap: '8px',
+                                        justifyContent: 'left',
+                                        marginTop: '25px',
+                                    }}>
+                                 
+                                <EmojiSmileIcon/>
+                                <PaperClipIcon/>
+                                <PhotoBaselineIcon/>
+                                <CrossStyledIcon/>
+                                <MenuDotsIcon/>
+                                <PenFluentIcon/>
+                                <TimeFillIcon/>
+                                <IInCircleIcon/>
+                                <TopFluentIcon/>
+                                <ShareRoundIcon/>
+                                <FilterFillIcon/>
+                                <AddPhotoIcon/>
+                                
                                 </Box>
                             </Box>
                         </Box>

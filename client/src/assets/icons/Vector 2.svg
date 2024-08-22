@@ -1,3 +1,3 @@
-<svg width="90" height="2" viewBox="0 0 90 2" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M0 1H90" stroke="black"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="90" height="2" fill="none" viewBox="0 0 90 2">
+  <path stroke="#000" d="M0 1h90"/>
 </svg>
