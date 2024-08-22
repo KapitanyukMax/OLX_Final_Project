@@ -54,8 +54,8 @@ const AdvertCreatePage: React.FC = () => {
                         }}>
                             <StyledLabel text="Категорія" type='head' textType='head' textColor='black' />
                             <StyledLabel text="Вкажіть категорію*" type='primary' textType='small' textColor='black' />
-                            <StyledDropdown value='Оберіть категорію' widthType='big' values={['Категорія 1', 'Категорія 2', 'Категорія 3']} />
-                            <StyledDropdown value='Рубрика категорії' widthType='big' values={['Рубрика 1', 'Рубрика 2', 'Рубрика 3']} />
+                            <StyledDropdown value='Оберіть категорію' type='large' values={['Категорія 1', 'Категорія 2', 'Категорія 3']} />
+                            <StyledDropdown value='Рубрика категорії' type='large' values={['Рубрика 1', 'Рубрика 2', 'Рубрика 3']} />
                         </Box>
                     </Box>
                     <Box sx={{
@@ -70,7 +70,7 @@ const AdvertCreatePage: React.FC = () => {
                     }}>
                         <StyledLabel text="Місцезнаходження" type='head' textType='head' textColor='black' />
                         <StyledLabel text="Оберіть назву населеного пункту*" type='primary' textType='small' textColor='black' />
-                        <StyledDropdown value='Оберіть місто' widthType='big' values={['Місто 1', 'Місто 2', 'Місто 3']} />
+                        <StyledDropdown value='Оберіть місто' type='large' values={['Місто 1', 'Місто 2', 'Місто 3']} />
                     </Box>
                     <Box sx={{
                         width: '100%',
@@ -137,7 +137,7 @@ const AdvertCreatePage: React.FC = () => {
                             alignItems: 'end',
                         }}>
                             <StyledInput label='Вкажіть ціну' value='1080 грн' widthType='big' />
-                            <StyledDropdown value='Валюта' values={["UAH", "USD", "EUR"]} widthType='middle' />
+                            <StyledDropdown value='Валюта' values={["UAH", "USD", "EUR"]} type='middle' />
                             <StyledCheckBox label='Договірна' />
                         </Box>
                     </Box>
