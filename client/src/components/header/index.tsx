@@ -4,9 +4,9 @@ import { Box, Link } from "@mui/material";
 import StyledImage from '../image';
 import { Typography } from '@mui/material';
 import StyledIconButton from '../iconButton';
-import HeartIcon from '../icons/heart';
-import MessageIcon from '../icons/message';
-import UserProfileIcon from '../icons/userProfile';
+import HeartWhiteIcon from '../icons/heartWhite';
+import MessageWhiteIcon from '../icons/messageWhite';
+import UserProfileWhiteIcon from '../icons/userProfileWhite';
 import StyledButton from '../button';
 import PlusIcon from '../icons/plus';
 
@@ -14,10 +14,13 @@ const Header: React.FC = () => {
     return (
         <StyledEngineProvider injectFirst>
             <Box sx={{
-                width: '100%',
+                width: '100vw',
                 height: '90px',
                 textAlign: 'center',
                 backgroundColor: 'var(--dark-blue)',
+                position: 'sticky',
+                top: '0',
+                zIndex: 1000,
             }}>
                 <Box sx={{
                     display: 'flex',
@@ -56,9 +59,9 @@ const Header: React.FC = () => {
                         display: 'flex',
                         gap: '30px',
                     }}>
-                        <StyledIconButton icon={HeartIcon} />
-                        <StyledIconButton icon={MessageIcon} />
-                        <StyledIconButton icon={UserProfileIcon} />
+                        <StyledIconButton icon={HeartWhiteIcon} />
+                        <StyledIconButton icon={MessageWhiteIcon} />
+                        <StyledIconButton icon={UserProfileWhiteIcon} />
                     </Box>
                     <StyledButton text='Додати оголошення' type='contained' icon={PlusIcon} primaryColor='var(--green)' secondaryColor='black' hoverBackColor='var(--light-blue)' className='button-fit'
                         onClick={() => {

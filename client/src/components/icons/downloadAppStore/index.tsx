@@ -1,5 +1,5 @@
 import React from 'react';
-import downloadAS from '../../../assets/icons/Group 78.svg';
+import downloadAS from '../../../assets/icons/Group 80.svg';
 import { Box } from '@mui/material';
 
 const DownloadAppStore = () => {

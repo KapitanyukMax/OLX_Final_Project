@@ -43,6 +43,7 @@
     font-weight: 700;
     font-size: 20px;
     line-height: 27.28px;
+    font-family: Nunito;
 }
 
 .status-label-text{
@@ -53,5 +54,5 @@
 .head-label-text{
     font-size: 36px;
     font-weight: 500;
-    font-family: Radio Canada;
+    font-family: Nunito;
 }

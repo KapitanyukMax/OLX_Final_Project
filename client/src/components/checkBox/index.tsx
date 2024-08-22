@@ -14,7 +14,7 @@ interface CheckBoxProps {
 const StyledCheckBox: React.FC<CheckBoxProps> = ({ label, checked, disabled, required, onChange }) => {
     return (
         <StyledEngineProvider injectFirst>
-            <Box className='box'>
+            <Box className='box1'>
                 <FormControlLabel
                     disabled={disabled}
                     required={required}
