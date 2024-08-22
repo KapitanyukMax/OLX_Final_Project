@@ -6,7 +6,7 @@ import './styles.css';
 
 interface StyledInputProps {
     value: string;
-    widthType: 'small' | 'middle' | 'big';
+    widthType: 'small' | 'middle' | 'big' | 'large';
     label?: string;
     required?: boolean;
     maxLength?: number;
@@ -32,6 +32,8 @@ const StyledInput: React.FC<StyledInputProps> = ({ label, value, required, width
                 return 'middle-input';
             case 'big':
                 return 'big-input';
+            case 'large':
+                return 'large-input';
             default:
                 return 'middle-input';
         }
