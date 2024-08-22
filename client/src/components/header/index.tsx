@@ -60,7 +60,7 @@ const Header: React.FC = () => {
                     </Box>
                     <StyledButton text='Додати оголошення' type='contained' icon={PlusIcon} primaryColor='var(--green)' secondaryColor='white' hoverBackColor='var(--light-blue)' className='button-fit'
                         onClick={() => {
-                            console.log('Button 2 clicked')
+                            window.location.href = '/advert-create';
                         }} />
                     <Box sx={{
                         display: 'flex',
