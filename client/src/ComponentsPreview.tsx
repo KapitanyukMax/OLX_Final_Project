@@ -56,7 +56,7 @@ import HeartWhiteIcon from './components/icons/heartWhite';
 import MessageWhiteIcon from './components/icons/messageWhite';
 import UserProfileWhiteIcon from './components/icons/userProfileWhite';
 import { Header } from './components/header';
-import { StyledDropdown } from './components/dropdown';
+import { StyledDropdown, StyledHeaderDropdown } from './components/dropdown';
 import AddPhotoIcon from './components/icons/addPhotoIcon';
 import VipCrownIcon from './components/icons/vipCrown';
 import FilterFillIcon from './components/icons/filterFill';
@@ -552,19 +552,20 @@ const ComponentsPreview = () => {
                 height?: string;
                 borderRadius?:string;
                 onClick?: () =>void; */}
-                    <ImageComponent src='https://5.imimg.com/data5/RV/NK/MY-45718396/ape-auto-501.png' alt='auto' width='150px' height='150px' />
-                </Box>
-                <Box sx={{
-                    width: 'fit-content',
-                    display: 'flex',
-                    flexDirection: 'row',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    gap: '8px',
-                    border: '2px solid black',
-                    padding: '10px',
-                    margin: '10px 0px',
-                }}>
+                <ImageComponent src='https://5.imimg.com/data5/RV/NK/MY-45718396/ape-auto-501.png' alt='auto' width='150px' height='150px' />
+            </Box>
+            <Box sx={{
+                width: 'fit-content',
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'center',
+                alignItems: 'center',
+                gap: '8px',
+                border: '2px solid black',
+                padding: '10px',
+                margin: '10px 0px',
+                backgroundColor: 'lightgray',
+            }}>
                     <Typography fontSize='10px'>Dropdown:</Typography>
                     <Box sx={{
                         display: 'flex',
@@ -572,9 +573,10 @@ const ComponentsPreview = () => {
                         alignItems: 'flex-start',
                         gap: '10px',
                     }}>
-                        <StyledDropdown value='Виберіть категорію' values={["Hello", "World", "e11fd31"]} widthType='small' />
-                        <StyledDropdown value='Виберіть категорію' values={["Hello", "World", "e11fd31"]} widthType='middle' />
-                        <StyledDropdown value='Виберіть категорію' values={["Hello", "World", "e11fd31"]} widthType='big' />
+                      <StyledHeaderDropdown value='Категорії' values={["Hello", "World", "e11fd31"]} />
+                      <StyledDropdown value='Виберіть категорію' values={["Hello", "World", "e11fd31"]} type='small'/>
+                      <StyledDropdown value='Виберіть категорію' values={["Hello", "World", "e11fd31"]} type='middle'/>
+                      <StyledDropdown value='Виберіть категорію' values={["Hello", "World", "e11fd31"]} type='large'/>
                     </Box>
                 </Box>
                 <Box sx={{

@@ -1,10 +1,7 @@
 .small-dropdown {
-    text-align: left;
     width: 117px;
     height: 48px;
-    color: #737070;
-    border-radius: 5px;
-    border: 1px solid #000;
+    
 }
 
 .middle-dropdown {
