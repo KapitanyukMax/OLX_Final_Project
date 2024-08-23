@@ -5,11 +5,11 @@ import './styles.css';
 
 interface StyledInputProps {
     value: string;
-    widthType: 'small' | 'middle' | 'big' | 'large';
+    widthType?: 'small' | 'middle' | 'big' | 'large';
+    width?: string;
     label?: string;
     required?: boolean;
     maxLength?: number;
-    isPassword?: boolean;
     type?: 'password' | 'text';
     onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
     iconStart?: React.ElementType<SvgIconProps>;
@@ -18,20 +18,7 @@ interface StyledInputProps {
     iconEndClick?: () => void;
 }
 
-const StyledInput: React.FC<StyledInputProps> = ({
-    label,
-    value,
-    required,
-    widthType,
-    maxLength,
-    isPassword,
-    iconStart: IconStart,
-    iconEnd: IconEnd,
-    iconEndClick,
-    iconStartClick,
-    type = 'text', // За замовчуванням 'text'
-    onChange
-}) => {
+const StyledInput: React.FC<StyledInputProps> = ({ label, value, required, widthType, width, maxLength, iconStart: IconStart, iconEnd: IconEnd, iconEndClick, iconStartClick, type = 'text', onChange }) => {
     const [currentValue, setCurrentValue] = useState(value);
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -58,7 +45,11 @@ const StyledInput: React.FC<StyledInputProps> = ({
 
     return (
         <StyledEngineProvider injectFirst>
-            <Box className={getInputWidth()}>
+            <Box className={widthType ? getInputWidth() : 'middle-input'}
+                {
+                ...(width ? { style: { width } } : {})
+                }
+            >
                 {
                     label && (
                         <InputLabel className='label'>
