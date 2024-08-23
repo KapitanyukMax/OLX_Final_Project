@@ -15,7 +15,7 @@
 }
 
 .with-icon-label {
-    width: 297px;
+    width: auto;
     height: 25px;
     display: flex;
     flex-direction: row;
@@ -38,7 +38,13 @@
     font-family: Nunito;
     color: #343232;
 }
-
+.small-label-text-bold{
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 21.82px;
+    font-family: Nunito;
+    color: #343232;
+}
 .middle-label-text{
     font-weight: 700;
     font-size: 20px;

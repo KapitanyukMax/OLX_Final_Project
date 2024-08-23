@@ -8,13 +8,15 @@ import './style.css';
 interface StyledLabelProps {
     text: string;
     type: 'primary' | 'head' | 'with-icon' | 'status';
-    textType: 'small' | 'middle' | 'status' |'head',
+    textType: 'small' | 'middle' | 'status' |'head' | 'small-bold',
     textColor?: string,
     backgroundColor?:string,
-    icon?: React.ElementType<SvgIconProps>;
+    icon?: React.ElementType<SvgIconProps>,
+    onClick?:()=>void;
+    fontWeight?:string;
 }
 
-const StyledLabel: React.FC<StyledLabelProps> = ({ text, type, textType, icon: Icon, textColor, backgroundColor }) => {
+const StyledLabel: React.FC<StyledLabelProps> = ({ text, type, textType, icon: Icon, textColor, backgroundColor, onClick, fontWeight }) => {
     const getClassName = () => {
         switch (type) {
             case 'primary':
@@ -34,6 +36,8 @@ const StyledLabel: React.FC<StyledLabelProps> = ({ text, type, textType, icon: I
         switch (textType) {
             case 'small':
                 return 'small-label-text';
+            case 'small-bold':
+                return 'small-label-text-bold';
             case 'middle':
                 return 'middle-label-text';
             case 'status':
@@ -47,17 +51,19 @@ const StyledLabel: React.FC<StyledLabelProps> = ({ text, type, textType, icon: I
 
     return (
         <StyledEngineProvider injectFirst>
-            <Box className={getClassName()}
-            sx={{
-                backgroundColor:{backgroundColor}
-            }
-            }>
+            <Box
+                className={getClassName()}
+                sx={{ backgroundColor
+                 }}
+                onClick={onClick} 
+                style={{ cursor: onClick ? 'pointer' : 'default' }}
+            >
                 {Icon && (
                     <Box className="icon-container">
                         <Icon />
                     </Box>
                 )}
-                <Typography className={getTextStyle()} color={textColor} >{text}</Typography>
+                <Typography className={getTextStyle()} color={textColor} fontWeight={fontWeight} >{text}</Typography>
             </Box>
             </StyledEngineProvider>
         

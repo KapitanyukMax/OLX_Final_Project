@@ -77,6 +77,7 @@ import MonobankIcon from './components/icons/monobank';
 import MastercardIcon from './components/icons/mastercard';
 import ApplePayIcon from './components/icons/applePay';
 import OComponentIcon from './components/icons/oicon';
+import HorizontalLineIcon from './components/icons/horizontalLine';
 
 const ComponentsPreview = () => {
     return (
@@ -281,7 +282,7 @@ const ComponentsPreview = () => {
                                 <ShareRoundIcon/>
                                 <FilterFillIcon/>
                                 <AddPhotoIcon/>
-                                
+                                <HorizontalLineIcon/>
                                 </Box>
                             </Box>
                         </Box>
