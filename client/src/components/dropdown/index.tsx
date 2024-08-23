@@ -93,14 +93,12 @@ const StyledDropdown: React.FC<StyledDropdownProps> = ({ value, values, type }) 
                     >{item}</MenuItem>
                 ))}
             </Select>
-        </StyledEngineProvider >
+        </StyledEngineProvider>
     );
 };
 
 const StyledHeaderDropdown: React.FC<StyledDropdownProps> = ({ value, values }) => {
-    const [currentValue, setCurrentValue] = useState(value);
     const [items, setItems] = useState(values);
-    
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
     const handleMouseEnter = (event: React.MouseEvent<HTMLElement>) => {
@@ -112,7 +110,7 @@ const StyledHeaderDropdown: React.FC<StyledDropdownProps> = ({ value, values }) 
     };
 
     const handleMenuItemClick = (value: string) => {
-        setCurrentValue(value);
+        // link to category page.
         setAnchorEl(null);
     };
 
@@ -126,12 +124,18 @@ const StyledHeaderDropdown: React.FC<StyledDropdownProps> = ({ value, values }) 
                     variant="text"
                     endIcon={<span style={{ transform: anchorEl ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.3s' }}><ArrowDownWhiteIcon/></span>}
                     sx={{ 
+                        height: '27px',
                         justifyContent: 'space-between',
-                        color: "#fff",
-                        width: "120px",
-                     }}
+                        color: '#fff',
+                        width: '120px',
+                    }}
                 >
-                    <Typography>{currentValue}</Typography>
+                    <Typography sx={{
+                        whiteSpace: 'nowrap',
+                        fontFamily: "Nunito",
+                        fontSize: "18px",
+                        textTransform: 'none',
+                    }}>{value}</Typography>
                 </Button>
                 <Menu
                     id="hover-select-menu"
@@ -139,14 +143,14 @@ const StyledHeaderDropdown: React.FC<StyledDropdownProps> = ({ value, values }) 
                     open={Boolean(anchorEl)}
                     onClose={handleMouseLeave}
                     MenuListProps={{
-                    onMouseLeave: handleMouseLeave,
+                        onMouseLeave: handleMouseLeave,
                     }}
                     PaperProps={{
-                    sx: {
-                        minWidth: anchorEl?.clientWidth,
-                        fontFamily: "Nunito",
-                        fontSize: "20px",
-                    },
+                        sx: {
+                            minWidth: anchorEl?.clientWidth,
+                            fontFamily: "Nunito",
+                            fontSize: "20px",
+                        },
                     }}
                 >
                     {items.map((item) => (
@@ -162,7 +166,7 @@ const StyledHeaderDropdown: React.FC<StyledDropdownProps> = ({ value, values }) 
                     ))}
                 </Menu>
             </div>
-        </StyledEngineProvider >
+        </StyledEngineProvider>
     );
 }
 
