@@ -1,27 +1,31 @@
 import React, { useState } from 'react';
-import { Box, Input, InputLabel, InputAdornment, IconButton } from '@mui/material';
-import { SvgIconComponent } from '@mui/icons-material';
+import { Box, Input, InputLabel, InputAdornment, IconButton, SvgIconProps } from '@mui/material';
 import { StyledEngineProvider } from '@mui/material/styles';
 import './styles.css';
 
 interface StyledInputProps {
     value: string;
-    widthType: 'small' | 'middle' | 'big';
+    widthType?: 'small' | 'middle' | 'big' | 'large';
+    width?: string;
     label?: string;
     required?: boolean;
     maxLength?: number;
-    isPassword?: boolean;
-    iconStart?: SvgIconComponent;
-    iconEnd?: SvgIconComponent;
+    type?: 'password' | 'text';
+    onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+    iconStart?: React.ElementType<SvgIconProps>;
+    iconEnd?: React.ElementType<SvgIconProps>;
     iconStartClick?: () => void;
     iconEndClick?: () => void;
 }
 
-const StyledInput: React.FC<StyledInputProps> = ({ label, value, required, widthType, maxLength, isPassword, iconStart: IconStart, iconEnd: IconEnd, iconEndClick, iconStartClick }) => {
+const StyledInput: React.FC<StyledInputProps> = ({ label, value, required, widthType, width, maxLength, iconStart: IconStart, iconEnd: IconEnd, iconEndClick, iconStartClick, type = 'text', onChange }) => {
     const [currentValue, setCurrentValue] = useState(value);
 
-    const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setCurrentValue(event.target.value);
+        if (onChange) {
+            onChange(event);
+        }
     };
 
     const getInputWidth = () => {
@@ -32,6 +36,8 @@ const StyledInput: React.FC<StyledInputProps> = ({ label, value, required, width
                 return 'middle-input';
             case 'big':
                 return 'big-input';
+            case 'large':
+                return 'large-input';
             default:
                 return 'middle-input';
         }
@@ -39,7 +45,11 @@ const StyledInput: React.FC<StyledInputProps> = ({ label, value, required, width
 
     return (
         <StyledEngineProvider injectFirst>
-            <Box className={getInputWidth()}>
+            <Box className={widthType ? getInputWidth() : 'middle-input'}
+                {
+                ...(width ? { style: { width } } : {})
+                }
+            >
                 {
                     label && (
                         <InputLabel className='label'>
@@ -50,7 +60,7 @@ const StyledInput: React.FC<StyledInputProps> = ({ label, value, required, width
                 <Input
                     id='input'
                     placeholder={currentValue}
-                    type={isPassword ? 'password' : 'text'}
+                    type={type}
                     className='basic-input'
                     onChange={handleChange}
                     required={required}
@@ -87,6 +97,4 @@ const StyledInput: React.FC<StyledInputProps> = ({ label, value, required, width
     );
 };
 
-export {
-    StyledInput
-};
+export { StyledInput };
