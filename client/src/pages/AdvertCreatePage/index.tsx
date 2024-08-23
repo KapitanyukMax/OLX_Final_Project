@@ -9,6 +9,7 @@ import { StyledCheckBox } from '../../components/checkBox';
 import StyledButton from '../../components/button';
 import { StyledTextArea } from '../../components/textArea';
 import './styles.css';
+import ImageComponent from '../../components/image';
 
 const AdvertCreatePage: React.FC = () => {
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -45,7 +46,7 @@ const AdvertCreatePage: React.FC = () => {
                     }}>
                         <Box>
                             <StyledLabel text="Заголовок" type='head' textType='head' textColor='black' />
-                            <StyledInput value='Продається фотоапарат Nikon d90' label='Вкажіть назву' required widthType='big' maxLength={80} />
+                            <StyledInput value='Продається фотоапарат Nikon d90' label='Вкажіть назву' required widthType='large' maxLength={80} />
                         </Box>
                         <Box sx={{
                             display: 'flex',
@@ -54,8 +55,8 @@ const AdvertCreatePage: React.FC = () => {
                         }}>
                             <StyledLabel text="Категорія" type='head' textType='head' textColor='black' />
                             <StyledLabel text="Вкажіть категорію*" type='primary' textType='small' textColor='black' />
-                            <StyledDropdown value='Оберіть категорію' widthType='big' values={['Категорія 1', 'Категорія 2', 'Категорія 3']} />
-                            <StyledDropdown value='Рубрика категорії' widthType='big' values={['Рубрика 1', 'Рубрика 2', 'Рубрика 3']} />
+                            <StyledDropdown value='Оберіть категорію' type='large' values={['Категорія 1', 'Категорія 2', 'Категорія 3']} />
+                            <StyledDropdown value='Рубрика категорії' type='large' values={['Рубрика 1', 'Рубрика 2', 'Рубрика 3']} />
                         </Box>
                     </Box>
                     <Box sx={{
@@ -70,7 +71,7 @@ const AdvertCreatePage: React.FC = () => {
                     }}>
                         <StyledLabel text="Місцезнаходження" type='head' textType='head' textColor='black' />
                         <StyledLabel text="Оберіть назву населеного пункту*" type='primary' textType='small' textColor='black' />
-                        <StyledDropdown value='Оберіть місто' widthType='big' values={['Місто 1', 'Місто 2', 'Місто 3']} />
+                        <StyledDropdown value='Оберіть місто' type='large' values={['Місто 1', 'Місто 2', 'Місто 3']} />
                     </Box>
                     <Box sx={{
                         width: '100%',
@@ -136,8 +137,8 @@ const AdvertCreatePage: React.FC = () => {
                             gap: '36px',
                             alignItems: 'end',
                         }}>
-                            <StyledInput label='Вкажіть ціну' value='1080 грн' widthType='big' />
-                            <StyledDropdown value='Валюта' values={["UAH", "USD", "EUR"]} widthType='middle' />
+                            <StyledInput label='Вкажіть ціну' value='1080 грн' widthType='middle' />
+                            <StyledDropdown value='Валюта' values={["UAH", "USD", "EUR"]} type='middle' />
                             <StyledCheckBox label='Договірна' />
                         </Box>
                     </Box>
@@ -204,9 +205,9 @@ const AdvertCreatePage: React.FC = () => {
                         marginBottom: '120px',
                     }}>
                         <StyledLabel text="Ваші контактні дані" type='head' textType='head' textColor='black' />
-                        <StyledInput label="Ваше ім'я" value='Вікторія' widthType='big' />
-                        <StyledInput label="Електронна адреса" value='vikka3467@gmail.com' widthType='big' />
-                        <StyledInput label="Номер телефону" value='+38 097 558 6548' widthType='big' />
+                        <StyledInput label="Ваше ім'я" value='Вікторія' widthType='large' />
+                        <StyledInput label="Електронна адреса" value='vikka3467@gmail.com' widthType='large' />
+                        <StyledInput label="Номер телефону" value='+38 097 558 6548' widthType='large' />
                         <StyledButton text='Додати оголошення' type='contained' primaryColor='var(--light-blue)' secondaryColor='white' hoverBackColor='var(--green)' />
                     </Box>
                 </form>
