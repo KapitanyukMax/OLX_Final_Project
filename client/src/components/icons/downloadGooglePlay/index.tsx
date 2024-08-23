@@ -1,5 +1,5 @@
 import React from 'react';
-import downloadGP from '../../../assets/icons/Group 77.svg';
+import downloadGP from '../../../assets/icons/Group 79.svg';
 import { Box } from '@mui/material';
 
 const DownloadGooglePlay = () => {

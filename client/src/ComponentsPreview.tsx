@@ -3,13 +3,13 @@ import StyledButton from './components/button';
 import StyledIconButton from './components/iconButton';
 import { Container, Box, Typography } from '@mui/material';
 import { StyledInput } from './components/input';
-import { Mail, RemoveRedEye, Password, Home, Favorite, Chat, FavoriteBorderOutlined, SearchOffRounded } from '@mui/icons-material';
+import { Mail, RemoveRedEye, Password, Favorite, FavoriteBorderOutlined, SearchOffRounded } from '@mui/icons-material';
 import { StyledEngineProvider } from '@mui/system';
 import { StyledCheckBox } from './components/checkBox';
 import { StyledTextArea } from './components/textArea';
 import ImageComponent from './components/image';
-import  { ArrowDownBlackIcon, ArrowDownWhiteIcon }  from './components/icons/arrowDown';
-import  SearchIcon  from './components/icons/search';
+import { ArrowDownBlackIcon, ArrowDownWhiteIcon } from './components/icons/arrowDown';
+import SearchIcon from './components/icons/search';
 import MicrophoneIcon from './components/icons/microphone';
 import PlusIcon from './components/icons/plus';
 import UserProfileIcon from './components/icons/userProfile';
@@ -51,32 +51,58 @@ import DownloadAppStore from './components/icons/downloadAppStore';
 import './global.css';
 import { StyledAdvert } from './components/advert';
 import InformationSection from './components/informationSection';
+import StyledFooter from './components/footer';
+import HeartWhiteIcon from './components/icons/heartWhite';
+import MessageWhiteIcon from './components/icons/messageWhite';
+import UserProfileWhiteIcon from './components/icons/userProfileWhite';
 import { Header } from './components/header';
 import { StyledDropdown, StyledHeaderDropdown } from './components/dropdown';
+import AddPhotoIcon from './components/icons/addPhotoIcon';
+import VipCrownIcon from './components/icons/vipCrown';
+import FilterFillIcon from './components/icons/filterFill';
+import ShareRoundIcon from './components/icons/shareRound';
+import TopFluentIcon from './components/icons/topFluent';
+import IInCircleIcon from './components/icons/iInCircle';
+import TimeFillIcon from './components/icons/timeFill';
+import PenFluentIcon from './components/icons/penFluent';
+import MenuDotsIcon from './components/icons/menuDots';
+import CrossStyledIcon from './components/icons/cross';
+import PhotoBaselineIcon from './components/icons/photoBaseline';
+import PaperClipIcon from './components/icons/paperClip';
+import EmojiSmileIcon from './components/icons/emoji';
+import DDXLogoIcon from './components/icons/ddxLogo';
+import CardWithHandIcon from './components/icons/cardWithHand';
+import Privat24Icon from './components/icons/private24';
+import MonobankIcon from './components/icons/monobank';
+import MastercardIcon from './components/icons/mastercard';
+import ApplePayIcon from './components/icons/applePay';
+import OComponentIcon from './components/icons/oicon';
 
 const ComponentsPreview = () => {
     return (
         <StyledEngineProvider injectFirst>
-            <Container className='container'
+            <Container
                 sx={{
                     display: 'block',
                     position: 'sticky',
                     minWidth: '100vw',
-                    minHeight: '100vh',
-                    margin: '0 auto',
-                    padding: '0'
+                    minHeight: '100vh'
                 }}>
                 <Typography variant="h3">Components Preview</Typography>
                 <Box>
-                    <Typography variant='h5'>Header</Typography>
+                    <Typography variant='h5' textAlign='start'>Information Section</Typography>
+                    <InformationSection></InformationSection>
+                </Box>
+                <Box>
+                    <Typography variant='h5' textAlign='start'>Header</Typography>
                     <Box>
                         <Header></Header>
                     </Box>
                 </Box>
                 <Box>
-                    <Typography variant='h5'>Information Section</Typography>
+                    <Typography variant='h5' textAlign='start'>Footer</Typography>
                     <Box>
-                        <InformationSection></InformationSection>
+                        <StyledFooter></StyledFooter>
                     </Box>
                 </Box>
                 <Box>
@@ -97,84 +123,170 @@ const ComponentsPreview = () => {
                                 gap: '8px',
                                 justifyContent: 'space-between',
                             }}>
-
-                            <ArrowDownBlackIcon />
-                            <ArrowDownWhiteIcon />
+                                
+                            <HeartWhiteIcon />
+                            <MessageWhiteIcon />
+                            <UserProfileWhiteIcon />
                             <SearchIcon />
-                            <MicrophoneIcon/>
-                            <PlusIcon/>
-                            <UserProfileIcon/>
-                            <MessageIcon/>
-                            <HeartIcon/>
-                            <LocationIcon/>
-                            <CalendarSolidIcon/>
-                            <CarFillIcon/>
-                            <AreaIcon/>
-                            <PasswordIcon/>
-                            <FacebookIcon/>
-                            <GoogleIcon/> 
-                            <AppleIcon/>  
-                            <CheckBoxIcon/>
-                            <ArrowUpIcon/>
-                        </Box>
-
-                        <Box
-                            sx={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                            }}>
-
-
-                            <Box
-                                sx={{
-                                    display: 'flex',
-                                    flexDirection: 'row',
-                                    gap: '8px',
-                                    justifyContent: 'space-between',
-                                }}>
-                                <GeneratorIcon />
-                                <TransportSparePartIcon />
-                                <BusinessManIcon />
-                                <HeartFilledIcon />
-                                <FurnitureIcon />
-                                <ClothesIcon />
-                                <SportsIcon />
-                                <CarIcon />
-                            </Box>
-                            <Box
-                                sx={{
-                                    display: 'flex',
-                                    flexDirection: 'row',
-                                    gap: '8px',
-                                    justifyContent: 'space-between',
-                                }}>
-                                <HomeAndGardenIcon />
-                                <CalendarIcon />
-                                <ChildrenToyIcon />
-                                <PhoneIcon />
-                                <WorkIcon />
-                                <RealEstateAgentIcon />
-                                <CatIcon />
-                                <HandIcon />
-                            </Box>
-                            <Box
-                                sx={{
-                                    display: 'flex',
-                                    flexDirection: 'row',
-                                    gap: '8px',
-                                    justifyContent: 'left',
-                                    marginTop: '25px',
-                                }}>
-                                <BaselineFacebookIcon />
-                                <InstagramIcon />
-                                <TwitterIcon />
-                                <YoutubeIcon />
-                                <DownloadGooglePlay />
-                                <DownloadAppStore />
-                            </Box>
+                            <MicrophoneIcon />
+                            <PlusIcon />
+                            <UserProfileIcon />
+                            <MessageIcon />
+                            <HeartIcon />
+                            <LocationIcon />
+                            <CalendarSolidIcon />
+                            <CarFillIcon />
+                            <AreaIcon />
+                            <PasswordIcon />
+                            <FacebookIcon />
+                            <GoogleIcon />
+                            <AppleIcon />
+                            <CheckBoxIcon />
+                            <ArrowUpIcon />
                         </Box>
                     </Box>
-                    <MaterialSymbolIcon />
+                    <Box>
+                        <Typography variant='h5'>Icons</Typography>
+                        <Box sx={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            backgroundColor: 'var(--green)',
+                            padding: '5px',
+                            gap: '5px',
+                            alignItems: 'center',
+                        }}
+                        >
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    flexDirection: 'row',
+                                    gap: '8px',
+                                    justifyContent: 'space-between',
+                                }}>
+
+                                <ArrowDownBlackIcon />
+                                <ArrowDownWhiteIcon />
+                                <SearchIcon />
+                                <MicrophoneIcon />
+                                <PlusIcon />
+                                <UserProfileIcon />
+                                <MessageIcon />
+                                <HeartIcon />
+                                <LocationIcon />
+                                <CalendarSolidIcon />
+                                <CarFillIcon />
+                                <AreaIcon />
+                                <PasswordIcon />
+                                <FacebookIcon />
+                                <GoogleIcon />
+                                <AppleIcon />
+                                <CheckBoxIcon />
+                                <ArrowUpIcon />
+                            </Box>
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                }}>
+
+
+                                <Box
+                                    sx={{
+                                        display: 'flex',
+                                        flexDirection: 'row',
+                                        gap: '8px',
+                                        justifyContent: 'space-between',
+                                    }}>
+                                    <GeneratorIcon />
+                                    <TransportSparePartIcon />
+                                    <BusinessManIcon />
+                                    <HeartFilledIcon />
+                                    <FurnitureIcon />
+                                    <ClothesIcon />
+                                    <SportsIcon />
+                                    <CarIcon />
+                                </Box>
+                                <Box
+                                    sx={{
+                                        display: 'flex',
+                                        flexDirection: 'row',
+                                        gap: '8px',
+                                        justifyContent: 'space-between',
+                                    }}>
+                                    <HomeAndGardenIcon />
+                                    <CalendarIcon />
+                                    <ChildrenToyIcon />
+                                    <PhoneIcon />
+                                    <WorkIcon />
+                                    <RealEstateAgentIcon />
+                                    <CatIcon />
+                                    <HandIcon />
+                                </Box>
+                                <Box
+                                    sx={{
+                                        display: 'flex',
+                                        flexDirection: 'row',
+                                        gap: '8px',
+                                        justifyContent: 'left',
+                                        marginTop: '25px',
+                                    }}>
+                                    <BaselineFacebookIcon />
+                                    <InstagramIcon />
+                                    <TwitterIcon />
+                                    <YoutubeIcon />
+                                    <DownloadGooglePlay />
+                                    <DownloadAppStore />
+                                </Box>
+                                <Box sx={{
+                                        display: 'flex',
+                                        flexDirection: 'row',
+                                        gap: '8px',
+                                        justifyContent: 'left',
+                                        marginTop: '25px',
+                                    }}>
+                                    <Box sx={{
+                                        background:'var(--dark-blue)',
+                                    }}>
+                                        <DDXLogoIcon/>
+                                    </Box>
+                                    <Box sx={{
+                                        background:'white',
+                                    }}>
+                                        <VipCrownIcon/>
+                                    </Box>
+                                        <OComponentIcon/>
+                                        <ApplePayIcon/>
+                                        <MastercardIcon/>
+                                        <MonobankIcon/>
+                                        <Privat24Icon/>
+                                        <CardWithHandIcon/>
+                                </Box>
+                                <Box sx={{
+                                        display: 'flex',
+                                        flexDirection: 'row',
+                                        gap: '8px',
+                                        justifyContent: 'left',
+                                        marginTop: '25px',
+                                    }}>
+                                 
+                                <EmojiSmileIcon/>
+                                <PaperClipIcon/>
+                                <PhotoBaselineIcon/>
+                                <CrossStyledIcon/>
+                                <MenuDotsIcon/>
+                                <PenFluentIcon/>
+                                <TimeFillIcon/>
+                                <IInCircleIcon/>
+                                <TopFluentIcon/>
+                                <ShareRoundIcon/>
+                                <FilterFillIcon/>
+                                <AddPhotoIcon/>
+                                
+                                </Box>
+                            </Box>
+                        </Box>
+                        <MaterialSymbolIcon />
+                    </Box>
                 </Box>
                 <Box
                     sx={{
@@ -454,19 +566,19 @@ const ComponentsPreview = () => {
                 margin: '10px 0px',
                 backgroundColor: 'lightgray',
             }}>
-                <Typography fontSize='10px'>Dropdown:</Typography>
-                <Box sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'flex-start',
-                    gap: '10px',
-                }}>
-                    <StyledHeaderDropdown value='Категорії' values={["Hello", "World", "e11fd31"]} />
-                    <StyledDropdown value='Виберіть категорію' values={["Hello", "World", "e11fd31"]} type='small'/>
-                    <StyledDropdown value='Виберіть категорію' values={["Hello", "World", "e11fd31"]} type='middle'/>
-                    <StyledDropdown value='Виберіть категорію' values={["Hello", "World", "e11fd31"]} type='large'/>
+                    <Typography fontSize='10px'>Dropdown:</Typography>
+                    <Box sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'flex-start',
+                        gap: '10px',
+                    }}>
+                      <StyledHeaderDropdown value='Категорії' values={["Hello", "World", "e11fd31"]} />
+                      <StyledDropdown value='Виберіть категорію' values={["Hello", "World", "e11fd31"]} type='small'/>
+                      <StyledDropdown value='Виберіть категорію' values={["Hello", "World", "e11fd31"]} type='middle'/>
+                      <StyledDropdown value='Виберіть категорію' values={["Hello", "World", "e11fd31"]} type='large'/>
+                    </Box>
                 </Box>
-            </Box>
                 <Box sx={{
                     backgroundColor: 'lightgrey',
                     padding: '10px',
