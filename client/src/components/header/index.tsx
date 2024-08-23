@@ -9,6 +9,7 @@ import MessageIcon from '../icons/message';
 import UserProfileIcon from '../icons/userProfile';
 import StyledButton from '../button';
 import PlusIcon from '../icons/plus';
+import { StyledHeaderDropdown } from '../dropdown';
 
 const Header: React.FC = () => {
     return (
@@ -49,7 +50,7 @@ const Header: React.FC = () => {
                             textDecoration: 'none',
                             alignSelf: 'center',
                         }}>
-                            Категорії
+                            <StyledHeaderDropdown value={'Категорії'} values={["Електроніка", "Одяг"]}/>
                         </Link>
                     </Box>
                     <Box sx={{
