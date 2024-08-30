@@ -16,7 +16,26 @@
 .button-fit {
     width: fit-content;
     height: fit-content;
-    padding: 7px 20px;
+}
+
+.category-button {
+    width: 327px;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.button-icon {
+    margin: 10px;
+}
+
+.button-text {
+    margin: 10px;
+    margin-right: 14px;
+    text-transform: none;
+    text-align: left;
+    font-family: 'Nunito', sans-serif;
+    font-size: 14pt;
+    font-weight: 500;
 }
 
 .container {

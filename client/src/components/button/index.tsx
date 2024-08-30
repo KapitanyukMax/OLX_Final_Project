@@ -1,10 +1,10 @@
 import * as React from 'react';
-import { Box, Button, SvgIconProps, alpha } from '@mui/material';
+import { Box, Button, SvgIconProps, Typography, alpha } from '@mui/material';
 import { StyledEngineProvider } from '@mui/material/styles';
 
 interface StyledButtonProps {
     text: string;
-    type: 'contained' | 'outlined';
+    type: 'contained' | 'outlined' | 'category';
     className?: string;
     primaryColor?: string;
     secondaryColor?: string;
@@ -16,38 +16,62 @@ interface StyledButtonProps {
 };
 
 const StyledButton: React.FC<StyledButtonProps> = ({ text, type, className, primaryColor, secondaryColor = 'white', hoverBackColor = 'var(--green)', hoverColor = 'black', disabled, icon: Icon, onClick }) => {
-    primaryColor ??= type == 'outlined' ? 'black' : 'var(--blue)';
+    primaryColor ??= type == 'outlined'
+        ? 'black'
+        : type == 'category'
+            ? 'white'
+            : 'var(--blue)';
+
+    if (type == 'category') {
+        secondaryColor = '#049CE4';
+        hoverBackColor = '#ddd';
+        hoverColor = 'var(--green)';
+    }
 
     const getStyle = () => {
         switch (type) {
             case 'outlined':
                 return {
+                    height: '57px',
                     color: primaryColor,
                     backgroundColor: alpha('#fff', 0),
                     borderColor: primaryColor,
-                    border: 1
+                    borderRadius: '8px',
+                    border: 1,
+                    '&:hover': {
+                        backgroundColor: hoverBackColor,
+                        color: hoverColor,
+                        boxShadow: 'none'
+                    },
+                    '&:focus': {
+                        outline: 'none'
+                    }
+                };
+            case 'category':
+                return {
+                    height: '74px',
+                    color: '#000',
+                    backgroundColor: primaryColor,
+                    borderColor: secondaryColor,
+                    border: 1,
+                    borderRadius: 0,
+                    '&:hover': {
+                        borderColor: hoverColor,
+                        color: hoverColor,
+                        backgroundColor: primaryColor,
+                        boxShadow: 'none'
+                    },
+                    '&:focus': {
+                        outline: 'none'
+                    }
                 };
             case 'contained':
             default:
                 return {
+                    height: '57px',
                     color: secondaryColor,
                     backgroundColor: primaryColor,
-                    boxShadow: 'none'
-                };
-        }
-    };
-
-    return (
-        <StyledEngineProvider injectFirst>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Button sx={{
-                    ...getStyle(),
-                    height: '57px',
                     borderRadius: '8px',
-                    fontFamily: 'Nunito, sans-serif',
-                    fontSize: '14pt',
-                    fontWeight: 'normal',
-                    textTransform: 'none',
                     boxShadow: 'none',
                     '&:hover': {
                         backgroundColor: hoverBackColor,
@@ -57,8 +81,24 @@ const StyledButton: React.FC<StyledButtonProps> = ({ text, type, className, prim
                     '&:focus': {
                         outline: 'none'
                     }
-                }} startIcon={Icon && <Icon />} onClick={onClick} disabled={disabled} className={className}>
-                    {text}
+                };
+        }
+    };
+
+    return (
+        <StyledEngineProvider injectFirst>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Button sx={{
+                    ...getStyle(),
+                    boxShadow: 'none',
+                    padding: 0
+                }} onClick={onClick} disabled={disabled}
+                    className={type === 'category' ? 'category-button' : className}>
+                    {Icon &&
+                        <Box className='button-icon'>
+                            <Icon />
+                        </Box>}
+                    <Typography className='button-text'>{text}</Typography>
                 </Button>
             </Box>
         </StyledEngineProvider>
