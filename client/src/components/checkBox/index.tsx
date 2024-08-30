@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, Checkbox, FormControlLabel } from '@mui/material';
 import { StyledEngineProvider } from '@mui/material/styles';
+import StyledLabel from '../lable';
 import './styles.css';
 
 interface CheckBoxProps {
@@ -14,7 +15,7 @@ interface CheckBoxProps {
 const StyledCheckBox: React.FC<CheckBoxProps> = ({ label, checked, disabled, required, onChange }) => {
     return (
         <StyledEngineProvider injectFirst>
-            <Box className='box'>
+            <Box className='box1'>
                 <FormControlLabel
                     disabled={disabled}
                     required={required}
@@ -26,13 +27,11 @@ const StyledCheckBox: React.FC<CheckBoxProps> = ({ label, checked, disabled, req
                             className='checkBox'
                         />
                     }
-                    label={label}
+                    label={<StyledLabel text={label} type='with-icon' textType='small' />}
                 />
             </Box>
         </StyledEngineProvider>
     );
 };
 
-export {
-    StyledCheckBox
-};
+export {StyledCheckBox};

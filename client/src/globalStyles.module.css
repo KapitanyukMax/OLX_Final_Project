@@ -1,0 +1,36 @@
+.primaryLabel {
+    color: white;
+    background-color: var(--dark-blue);
+    padding: 5px;
+    border-radius: 5px;
+    font-weight: 400;
+    font-size: 45px;
+  }
+  
+  .headLabel {
+    color: white;
+    background-color: var(--dark-blue);
+    padding: 5px;
+    border-radius: 5px;
+    font-weight: 800;
+    font-size: 20px;
+  }
+  
+  .withIconLabel {
+    color: var(--dark-blue);
+    background-color: white;
+    padding: 5px;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 5px;
+  }
+  
+  .noBackgroundLabel {
+    color: var(--dark-blue);
+    padding: 5px;
+    border-radius: 5px;
+    font-size: small;
+  }
+  

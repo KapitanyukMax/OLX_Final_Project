@@ -2,6 +2,7 @@ const express = require('express')
 const cors = require('cors')
 const requestLogger = require('./middleware/requestLogger')
 const errorHandler = require('./middleware/errorHandler')
+const logger = require('./logger/logger')
 
 const PORT = 5000;
 
@@ -19,10 +20,16 @@ app.use('/users', require('./routes/users'));
 app.use('/messages', require('./routes/messages.js'));
 app.use('/chats', require('./routes/chats.js'));
 app.use('/feedbacks', require('./routes/feedbacks.js'));
+app.use('/wallets', require('./routes/wallets.js'));
+app.use('/cities', require('./routes/cities.js'))
 
 app.use(errorHandler);
 
 app.listen(PORT, (err) => {
-    if (err) console.log(err);
+    if (err) {
+        const message = err?.message ?? 'Unknown server error';
+        logger.error(message);
+        res.status(500).json({ message });
+    }
     console.log(`Server listening on PORT: ${PORT}`);
 });

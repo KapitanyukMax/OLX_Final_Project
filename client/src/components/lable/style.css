@@ -1,0 +1,64 @@
+.icon-container{
+    top: 2.08px;
+    left: 5.21px;
+}
+.primary-label {
+    color: var(--dark-blue);
+    padding: 5px;
+    text-align: left;
+}
+
+.head-label {
+    color: white;
+    padding: 5px;
+    text-align: left;
+}
+
+.with-icon-label {
+    width: auto;
+    height: 25px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: left;
+    gap: 12px;
+}
+
+.status-label {
+    width: 36px;
+    height: 22px;
+    border-radius: 5px;
+    padding: 5px;
+}
+
+.small-label-text{
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 21.82px;
+    font-family: Nunito;
+    color: #343232;
+}
+.small-label-text-bold{
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 21.82px;
+    font-family: Nunito;
+    color: #343232;
+}
+.middle-label-text{
+    font-weight: 700;
+    font-size: 20px;
+    line-height: 27.28px;
+    font-family: Nunito;
+}
+
+.status-label-text{
+    font-size: 16px;
+    font-weight: 400;
+    font-family: Nunito;
+}
+.head-label-text{
+    font-size: 36px;
+    font-weight: 500;
+    font-family: Nunito;
+}

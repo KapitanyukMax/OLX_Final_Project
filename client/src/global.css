@@ -1,0 +1,29 @@
+.button-large {
+    width: 496px;
+    border-radius: 15px;
+}
+
+.button-medium {
+    width: 309px;
+    border-radius: 20px;
+    font-weight: bold;
+}
+
+.button-small {
+    width: 172px;
+}
+
+.button-fit {
+    width: fit-content;
+    height: fit-content;
+    padding: 7px 20px;
+}
+
+.container {
+    padding-left: 0%;
+    padding-right: 0%;
+}
+
+.css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input.css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input.css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input {
+    padding: 15px 10px;
+}
