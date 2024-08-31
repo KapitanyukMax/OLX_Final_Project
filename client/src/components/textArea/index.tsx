@@ -10,13 +10,17 @@ interface TextAreaProps {
     maxRows?: number;
     maxLength?: number;
     required?: boolean;
+    onChange?: (event: React.ChangeEvent<HTMLTextAreaElement>) => void;
 }
 
-const StyledTextArea: React.FC<TextAreaProps> = ({ label, value, minRows, maxRows, maxLength, required }) => {
+const StyledTextArea: React.FC<TextAreaProps> = ({ label, value, minRows, maxRows, maxLength, required, onChange }) => {
     const [currentValue, setCurrentValue] = useState(value);
 
     const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
         setCurrentValue(event.target.value);
+        if (onChange) {
+            onChange(event);
+        }
     };
 
     return (

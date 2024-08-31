@@ -8,15 +8,19 @@ interface StyledDropdownProps {
     value: string;
     values: string[],
     type?: 'small' | 'middle' | 'large';
+    onChange?: (event: SelectChangeEvent) => void;
 }
 
-const StyledDropdown: React.FC<StyledDropdownProps> = ({ value, values, type }) => {
+const StyledDropdown: React.FC<StyledDropdownProps> = ({ value, values, type, onChange }) => {
     const [currentValue, setCurrentValue] = useState(value);
     const [items, setItems] = useState(values);
     const [isOpen, setIsOpen] = useState(false);
 
     const handleChange = (event: SelectChangeEvent) => {
         setCurrentValue(event.target.value);
+        if (onChange) {
+            onChange(event);
+        }
     };
 
     const handleOpen = () => {
@@ -57,12 +61,12 @@ const StyledDropdown: React.FC<StyledDropdownProps> = ({ value, values, type }) 
                 onOpen={handleOpen}
                 onClose={handleClose}
                 renderValue={(value) => (
-                    <Box sx={{ 
+                    <Box sx={{
                         display: "flex",
                         justifyContent: "space-between",
                         alignItems: "center",
                     }}>
-                        <Typography sx={{ 
+                        <Typography sx={{
                             whiteSpace: 'nowrap',
                             overflow: 'hidden',
                             textOverflow: 'ellipsis',
@@ -70,9 +74,9 @@ const StyledDropdown: React.FC<StyledDropdownProps> = ({ value, values, type }) 
                             fontSize: "18px",
                         }}>
                             {value}</Typography>
-                            <span style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.3s' }}><ArrowDownBlackIcon/></span>
+                        <span style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.3s' }}><ArrowDownBlackIcon /></span>
                     </Box>
-                    )}
+                )}
                 sx={{
                     ...getStyle(),
                     textAlign: 'left',
@@ -104,7 +108,7 @@ const StyledHeaderDropdown: React.FC<StyledDropdownProps> = ({ value, values }) 
     const handleMouseEnter = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
     };
-    
+
     const handleMouseLeave = () => {
         setAnchorEl(null);
     };
@@ -122,8 +126,8 @@ const StyledHeaderDropdown: React.FC<StyledDropdownProps> = ({ value, values }) 
                     aria-haspopup="true"
                     onMouseEnter={handleMouseEnter}
                     variant="text"
-                    endIcon={<span style={{ transform: anchorEl ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.3s' }}><ArrowDownWhiteIcon/></span>}
-                    sx={{ 
+                    endIcon={<span style={{ transform: anchorEl ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.3s' }}><ArrowDownWhiteIcon /></span>}
+                    sx={{
                         height: '27px',
                         justifyContent: 'space-between',
                         color: '#fff',
@@ -154,15 +158,15 @@ const StyledHeaderDropdown: React.FC<StyledDropdownProps> = ({ value, values }) 
                     }}
                 >
                     {items.map((item) => (
-                    <MenuItem
-                        key={item}
-                        value={item}
-                        onClick={() => handleMenuItemClick(item)}
-                        sx={{
-                            fontFamily: "Nunito",
-                            fontSize: "18px",
-                        }}
-                    >{item}</MenuItem>
+                        <MenuItem
+                            key={item}
+                            value={item}
+                            onClick={() => handleMenuItemClick(item)}
+                            sx={{
+                                fontFamily: "Nunito",
+                                fontSize: "18px",
+                            }}
+                        >{item}</MenuItem>
                     ))}
                 </Menu>
             </div>
