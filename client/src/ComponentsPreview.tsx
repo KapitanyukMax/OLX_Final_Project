@@ -406,7 +406,7 @@ const ComponentsPreview = () => {
                         {/* 
                         Button має такі поля:
                             text: string;
-                            type: 'contained' | 'outlined';
+                            type: 'contained' | 'outlined' | 'category';
                             className: string;
                             primaryColor?: string;
                             secondaryColor?: string;
@@ -435,11 +435,16 @@ const ComponentsPreview = () => {
                             onClick={() => {
                                 console.log('Button 5 clicked')
                             }} />
+                        <StyledButton text='Транспорт' type='category' icon={CarIcon}
+                            onClick={() => {
+                                console.log('Button 6 clicked')
+                            }} />
                     </Box>
                 </Box>
                 <Box
                     sx={{
-                        width: 'fit-content',
+                        marginTop: '450px',
+                        position: 'absolute',
                         display: 'flex',
                         flexDirection: 'row',
                         justifyContent: 'center',

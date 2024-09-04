@@ -16,6 +16,12 @@ router.route('/categoryId')
 router.route('/userId')
     .get(advertsController.getAdvertsByUserId);
 
+router.route('/top')
+    .get(advertsController.getAdvertsByTOP);
+
+router.route('/vip')
+    .get(advertsController.getAdvertsByVIP);
+
 router.route('/:id')
     .get(advertsController.getAdvertById)
     .delete(advertsController.deleteAdvert);
