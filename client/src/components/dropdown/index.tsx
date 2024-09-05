@@ -17,6 +17,7 @@ interface StyledDropdownProps {
     values: string[];
     selectOnly?: boolean;
     type?: "small" | "middle" | "large";
+    onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 const StyledDropdown: React.FC<StyledDropdownProps> = ({
@@ -24,6 +25,7 @@ const StyledDropdown: React.FC<StyledDropdownProps> = ({
     values,
     selectOnly,
     type,
+    onChange,
 }) => {
     const [currentValue, setCurrentValue] = useState('');
     const [filteredItems, setFilteredItems] = useState(values);
@@ -37,6 +39,9 @@ const StyledDropdown: React.FC<StyledDropdownProps> = ({
                 item.toLowerCase().includes(inputValue.toLowerCase())
             )
         );
+        if (onChange) {
+            onChange(event);
+        }
     };
 
     const handleSelect = (item: string) => {
