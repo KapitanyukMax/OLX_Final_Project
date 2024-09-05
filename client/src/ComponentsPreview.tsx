@@ -124,7 +124,7 @@ const ComponentsPreview = () => {
                                 gap: '8px',
                                 justifyContent: 'space-between',
                             }}>
-                                
+
                             <HeartWhiteIcon />
                             <MessageWhiteIcon />
                             <UserProfileWhiteIcon />
@@ -239,50 +239,50 @@ const ComponentsPreview = () => {
                                     <DownloadAppStore />
                                 </Box>
                                 <Box sx={{
-                                        display: 'flex',
-                                        flexDirection: 'row',
-                                        gap: '8px',
-                                        justifyContent: 'left',
-                                        marginTop: '25px',
-                                    }}>
+                                    display: 'flex',
+                                    flexDirection: 'row',
+                                    gap: '8px',
+                                    justifyContent: 'left',
+                                    marginTop: '25px',
+                                }}>
                                     <Box sx={{
-                                        background:'var(--dark-blue)',
+                                        background: 'var(--dark-blue)',
                                     }}>
-                                        <DDXLogoIcon/>
+                                        <DDXLogoIcon />
                                     </Box>
                                     <Box sx={{
-                                        background:'white',
+                                        background: 'white',
                                     }}>
-                                        <VipCrownIcon/>
+                                        <VipCrownIcon />
                                     </Box>
-                                        <OComponentIcon/>
-                                        <ApplePayIcon/>
-                                        <MastercardIcon/>
-                                        <MonobankIcon/>
-                                        <Privat24Icon/>
-                                        <CardWithHandIcon/>
+                                    <OComponentIcon />
+                                    <ApplePayIcon />
+                                    <MastercardIcon />
+                                    <MonobankIcon />
+                                    <Privat24Icon />
+                                    <CardWithHandIcon />
                                 </Box>
                                 <Box sx={{
-                                        display: 'flex',
-                                        flexDirection: 'row',
-                                        gap: '8px',
-                                        justifyContent: 'left',
-                                        marginTop: '25px',
-                                    }}>
-                                 
-                                <EmojiSmileIcon/>
-                                <PaperClipIcon/>
-                                <PhotoBaselineIcon/>
-                                <CrossStyledIcon/>
-                                <MenuDotsIcon/>
-                                <PenFluentIcon/>
-                                <TimeFillIcon/>
-                                <IInCircleIcon/>
-                                <TopFluentIcon/>
-                                <ShareRoundIcon/>
-                                <FilterFillIcon/>
-                                <AddPhotoIcon/>
-                                <HorizontalLineIcon/>
+                                    display: 'flex',
+                                    flexDirection: 'row',
+                                    gap: '8px',
+                                    justifyContent: 'left',
+                                    marginTop: '25px',
+                                }}>
+
+                                    <EmojiSmileIcon />
+                                    <PaperClipIcon />
+                                    <PhotoBaselineIcon />
+                                    <CrossStyledIcon />
+                                    <MenuDotsIcon />
+                                    <PenFluentIcon />
+                                    <TimeFillIcon />
+                                    <IInCircleIcon />
+                                    <TopFluentIcon />
+                                    <ShareRoundIcon />
+                                    <FilterFillIcon />
+                                    <AddPhotoIcon />
+                                    <HorizontalLineIcon />
                                 </Box>
                             </Box>
                         </Box>
@@ -355,6 +355,8 @@ const ComponentsPreview = () => {
                         Input має такі поля:
                             label?: string;
                             value: string;
+                            widthType?: 'small' | 'middle' | 'big' | 'large';
+                            width?: string;
                             required?: boolean;
                             maxLength?: number;
                             isPassword?: boolean;
@@ -363,8 +365,8 @@ const ComponentsPreview = () => {
                             iconStartClick?: () => void;
                             iconEndClick?: () => void;
                     */}
-                        <StyledInput label='Пошта' widthType='middle' value='test@gmail.com' iconStart={Mail} />
-                        <StyledInput label='Пароль' widthType='small' value='password' isPassword iconStart={Password} iconEnd={RemoveRedEye}
+                        <StyledInput label='Пошта' width='700px' value='test@gmail.com' iconStart={Mail} />
+                        <StyledInput label='Пароль' widthType='small' value='password' iconStart={Password} iconEnd={RemoveRedEye}
                             iconEndClick={
                                 () => {
                                     console.log('Icon end clicked');
@@ -377,7 +379,7 @@ const ComponentsPreview = () => {
                                 }
                             }
                         />
-                        <StyledInput value='Продається фотоапарат...' widthType='big' label='Вкажіть назву' required maxLength={80} />
+                        <StyledInput value='Продається фотоапарат...' widthType='large' label='Вкажіть назву' required maxLength={80} />
                     </Box>
                 </Box>
                 <Box
@@ -404,7 +406,7 @@ const ComponentsPreview = () => {
                         {/* 
                         Button має такі поля:
                             text: string;
-                            type: 'contained' | 'outlined';
+                            type: 'contained' | 'outlined' | 'category';
                             className: string;
                             primaryColor?: string;
                             secondaryColor?: string;
@@ -433,11 +435,16 @@ const ComponentsPreview = () => {
                             onClick={() => {
                                 console.log('Button 5 clicked')
                             }} />
+                        <StyledButton text='Транспорт' type='category' icon={CarIcon}
+                            onClick={() => {
+                                console.log('Button 6 clicked')
+                            }} />
                     </Box>
                 </Box>
                 <Box
                     sx={{
-                        width: 'fit-content',
+                        marginTop: '450px',
+                        position: 'absolute',
                         display: 'flex',
                         flexDirection: 'row',
                         justifyContent: 'center',
@@ -553,20 +560,20 @@ const ComponentsPreview = () => {
                 height?: string;
                 borderRadius?:string;
                 onClick?: () =>void; */}
-                <ImageComponent src='https://5.imimg.com/data5/RV/NK/MY-45718396/ape-auto-501.png' alt='auto' width='150px' height='150px' />
-            </Box>
-            <Box sx={{
-                width: 'fit-content',
-                display: 'flex',
-                flexDirection: 'row',
-                justifyContent: 'center',
-                alignItems: 'center',
-                gap: '8px',
-                border: '2px solid black',
-                padding: '10px',
-                margin: '10px 0px',
-                backgroundColor: 'lightgray',
-            }}>
+                    <ImageComponent src='https://5.imimg.com/data5/RV/NK/MY-45718396/ape-auto-501.png' alt='auto' width='150px' height='150px' />
+                </Box>
+                <Box sx={{
+                    width: 'fit-content',
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    gap: '8px',
+                    border: '2px solid black',
+                    padding: '10px',
+                    margin: '10px 0px',
+                    backgroundColor: 'lightgray',
+                }}>
                     <Typography fontSize='10px'>Dropdown:</Typography>
                     <Box sx={{
                         display: 'flex',
@@ -574,10 +581,10 @@ const ComponentsPreview = () => {
                         alignItems: 'flex-start',
                         gap: '10px',
                     }}>
-                      <StyledHeaderDropdown value='Категорії' values={["Hello", "World", "e11fd31"]} />
-                      <StyledDropdown value='Виберіть категорію' values={["Hello", "World", "e11fd31"]} type='small'/>
-                      <StyledDropdown value='Виберіть категорію' values={["Hello", "World", "e11fd31"]} type='middle'/>
-                      <StyledDropdown value='Виберіть категорію' values={["Hello", "World", "e11fd31"]} type='large'/>
+                        <StyledHeaderDropdown value='Категорії' values={["Hello", "World", "e11fd31"]} />
+                        <StyledDropdown value='Виберіть категорію' values={["Hello", "World", "e11fd31"]} type='small' />
+                        <StyledDropdown value='Виберіть категорію' values={["Hello", "World", "e11fd31"]} type='middle' />
+                        <StyledDropdown value='Виберіть категорію' values={["Hello", "World", "e11fd31"]} type='large' />
                     </Box>
                 </Box>
                 <Box sx={{

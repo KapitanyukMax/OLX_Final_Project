@@ -5,11 +5,11 @@ import './styles.css';
 
 interface StyledInputProps {
     value: string;
-    widthType: 'small' | 'middle' | 'big' | 'large';
+    widthType?: 'small' | 'middle' | 'big' | 'large';
+    width?: string;
     label?: string;
     required?: boolean;
     maxLength?: number;
-    isPassword?: boolean;
     type?: 'password' | 'text';
     onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
     iconStart?: React.ElementType<SvgIconProps>;
@@ -57,7 +57,11 @@ const StyledInput: React.FC<StyledInputProps> = ({
 
     return (
         <StyledEngineProvider injectFirst>
-            <Box className={getInputWidth()}>
+            <Box className={widthType ? getInputWidth() : 'middle-input'}
+                {
+                ...(width ? { style: { width } } : {})
+                }
+            >
                 {
                     label && (
                         <InputLabel className='label'>

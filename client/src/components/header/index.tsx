@@ -48,7 +48,7 @@ const Header: React.FC = () => {
                         }}>
                             Головна
                         </Link>
-                        <StyledHeaderDropdown value='Категорії' values={["Категорія 1", "Категорія 2", "Категорія 3"]} />
+                        <StyledHeaderDropdown value={'Категорії'} values={["Електроніка", "Одяг"]} />
                     </Box>
                     <Box sx={{
                         display: 'flex',

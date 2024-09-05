@@ -8,15 +8,19 @@ interface StyledDropdownProps {
     value: string;
     values: string[],
     type?: 'small' | 'middle' | 'large';
+    onChange?: (event: SelectChangeEvent) => void;
 }
 
-const StyledDropdown: React.FC<StyledDropdownProps> = ({ value, values, type }) => {
+const StyledDropdown: React.FC<StyledDropdownProps> = ({ value, values, type, onChange }) => {
     const [currentValue, setCurrentValue] = useState(value);
     const [items, setItems] = useState(values);
     const [isOpen, setIsOpen] = useState(false);
 
     const handleChange = (event: SelectChangeEvent) => {
         setCurrentValue(event.target.value);
+        if (onChange) {
+            onChange(event);
+        }
     };
 
     const handleOpen = () => {
@@ -57,12 +61,12 @@ const StyledDropdown: React.FC<StyledDropdownProps> = ({ value, values, type }) 
                 onOpen={handleOpen}
                 onClose={handleClose}
                 renderValue={(value) => (
-                    <Box sx={{ 
+                    <Box sx={{
                         display: "flex",
                         justifyContent: "space-between",
                         alignItems: "center",
                     }}>
-                        <Typography sx={{ 
+                        <Typography sx={{
                             whiteSpace: 'nowrap',
                             overflow: 'hidden',
                             textOverflow: 'ellipsis',
@@ -70,9 +74,9 @@ const StyledDropdown: React.FC<StyledDropdownProps> = ({ value, values, type }) 
                             fontSize: "18px",
                         }}>
                             {value}</Typography>
-                            <span style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.3s' }}><ArrowDownBlackIcon/></span>
+                        <span style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.3s' }}><ArrowDownBlackIcon /></span>
                     </Box>
-                    )}
+                )}
                 sx={{
                     ...getStyle(),
                     textAlign: 'left',
@@ -93,26 +97,24 @@ const StyledDropdown: React.FC<StyledDropdownProps> = ({ value, values, type }) 
                     >{item}</MenuItem>
                 ))}
             </Select>
-        </StyledEngineProvider >
+        </StyledEngineProvider>
     );
 };
 
 const StyledHeaderDropdown: React.FC<StyledDropdownProps> = ({ value, values }) => {
-    const [currentValue, setCurrentValue] = useState(value);
     const [items, setItems] = useState(values);
-    
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
     const handleMouseEnter = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
     };
-    
+
     const handleMouseLeave = () => {
         setAnchorEl(null);
     };
 
     const handleMenuItemClick = (value: string) => {
-        setCurrentValue(value);
+        // link to category page.
         setAnchorEl(null);
     };
 
@@ -124,14 +126,20 @@ const StyledHeaderDropdown: React.FC<StyledDropdownProps> = ({ value, values }) 
                     aria-haspopup="true"
                     onMouseEnter={handleMouseEnter}
                     variant="text"
-                    endIcon={<span style={{ transform: anchorEl ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.3s' }}><ArrowDownWhiteIcon/></span>}
-                    sx={{ 
+                    endIcon={<span style={{ transform: anchorEl ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.3s' }}><ArrowDownWhiteIcon /></span>}
+                    sx={{
+                        height: '27px',
                         justifyContent: 'space-between',
-                        color: "#fff",
-                        width: "120px",
-                     }}
+                        color: '#fff',
+                        width: '120px',
+                    }}
                 >
-                    <Typography>{currentValue}</Typography>
+                    <Typography sx={{
+                        whiteSpace: 'nowrap',
+                        fontFamily: "Nunito",
+                        fontSize: "18px",
+                        textTransform: 'none',
+                    }}>{value}</Typography>
                 </Button>
                 <Menu
                     id="hover-select-menu"
@@ -139,30 +147,30 @@ const StyledHeaderDropdown: React.FC<StyledDropdownProps> = ({ value, values }) 
                     open={Boolean(anchorEl)}
                     onClose={handleMouseLeave}
                     MenuListProps={{
-                    onMouseLeave: handleMouseLeave,
+                        onMouseLeave: handleMouseLeave,
                     }}
                     PaperProps={{
-                    sx: {
-                        minWidth: anchorEl?.clientWidth,
-                        fontFamily: "Nunito",
-                        fontSize: "20px",
-                    },
+                        sx: {
+                            minWidth: anchorEl?.clientWidth,
+                            fontFamily: "Nunito",
+                            fontSize: "20px",
+                        },
                     }}
                 >
                     {items.map((item) => (
-                    <MenuItem
-                        key={item}
-                        value={item}
-                        onClick={() => handleMenuItemClick(item)}
-                        sx={{
-                            fontFamily: "Nunito",
-                            fontSize: "18px",
-                        }}
-                    >{item}</MenuItem>
+                        <MenuItem
+                            key={item}
+                            value={item}
+                            onClick={() => handleMenuItemClick(item)}
+                            sx={{
+                                fontFamily: "Nunito",
+                                fontSize: "18px",
+                            }}
+                        >{item}</MenuItem>
                     ))}
                 </Menu>
             </div>
-        </StyledEngineProvider >
+        </StyledEngineProvider>
     );
 }
 
