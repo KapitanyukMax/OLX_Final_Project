@@ -18,7 +18,19 @@ interface StyledInputProps {
     iconEndClick?: () => void;
 }
 
-const StyledInput: React.FC<StyledInputProps> = ({ label, value, required, widthType, width, maxLength, iconStart: IconStart, iconEnd: IconEnd, iconEndClick, iconStartClick, type = 'text', onChange }) => {
+const StyledInput: React.FC<StyledInputProps> = ({
+    label,
+    value,
+    required,
+    widthType,
+    maxLength,
+    iconStart: IconStart,
+    iconEnd: IconEnd,
+    iconEndClick,
+    iconStartClick,
+    type = 'text', // За замовчуванням 'text'
+    onChange
+}) => {
     const [currentValue, setCurrentValue] = useState(value);
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
