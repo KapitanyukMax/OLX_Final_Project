@@ -21,13 +21,9 @@ app.use('/messages', require('./routes/messages.js'));
 app.use('/chats', require('./routes/chats.js'));
 app.use('/feedbacks', require('./routes/feedbacks.js'));
 app.use('/wallets', require('./routes/wallets.js'));
-<<<<<<< Updated upstream
 app.use('/cities', require('./routes/cities.js'));
 app.use('/currencies', require('./routes/currencies.js'));
-
-=======
 app.use('/resetPass', require('./routes/resetPass.js'));
->>>>>>> Stashed changes
 app.use(errorHandler);
 
 app.listen(PORT, (err) => {
