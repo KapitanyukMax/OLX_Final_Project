@@ -23,6 +23,7 @@ const StyledInput: React.FC<StyledInputProps> = ({
     value,
     required,
     widthType,
+    width,
     maxLength,
     iconStart: IconStart,
     iconEnd: IconEnd,
