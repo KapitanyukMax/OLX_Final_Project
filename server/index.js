@@ -23,7 +23,7 @@ app.use('/feedbacks', require('./routes/feedbacks.js'));
 app.use('/wallets', require('./routes/wallets.js'));
 app.use('/cities', require('./routes/cities.js'));
 app.use('/currencies', require('./routes/currencies.js'));
-
+app.use('/resetPass', require('./routes/resetPass.js'));
 app.use(errorHandler);
 
 app.listen(PORT, (err) => {

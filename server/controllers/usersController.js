@@ -68,7 +68,8 @@ const getUserByEmail = async (req, res, next) => {
 
 const createUser = async (req, res, next) => {
     try {
-        const { name, email, phone, currencyId, isAdmin, picture, rating } = req.body;
+        const { name, email, phone, currencyId, isAdmin, picture, rating, verifyCode,resetCodeExpiry } = req.body;
+
         if (!name) {
             logger.info('Bad Request - user name is required');
             return res.status(400).json({ message: 'User name is required.' });
@@ -77,20 +78,21 @@ const createUser = async (req, res, next) => {
             logger.info('Bad Request - user email or phone is required');
             return res.status(400).json({ message: 'User email or phone is required.' });
         }
-        if (!picture) {
-            logger.info('Bad Request - user picture url is required');
-            return res.status(400).json({ message: 'User picture url is required.' });
-        }
+        picture ??= '';
         isAdmin ??= false;
         rating ??= 0;
+        currencyId ??= 0;
+        verifyCode ??= '';
+        resetCodeExpiry??='';
 
         const collection = await db.collection('users').get();
         for (const doc of collection.docs) {
-            if (doc.data().email == email) {
+            const docData = doc.data();
+            if (email && email === docData.email) {
                 logger.info(`Conflict - user with email "${email}" already exists`);
                 return res.status(409).json({ message: `The user with email "${email}" already exists.` });
             }
-            if (doc.data().phone == phone) {
+            if (phone && phone === docData.phone) {
                 logger.info(`Conflict - user with phone "${phone}" already exists`);
                 return res.status(409).json({ message: `The user with phone "${phone}" already exists.` });
             }
@@ -114,6 +116,7 @@ const createUser = async (req, res, next) => {
         next(error);
     }
 };
+
 
 const updateUser = async (req, res, next) => {
     try {
