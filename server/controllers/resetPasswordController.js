@@ -5,8 +5,11 @@ const nodemailer = require('nodemailer');
 const db = admin.firestore();
 const twilio = require('twilio');
 
-const accountSid = 'ACb5410b67c5d9086702b3e0f999d3e02d';
-const authToken = 'bc4434ab472d12c05a298b6ffe71ac29';
+const accountSid = process.env.ACCOUNT_SID;
+const authToken = process.env.AUTH_TOKEN;
+const userMail = process.env.USER_MAIL_SEND;
+const userMailPass = process.env.USER_PASS_SEND;
+
 
 const client = twilio(accountSid, authToken);
 
@@ -18,8 +21,8 @@ const transporter = nodemailer.createTransport({
     port: 465,
     secure: true,
     auth: {
-        user: 'ddx.mail@ukr.net',
-        pass: 'bQiYZWv97NlhhpJT'
+        user: userMail,
+        pass: userMailPass
     }
 });
 const saveResetCode = async (userId, resetCode) => {
