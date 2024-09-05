@@ -24,7 +24,6 @@ const StyledInput: React.FC<StyledInputProps> = ({
     required,
     widthType,
     maxLength,
-    isPassword,
     iconStart: IconStart,
     iconEnd: IconEnd,
     iconEndClick,

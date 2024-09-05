@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, Box, StyledEngineProvider } from '@mui/material';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from './../../../firebaseConfig';
@@ -10,13 +10,31 @@ import GoogleIcon from '../../components/icons/google';
 import FacebookIcon from '../../components/icons/facebook';
 import AppleIcon from '../../components/icons/apple';
 import PasswordIcon from '../../components/icons/password';
+import { useNavigate } from 'react-router-dom';
+import { iconBoxStyles } from './Styles';
 
-export const LoginModal = ({ onSwitchToRegister, onSwitchToForgotPassword }) => {
+interface LoginModalProps {
+    onSwitchToRegister: () => void;
+    onSwitchToForgotPassword: () => void; 
+}
+
+export const LoginModal: React.FC<LoginModalProps> = ({ onSwitchToRegister, onSwitchToForgotPassword }) => {
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
-    const [showPassword, setShowPassword] = useState<boolean>(false);
     const [error, setError] = useState<string>('');
-    
+    const [showPassword, setShowPassword] = useState<boolean>(false);
+    const [rememberMe, setRememberMe] = useState<boolean>(false);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const savedEmail = localStorage.getItem('email');
+        const savedPassword = localStorage.getItem('password');
+        if (savedEmail && savedPassword) {
+            setEmail(savedEmail);
+            setPassword(savedPassword);
+            setRememberMe(true);
+        }
+    }, []);
 
     const handleTogglePasswordVisibility = () => {
         setShowPassword(!showPassword);
@@ -28,6 +46,10 @@ export const LoginModal = ({ onSwitchToRegister, onSwitchToForgotPassword }) => 
 
     const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setPassword(e.target.value);
+    };
+
+    const handleRememberMeChangeWrapper = () => {
+        setRememberMe(!rememberMe);
     };
 
     const validateEmail = (email: string) => {
@@ -50,12 +72,34 @@ export const LoginModal = ({ onSwitchToRegister, onSwitchToForgotPassword }) => 
         try {
             await signInWithEmailAndPassword(auth, email, password);
             console.log('User logged in successfully');
-        } catch (error) {
+            
+            if (rememberMe) {
+                localStorage.setItem('email', email);
+                localStorage.setItem('password', password);
+            } else {
+                localStorage.removeItem('email');
+                localStorage.removeItem('password');
+            }
+
+            navigate('/components-preview');
+
+        } catch (error: unknown) {
             console.error('Error logging in:', error);
-            setError('Помилка входу: ' + error);
+            setError('Помилка входу: ' + (error || 'Невідома помилка'));
         }
     };
 
+    const handleAppleLogin = () => {
+        console.log('Apple login clicked');
+    };
+
+    const handleGoogleLogin = () => {
+        console.log('Google login clicked');
+    };
+
+    const handleFacebookLogin = () => {
+        console.log('Facebook login clicked');
+    };
 
     return (
         <Box sx={{ boxSizing: 'border-box', padding: '30px' }}>
@@ -67,26 +111,40 @@ export const LoginModal = ({ onSwitchToRegister, onSwitchToForgotPassword }) => 
                     <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '24px', width: '100%' }}>
                         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'left', gap: '8px', width: '100%' }}>
                             <StyledLabel text='Електронна пошта чи телефон' textType='small' type='with-icon' textColor='var(--black)' />
-                            <StyledInput widthType='big' value='vikka3467@gmail.com' onChange={handleEmailChange}/>
+                            <StyledInput widthType='big' value={email} onChange={handleEmailChange} />
                         </Box>
                         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'left', gap: '8px', width: '100%' }}>
                             <StyledLabel text='Пароль' textType='small' type='with-icon' textColor='var(--black)' />
-                            <StyledInput widthType='big' value={password} isPassword iconEnd={PasswordIcon} iconEndClick={handleTogglePasswordVisibility} type={showPassword?'text':'password'}
-                            onChange={handlePasswordChange} />
+                            <StyledInput widthType='big' value={password} isPassword iconEnd={PasswordIcon} iconEndClick={handleTogglePasswordVisibility} type={showPassword ? 'text' : 'password'}
+                                onChange={handlePasswordChange} />
                         </Box>
                     </Box>
                 </Box>
             </Box>
             <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', height: '22px', width: '568px', marginTop: '12px', marginBottom: '36px' }}>
-                <StyledCheckBox label="Запам'ятати мене" />
+                <StyledCheckBox label="Запам'ятати мене" checked={rememberMe} onChange={handleRememberMeChangeWrapper} />
                 <StyledLabel text='Забули пароль?' textType='small' type='with-icon' textColor='var(--blue)' onClick={onSwitchToForgotPassword} />
             </Box>
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '100%', gap: '42px' }}>
                 <StyledEngineProvider injectFirst>
-                    <Button onClick={handleLogin} sx={{ width: '456px', height: '48px', backgroundColor: 'var(--blue)', color: 'white', borderRadius: '15px', fontFamily: 'Nunito', gap: '8px' }}>
+                    <Button 
+                        onClick={handleLogin} 
+                        sx={{ 
+                            width: '456px', 
+                            height: '48px', 
+                            backgroundColor: 'var(--blue)', 
+                            color: 'white', 
+                            borderRadius: '15px', 
+                            fontFamily: 'Nunito', 
+                            gap: '8px',
+                            '&:hover': {
+                                backgroundColor: 'var(--green)',
+                                color:'black'
+                            },
+                        }}>
                         Увійти
                     </Button>
-                    <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', width: '100%' }}>
+                    <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', width: '100%',}}>
                         <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', width: '100%', gap: '4px' }}>
                             <StyledLabel text="Немає акаунту?" type='with-icon' textType='small' />
                             <StyledLabel text="Зареєструватись" type='with-icon' textType='small-bold' onClick={onSwitchToRegister} />
@@ -100,13 +158,13 @@ export const LoginModal = ({ onSwitchToRegister, onSwitchToForgotPassword }) => 
                 <HorizontalLineIcon />
             </Box>
             <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: '51px', marginTop: '30px' }}>
-                <Box sx={{ border: '1px solid black', padding: '16px', borderRadius: '10px' }}>
+                <Box sx={iconBoxStyles} onClick={handleAppleLogin}>
                     <AppleIcon />
                 </Box>
-                <Box sx={{ border: '1px solid black', padding: '16px', borderRadius: '10px' }}>
+                <Box sx={iconBoxStyles} onClick={handleGoogleLogin}>
                     <GoogleIcon />
                 </Box>
-                <Box sx={{ border: '1px solid black', padding: '16px', borderRadius: '10px' }}>
+                <Box sx={iconBoxStyles} onClick={handleFacebookLogin}>
                     <FacebookIcon />
                 </Box>
             </Box>
