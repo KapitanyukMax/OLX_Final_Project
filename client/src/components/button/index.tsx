@@ -1,10 +1,12 @@
 import * as React from 'react';
 import { Box, Button, SvgIconProps, Typography, alpha } from '@mui/material';
 import { StyledEngineProvider } from '@mui/material/styles';
+import { SxProps } from '@mui/material';
 
 interface StyledButtonProps {
     text: string;
     type: 'contained' | 'outlined' | 'category';
+    sx?: SxProps;
     className?: string;
     primaryColor?: string;
     secondaryColor?: string;
@@ -15,12 +17,14 @@ interface StyledButtonProps {
     onClick?: () => void;
 };
 
-const StyledButton: React.FC<StyledButtonProps> = ({ text, type, className, primaryColor, secondaryColor = 'white', hoverBackColor = 'var(--green)', hoverColor = 'black', disabled, icon: Icon, onClick }) => {
+const StyledButton: React.FC<StyledButtonProps> = ({ text, type, sx, className, primaryColor, secondaryColor = 'white', hoverBackColor = 'var(--green)', hoverColor = 'black', disabled, icon: Icon, onClick }) => {
     primaryColor ??= type == 'outlined'
         ? 'black'
         : type == 'category'
             ? 'white'
             : 'var(--blue)';
+
+    sx ??= {};
 
     if (type == 'category') {
         secondaryColor = '#049CE4';
@@ -87,11 +91,12 @@ const StyledButton: React.FC<StyledButtonProps> = ({ text, type, className, prim
 
     return (
         <StyledEngineProvider injectFirst>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Button sx={{
+            <Box sx={{  display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Button sx={{ 
                     ...getStyle(),
                     boxShadow: 'none',
-                    padding: 0
+                    padding: 0,
+                    ...sx
                 }} onClick={onClick} disabled={disabled}
                     className={type === 'category' ? 'category-button' : className}>
                     {Icon &&
