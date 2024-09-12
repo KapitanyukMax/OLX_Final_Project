@@ -406,7 +406,7 @@ const ComponentsPreview = () => {
                         {/* 
                         Button має такі поля:
                             text: string;
-                            type: 'contained' | 'outlined';
+                            type: 'contained' | 'outlined' | 'category';
                             className: string;
                             primaryColor?: string;
                             secondaryColor?: string;
@@ -435,11 +435,16 @@ const ComponentsPreview = () => {
                             onClick={() => {
                                 console.log('Button 5 clicked')
                             }} />
+                        <StyledButton text='Транспорт' type='category' icon={CarIcon}
+                            onClick={() => {
+                                console.log('Button 6 clicked')
+                            }} />
                     </Box>
                 </Box>
                 <Box
                     sx={{
-                        width: 'fit-content',
+                        marginTop: '450px',
+                        position: 'absolute',
                         display: 'flex',
                         flexDirection: 'row',
                         justifyContent: 'center',
@@ -576,10 +581,10 @@ const ComponentsPreview = () => {
                         alignItems: 'flex-start',
                         gap: '10px',
                     }}>
-                        <StyledHeaderDropdown value='Категорії' values={["Hello", "World", "e11fd31"]} />
-                        <StyledDropdown value='Виберіть категорію' values={["Hello", "World", "e11fd31"]} type='small' />
-                        <StyledDropdown value='Виберіть категорію' values={["Hello", "World", "e11fd31"]} type='middle' />
-                        <StyledDropdown value='Виберіть категорію' values={["Hello", "World", "e11fd31"]} type='large' />
+                        <StyledHeaderDropdown placeholder="Категорії" values={["Hello", "World", "e11fd31"]} />
+                        <StyledDropdown selectOnly={true} placeholder='Виберіть категорію' values={["Hello", "World", "e11fd31"]} type='small' />
+                        <StyledDropdown placeholder='Виберіть категорію' values={["Hello", "World", "e11fd31"]} type='middle' />
+                        <StyledDropdown placeholder='Виберіть категорію' values={["Hello", "World", "e11fd31"]} type='large' />
                     </Box>
                 </Box>
                 <Box sx={{

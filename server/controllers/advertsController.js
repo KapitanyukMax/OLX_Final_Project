@@ -6,15 +6,33 @@ const db = admin.firestore();
 
 const getAllAdverts = async (req, res, next) => {
     try {
-        const snapshot = await db.collection('adverts').get();
+        const { limit = 10, startAfter } = req.query; // Default limit is 10
+        let query = db.collection('adverts').orderBy('creationDate').limit(parseInt(limit));
+
+        if (startAfter) {
+            const lastDoc = await db.collection('adverts').doc(startAfter).get();
+            if (lastDoc.exists) {
+                query = query.startAfter(lastDoc);
+            }
+        }
+
+        const snapshot = await query.get();
         const result = [];
 
         snapshot.forEach((doc) => {
-            result.push(doc.data());
+            result.push({
+                id: doc.id,
+                ...doc.data()
+            });
         });
 
+        const lastVisible = snapshot.docs[snapshot.docs.length - 1];
+
         logger.info(`Adverts received successfully`);
-        res.status(200).json(result);
+        res.status(200).json({
+            adverts: result,
+            lastVisibleId: lastVisible ? lastVisible.id : null,
+        });
     } catch (error) {
         next(error);
     }
@@ -40,7 +58,10 @@ const getAdvertById = async (req, res, next) => {
 
 const getAdvertsByCategoryId = async (req, res, next) => {
     try {
-        const snapshot = await db.collection('subcategories').where('categoryId', '==', req.query.categoryId).get();
+        const { limit = 10, startAfter } = req.query;
+        const snapshot = await db.collection('subcategories')
+            .where('categoryId', '==', req.query.categoryId)
+            .get();
 
         if (snapshot.empty) {
             return res.status(404).json({ error: 'Adverts not found' });
@@ -52,23 +73,62 @@ const getAdvertsByCategoryId = async (req, res, next) => {
         });
 
         const result = [];
+        let lastVisible = null;
+
         for (let i = 0; i < subCategories.length; i++) {
-            const advertsSnapshot = await db.collection('adverts').where('subCategoryId', '==', subCategories[i]).get();
+            let query = db.collection('adverts')
+                .where('subCategoryId', '==', subCategories[i])
+                .orderBy('creationDate')
+                .limit(parseInt(limit));
+
+            if (startAfter) {
+                const lastDoc = await db.collection('adverts').doc(startAfter).get();
+                if (lastDoc.exists) {
+                    query = query.startAfter(lastDoc);
+                }
+            }
+
+            const advertsSnapshot = await query.get();
+
             advertsSnapshot.forEach((doc) => {
-                result.push(doc.data());
+                result.push({
+                    id: doc.id,
+                    ...doc.data()
+                });
             });
+
+            if (advertsSnapshot.docs.length > 0) {
+                lastVisible = advertsSnapshot.docs[advertsSnapshot.docs.length - 1];
+            }
         }
 
         logger.info(`Adverts received successfully`);
-        res.status(200).json(result);
+        res.status(200).json({
+            adverts: result,
+            lastVisibleId: lastVisible ? lastVisible.id : null,
+        });
     } catch (error) {
         next(error);
     }
 };
+
 
 const getAdvertsByUserId = async (req, res, next) => {
     try {
-        const snapshot = await db.collection('adverts').where('userId', '==', req.query.userId).get();
+        const { limit = 10, startAfter } = req.query;
+        let query = db.collection('adverts')
+            .where('userId', '==', req.query.userId)
+            .orderBy('creationDate')
+            .limit(parseInt(limit));
+
+        if (startAfter) {
+            const lastDoc = await db.collection('adverts').doc(startAfter).get();
+            if (lastDoc.exists) {
+                query = query.startAfter(lastDoc);
+            }
+        }
+
+        const snapshot = await query.get();
 
         if (snapshot.empty) {
             return res.status(404).json({ error: 'Adverts not found' });
@@ -76,35 +136,66 @@ const getAdvertsByUserId = async (req, res, next) => {
 
         const result = [];
         snapshot.forEach((doc) => {
-            result.push(doc.data());
+            result.push({
+                id: doc.id,
+                ...doc.data()
+            });
         });
 
+        const lastVisible = snapshot.docs[snapshot.docs.length - 1];
+
         logger.info(`Adverts received successfully`);
-        res.status(200).json(result);
-    } catch (error) {
-        next(error);
-    }
-}
-
-const getAdvertsBySubcategoryId = async (req, res, next) => {
-    try {
-        const snapshot = await db.collection('adverts').where('subCategoryId', '==', req.query.subcategoryId).get();
-
-        if (snapshot.empty) {
-            return res.status(404).json({ error: 'Adverts not found' });
-        }
-
-        const result = [];
-        snapshot.forEach((doc) => {
-            result.push(doc.data());
+        res.status(200).json({
+            adverts: result,
+            lastVisibleId: lastVisible ? lastVisible.id : null,
         });
-
-        logger.info(`Adverts received successfully`);
-        res.status(200).json(result);
     } catch (error) {
         next(error);
     }
 };
+
+
+const getAdvertsBySubcategoryId = async (req, res, next) => {
+    try {
+        const { limit = 10, startAfter } = req.query;
+        let query = db.collection('adverts')
+            .where('subCategoryId', '==', req.query.subcategoryId)
+            .orderBy('creationDate')
+            .limit(parseInt(limit));
+
+        if (startAfter) {
+            const lastDoc = await db.collection('adverts').doc(startAfter).get();
+            if (lastDoc.exists) {
+                query = query.startAfter(lastDoc);
+            }
+        }
+
+        const snapshot = await query.get();
+
+        if (snapshot.empty) {
+            return res.status(404).json({ error: 'Adverts not found' });
+        }
+
+        const result = [];
+        snapshot.forEach((doc) => {
+            result.push({
+                id: doc.id,
+                ...doc.data()
+            });
+        });
+
+        const lastVisible = snapshot.docs[snapshot.docs.length - 1];
+
+        logger.info(`Adverts received successfully`);
+        res.status(200).json({
+            adverts: result,
+            lastVisibleId: lastVisible ? lastVisible.id : null,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
 
 const createAdvert = async (req, res, next) => {
     try {
@@ -195,6 +286,89 @@ const deleteAdvert = async (req, res, next) => {
     }
 };
 
+const getAdvertsByTOP = async (req, res, next) => {
+    try {
+        const { limit = 10, startAfter } = req.query;
+        let query = db.collection('adverts')
+            .orderBy('viewsCount', 'desc')
+            .limit(parseInt(limit));
+
+        if (startAfter) {
+            const lastDoc = await db.collection('adverts').doc(startAfter).get();
+            if (lastDoc.exists) {
+                query = query.startAfter(lastDoc);
+            }
+        }
+
+        const snapshot = await query.get();
+
+        if (snapshot.empty) {
+            return res.status(404).json({ error: 'Adverts not found' });
+        }
+
+        const result = [];
+        snapshot.forEach((doc) => {
+            result.push({
+                id: doc.id,
+                ...doc.data()
+            });
+        });
+
+        const lastVisible = snapshot.docs[snapshot.docs.length - 1];
+
+        logger.info(`Adverts received successfully`);
+        res.status(200).json({
+            adverts: result,
+            lastVisibleId: lastVisible ? lastVisible.id : null,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+
+const getAdvertsByVIP = async (req, res, next) => {
+    try {
+        const { limit = 10, startAfter } = req.query;
+        let query = db.collection('adverts')
+            .where('vipUntil', '!=', null)
+            .orderBy('vipUntil', 'desc')
+            .limit(parseInt(limit));
+
+        if (startAfter) {
+            const lastDoc = await db.collection('adverts').doc(startAfter).get();
+            if (lastDoc.exists) {
+                query = query.startAfter(lastDoc);
+            }
+        }
+
+        const snapshot = await query.get();
+
+        if (snapshot.empty) {
+            return res.status(404).json({ error: 'Adverts not found' });
+        }
+
+        const result = [];
+        snapshot.forEach((doc) => {
+            result.push({
+                id: doc.id,
+                ...doc.data()
+            });
+        });
+
+        const lastVisible = snapshot.docs[snapshot.docs.length - 1];
+
+        logger.info(`Adverts received successfully`);
+        res.status(200).json({
+            adverts: result,
+            lastVisibleId: lastVisible ? lastVisible.id : null,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+
 module.exports = {
     getAllAdverts,
     getAdvertById,
@@ -203,5 +377,7 @@ module.exports = {
     deleteAdvert,
     getAdvertsBySubcategoryId,
     getAdvertsByCategoryId,
-    getAdvertsByUserId
+    getAdvertsByUserId,
+    getAdvertsByTOP,
+    getAdvertsByVIP
 };

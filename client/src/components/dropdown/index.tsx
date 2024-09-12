@@ -1,110 +1,164 @@
-import React, { useState } from 'react';
-import { Box, Select, MenuItem, SelectChangeEvent, Typography, Button, Menu } from '@mui/material';
-import { StyledEngineProvider } from '@mui/material/styles';
-import { ArrowDownBlackIcon, ArrowDownWhiteIcon } from '../icons/arrowDown';
+import React, { useState } from "react";
+import {
+    Box,
+    MenuItem,
+    Typography,
+    Button,
+    Menu,
+    Paper,
+    TextField,
+} from "@mui/material";
+import { StyledEngineProvider } from "@mui/material/styles";
+import { ArrowDownBlackIcon, ArrowDownWhiteIcon } from "../icons/arrowDown";
 import "./styles.css";
 
 interface StyledDropdownProps {
-    value: string;
-    values: string[],
-    type?: 'small' | 'middle' | 'large';
+    placeholder?: string;
+    values: string[];
+    selectOnly?: boolean;
+    type?: "small" | "middle" | "large";
+    onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const StyledDropdown: React.FC<StyledDropdownProps> = ({ value, values, type }) => {
-    const [currentValue, setCurrentValue] = useState(value);
-    const [items, setItems] = useState(values);
+const StyledDropdown: React.FC<StyledDropdownProps> = ({
+    placeholder,
+    values,
+    selectOnly,
+    type,
+    onChange,
+}) => {
+    const [currentValue, setCurrentValue] = useState('');
+    const [filteredItems, setFilteredItems] = useState(values);
     const [isOpen, setIsOpen] = useState(false);
 
-    const handleChange = (event: SelectChangeEvent) => {
-        setCurrentValue(event.target.value);
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const inputValue = event.target.value;
+        setCurrentValue(inputValue);
+        setFilteredItems(
+            values.filter((item) =>
+                item.toLowerCase().includes(inputValue.toLowerCase())
+            )
+        );
+        if (onChange) {
+            onChange(event);
+        }
     };
 
-    const handleOpen = () => {
+    const handleSelect = (item: string) => {
+        setCurrentValue(item);
+        setIsOpen(false);
+    };
+
+    const handleFocus = () => {
         setIsOpen(true);
     };
 
-    const handleClose = () => {
-        setIsOpen(false);
+    const handleBlur = () => {
+        setTimeout(() => setIsOpen(false), 150);
     };
 
     const getStyle = () => {
         switch (type) {
-            case 'small':
+            case "small":
                 return {
-                    width: '117px',
-                    height: '48px',
+                    width: "117px",
                 };
-            case 'middle':
+            case "middle":
                 return {
-                    width: '259px',
-                    height: '48px',
+                    width: "259px",
                 };
-            case 'large':
+            case "large":
                 return {
-                    width: '592px',
-                    height: '48px',
+                    width: "592px",
                 };
+            default:
+                return {};
         }
-    }
+    };
 
     return (
         <StyledEngineProvider injectFirst>
-            <Select
-                defaultValue={value}
-                value={currentValue}
-                onChange={handleChange}
-                IconComponent={() => null}
-                onOpen={handleOpen}
-                onClose={handleClose}
-                renderValue={(value) => (
-                    <Box sx={{ 
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                    }}>
-                        <Typography sx={{ 
-                            whiteSpace: 'nowrap',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
+            <Box sx={{ position: "relative", ...getStyle() }}>
+                <TextField
+                    value={currentValue}
+                    onChange={handleChange}
+                    onFocus={handleFocus}
+                    onBlur={handleBlur}
+                    variant="outlined"
+                    fullWidth
+                    InputProps={{
+                        placeholder: placeholder,
+                        readOnly: selectOnly,
+                        endAdornment: (
+                            <span
+                                style={{
+                                    transform: isOpen
+                                        ? "rotate(180deg)"
+                                        : "rotate(0deg)",
+                                    transition: "transform 0.3s",
+                                }}
+                            >
+                                <ArrowDownBlackIcon />
+                            </span>
+                        ),
+                    }}
+                    sx={{
+                        ...getStyle(),
+                        textAlign: "left",
+                        color: "#737070",
+                        backgroundColor: "#fff",
+                        borderRadius: "10px",
+                        border: "1px solid #000",
+                        "& .MuiOutlinedInput-input": {
+                            padding: "10px",
                             fontFamily: "Nunito",
                             fontSize: "18px",
-                        }}>
-                            {value}</Typography>
-                            <span style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.3s' }}><ArrowDownBlackIcon/></span>
-                    </Box>
-                    )}
-                sx={{
-                    ...getStyle(),
-                    textAlign: 'left',
-                    color: '#737070',
-                    backgroundColor: "#fff",
-                    borderRadius: '5px',
-                    border: '1px solid #000',
-                }}
-            >
-                {items.map((item: string, index: number) => (
-                    <MenuItem
-                        key={index}
-                        value={item}
+                        },
+                    }}
+                />
+                {isOpen && (
+                    <Paper
                         sx={{
-                            fontFamily: "Nunito",
-                            fontSize: "18px",
+                            position: "absolute",
+                            top: "100%",
+                            left: 0,
+                            right: 0,
+                            zIndex: 10,
+                            maxHeight: "200px",
+                            overflowY: "auto",
+                            border: "1px solid #ddd",
                         }}
-                    >{item}</MenuItem>
-                ))}
-            </Select>
+                    >
+                        {filteredItems.map((item, index) => (
+                            <MenuItem
+                                key={index}
+                                onClick={() => handleSelect(item)}
+                                sx={{
+                                    fontFamily: "Nunito",
+                                    fontSize: "18px",
+                                }}
+                            >
+                                {item}
+                            </MenuItem>
+                        ))}
+                    </Paper>
+                )}
+            </Box>
         </StyledEngineProvider>
     );
 };
 
-const StyledHeaderDropdown: React.FC<StyledDropdownProps> = ({ value, values }) => {
+const StyledHeaderDropdown: React.FC<StyledDropdownProps> = ({
+    placeholder,
+    values,
+}) => {
     const [items, setItems] = useState(values);
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
     const handleMouseEnter = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
     };
-    
+
     const handleMouseLeave = () => {
         setAnchorEl(null);
     };
@@ -116,26 +170,44 @@ const StyledHeaderDropdown: React.FC<StyledDropdownProps> = ({ value, values }) 
 
     return (
         <StyledEngineProvider injectFirst>
-            <div onMouseLeave={handleMouseLeave} style={{ display: 'inline-block' }}>
+            <div
+                onMouseLeave={handleMouseLeave}
+                style={{ display: "inline-block" }}
+            >
                 <Button
                     aria-controls="hover-select-menu"
                     aria-haspopup="true"
                     onMouseEnter={handleMouseEnter}
                     variant="text"
-                    endIcon={<span style={{ transform: anchorEl ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.3s' }}><ArrowDownWhiteIcon/></span>}
-                    sx={{ 
-                        height: '27px',
-                        justifyContent: 'space-between',
-                        color: '#fff',
-                        width: '120px',
+                    endIcon={
+                        <span
+                            style={{
+                                transform: anchorEl
+                                    ? "rotate(180deg)"
+                                    : "rotate(0deg)",
+                                transition: "transform 0.3s",
+                            }}
+                        >
+                            <ArrowDownWhiteIcon />
+                        </span>
+                    }
+                    sx={{
+                        height: "27px",
+                        justifyContent: "space-between",
+                        color: "#fff",
+                        width: "120px",
                     }}
                 >
-                    <Typography sx={{
-                        whiteSpace: 'nowrap',
-                        fontFamily: "Nunito",
-                        fontSize: "18px",
-                        textTransform: 'none',
-                    }}>{value}</Typography>
+                    <Typography
+                        sx={{
+                            whiteSpace: "nowrap",
+                            fontFamily: "Nunito",
+                            fontSize: "18px",
+                            textTransform: "none",
+                        }}
+                    >
+                        {placeholder}
+                    </Typography>
                 </Button>
                 <Menu
                     id="hover-select-menu"
@@ -154,23 +226,22 @@ const StyledHeaderDropdown: React.FC<StyledDropdownProps> = ({ value, values }) 
                     }}
                 >
                     {items.map((item) => (
-                    <MenuItem
-                        key={item}
-                        value={item}
-                        onClick={() => handleMenuItemClick(item)}
-                        sx={{
-                            fontFamily: "Nunito",
-                            fontSize: "18px",
-                        }}
-                    >{item}</MenuItem>
+                        <MenuItem
+                            key={item}
+                            value={item}
+                            onClick={() => handleMenuItemClick(item)}
+                            sx={{
+                                fontFamily: "Nunito",
+                                fontSize: "18px",
+                            }}
+                        >
+                            {item}
+                        </MenuItem>
                     ))}
                 </Menu>
             </div>
         </StyledEngineProvider>
     );
-}
-
-export {
-    StyledDropdown,
-    StyledHeaderDropdown
 };
+
+export { StyledDropdown, StyledHeaderDropdown };

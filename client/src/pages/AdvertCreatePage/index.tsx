@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
+import axios from 'axios';
 import { Header } from '../../components/header';
-import { StyledEngineProvider, Box } from '@mui/material';
+import { StyledEngineProvider, Box, Button } from '@mui/material';
 import StyledFooter from '../../components/footer';
 import StyledLabel from '../../components/lable';
 import { StyledInput } from '../../components/input';
@@ -8,14 +9,185 @@ import { StyledDropdown } from '../../components/dropdown';
 import { StyledCheckBox } from '../../components/checkBox';
 import StyledButton from '../../components/button';
 import { StyledTextArea } from '../../components/textArea';
+import { Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
+import imageCompression from 'browser-image-compression';
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { useRef } from 'react';
+import { IconButton } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
 import './styles.css';
-import ImageComponent from '../../components/image';
 
 const AdvertCreatePage: React.FC = () => {
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        console.log('Form submitted');
+    const [openErrorDialog, setOpenErrorDialog] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
+    const [selectedImages, setSelectedImages] = useState<File[]>([]);
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
+    const storage = getStorage();
+
+    const [errors, setErrors] = useState({
+        name: '',
+        description: '',
+        location: '',
+        subCategoryId: '',
+        image: '',
+    });
+
+    const [formData, setFormData] = useState({
+        userId: 'user1234',
+        subCategoryId: '',
+        name: '',
+        description: '',
+        price: 0,
+        location: '',
+        status: '',
+        pictures: [''],
+        orderType: '',
+        currencyId: '',
+        delivery: '',
+        isHidden: false,
+    });
+
+    const uploadResizedImages = async (file: File, path: string) => {
+        const sizes = [200, 400, 800];
+
+        try {
+            const originalRef = ref(storage, `${path}/original.jpg`);
+            await uploadBytes(originalRef, file);
+
+            for (let size of sizes) {
+                const options = {
+                    maxWidthOrHeight: size,
+                    useWebWorker: true,
+                };
+
+                const resizedFile = await imageCompression(file, options);
+                const resizedRef = ref(storage, `${path}/resized-${size}.jpg`);
+                await uploadBytes(resizedRef, resizedFile);
+            }
+
+            console.log('Зображення успішно завантажені!');
+        } catch (error) {
+            console.error('Помилка під час завантаження:', error);
+        }
     };
+
+    const uploadMultipleImages = async (files: FileList) => {
+        const path = `images/${formData.userId}`;
+
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            await uploadResizedImages(file, `${path}/image-${i}`);
+
+            // Отримуємо URL завантаженого зображення і додаємо його до стану
+            const downloadURL = await getDownloadURL(ref(storage, `${path}/image-${i}/original.jpg`));
+            setFormData((prevFormData) => ({
+                ...prevFormData,
+                pictures: [...prevFormData.pictures, downloadURL],
+            }));
+        }
+    };
+
+    const handleMultipleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const files = Array.from(event.target.files || []);
+        setSelectedImages([...selectedImages, ...files]);
+        if (event.target.files && event.target.files.length > 0) {
+            await uploadMultipleImages(event.target.files);
+        }
+    };
+
+    const handleDeleteImage = (index: number) => {
+        setSelectedImages((prevImages) => prevImages.filter((_, i) => i !== index));
+        setFormData((prevFormData) => ({
+            ...prevFormData,
+            pictures: prevFormData.pictures.filter((_, i) => i !== index),
+        }));
+    };
+
+    const handleButtonClick = () => {
+        fileInputRef.current?.click();
+    };
+
+    const handleSubmit = async () => {
+        let formIsValid = true;
+        const newErrors = {
+            name: '',
+            description: '',
+            price: '',
+            location: '',
+            subCategoryId: '',
+            image: '',
+        };
+
+        if (!formData.name) {
+            newErrors.name = 'Назва обов\'язкова';
+            formIsValid = false;
+        }
+
+        if (!formData.description) {
+            newErrors.description = 'Опис обов\'язковий';
+            formIsValid = false;
+        }
+
+        if (!formData.location) {
+            newErrors.location = 'Місцезнаходження обов\'язкове';
+            formIsValid = false;
+        }
+
+        if (!formData.subCategoryId) {
+            newErrors.subCategoryId = 'Категорія обов\'язкова';
+            formIsValid = false;
+        }
+
+        if (selectedImages.length === 0) {
+            newErrors.image = 'Додайте хоча б одне зображення';
+            formIsValid = false;
+        }
+
+        setErrors(newErrors);
+
+        if (!formIsValid) {
+            setErrorMessage('Будь ласка, заповніть усі обов\'язкові поля.');
+            setOpenErrorDialog(true);
+            return;
+        }
+
+        try {
+            const response = await axios.post('http://localhost:5000/adverts', formData);
+            console.log('Advert created successfully', response.data);
+        } catch (error) {
+            console.error('Error creating advert', error);
+            setErrorMessage('Помилка створення оголошення.');
+            setOpenErrorDialog(true);
+        }
+    };
+
+    const handleNameChange = (value: string) => {
+        setFormData({ ...formData, name: value });
+    }
+
+    const handleDescriptionChange = (value: string) => {
+        setFormData({ ...formData, description: value });
+    }
+
+    const handlePriceChange = (value: string) => {
+        setFormData({ ...formData, price: parseFloat(value) });
+    }
+
+    const handleLocationChange = (value: string) => {
+        setFormData({ ...formData, location: value });
+    }
+
+    const handleCheckboxChange = (field: string, value: string) => {
+        setFormData({ ...formData, [field]: value });
+    };
+
+    const handleSubCategoryChange = (value: string) => {
+        setFormData({ ...formData, subCategoryId: value });
+    }
+
+    const handleCurrencyChange = (value: string) => {
+        setFormData({ ...formData, currencyId: value });
+    }
 
     return (
         <StyledEngineProvider injectFirst>
@@ -27,7 +199,7 @@ const AdvertCreatePage: React.FC = () => {
                 width: '100vw',
                 backgroundColor: '#ebeef5',
             }}>
-                <form className='form' onSubmit={handleSubmit}>
+                <form className='form'>
                     <Box sx={{
                         margin: '60px',
                     }}>
@@ -46,7 +218,8 @@ const AdvertCreatePage: React.FC = () => {
                     }}>
                         <Box>
                             <StyledLabel text="Заголовок" type='head' textType='head' textColor='black' />
-                            <StyledInput value='Продається фотоапарат Nikon d90' label='Вкажіть назву' required widthType='large' maxLength={80} />
+                            <StyledInput value="Вкажіть назву" label='Вкажіть назву' required widthType='large' maxLength={80} onChange={(e) => handleNameChange(e.target.value)} />
+                            {errors.name && <div className="error-message">{errors.name}</div>}
                         </Box>
                         <Box sx={{
                             display: 'flex',
@@ -56,7 +229,8 @@ const AdvertCreatePage: React.FC = () => {
                             <StyledLabel text="Категорія" type='head' textType='head' textColor='black' />
                             <StyledLabel text="Вкажіть категорію*" type='primary' textType='small' textColor='black' />
                             <StyledDropdown value='Оберіть категорію' type='large' values={['Категорія 1', 'Категорія 2', 'Категорія 3']} />
-                            <StyledDropdown value='Рубрика категорії' type='large' values={['Рубрика 1', 'Рубрика 2', 'Рубрика 3']} />
+                            <StyledDropdown value="Рубрика категорії" type='large' values={['Рубрика 1', 'Рубрика 2', 'Рубрика 3']} onChange={(e) => handleSubCategoryChange(e.target.value)} />
+                            {errors.subCategoryId && <div className="error-message">{errors.subCategoryId}</div>}
                         </Box>
                     </Box>
                     <Box sx={{
@@ -71,7 +245,8 @@ const AdvertCreatePage: React.FC = () => {
                     }}>
                         <StyledLabel text="Місцезнаходження" type='head' textType='head' textColor='black' />
                         <StyledLabel text="Оберіть назву населеного пункту*" type='primary' textType='small' textColor='black' />
-                        <StyledDropdown value='Оберіть місто' type='large' values={['Місто 1', 'Місто 2', 'Місто 3']} />
+                        <StyledDropdown value="Оберіть місто" type='large' values={['Місто 1', 'Місто 2', 'Місто 3']} onChange={(e) => handleLocationChange(e.target.value)} />
+                        {errors.location && <div className="error-message">{errors.location}</div>}
                     </Box>
                     <Box sx={{
                         width: '100%',
@@ -96,12 +271,12 @@ const AdvertCreatePage: React.FC = () => {
                                 gap: '80px',
                                 flexWrap: 'wrap',
                             }}>
-                                <StyledCheckBox label='Продам' />
-                                <StyledCheckBox label='Здам в оренду' />
-                                <StyledCheckBox label='Безкоштовно' />
-                                <StyledCheckBox label='Куплю' />
-                                <StyledCheckBox label='Орендую' />
-                                <StyledCheckBox label='Обміняю' />
+                                <StyledCheckBox label='Продам' checked={formData.orderType === "Продам"} onChange={() => handleCheckboxChange('orderType', 'Продам')} />
+                                <StyledCheckBox label='Здам в оренду' checked={formData.orderType === "Здам в оренду"} onChange={() => handleCheckboxChange('orderType', 'Здам в оренду')} />
+                                <StyledCheckBox label='Безкоштовно' checked={formData.orderType === "Безкоштовно"} onChange={() => handleCheckboxChange('orderType', 'Безкоштовно')} />
+                                <StyledCheckBox label='Куплю' checked={formData.orderType === "Куплю"} onChange={() => handleCheckboxChange('orderType', 'Куплю')} />
+                                <StyledCheckBox label='Орендую' checked={formData.orderType === "Орендую"} onChange={() => handleCheckboxChange('orderType', 'Орендую')} />
+                                <StyledCheckBox label='Обміняю' checked={formData.orderType === "Обміняю"} onChange={() => handleCheckboxChange('orderType', 'Обміняю')} />
                             </Box>
                         </Box>
                         <Box sx={{
@@ -115,8 +290,8 @@ const AdvertCreatePage: React.FC = () => {
                                 flexDirection: 'row',
                                 gap: '80px',
                             }}>
-                                <StyledCheckBox label='Нове' />
-                                <StyledCheckBox label='Вживане' />
+                                <StyledCheckBox label='Нове' checked={formData.status === "Нове"} onChange={() => handleCheckboxChange('status', 'Нове')} />
+                                <StyledCheckBox label='Вживане' checked={formData.status === "Вживане"} onChange={() => handleCheckboxChange('status', 'Вживане')} />
                             </Box>
                         </Box>
                     </Box>
@@ -137,8 +312,8 @@ const AdvertCreatePage: React.FC = () => {
                             gap: '36px',
                             alignItems: 'end',
                         }}>
-                            <StyledInput label='Вкажіть ціну' value='1080 грн' widthType='middle' />
-                            <StyledDropdown value='Валюта' values={["UAH", "USD", "EUR"]} type='middle' />
+                            <StyledInput label='Вкажіть ціну' value="1080" widthType='middle' onChange={(e) => handlePriceChange(e.target.value)} />
+                            <StyledDropdown value="Валюта" values={["UAH", "USD", "EUR"]} type='middle' onChange={(e) => handleCurrencyChange(e.target.value)} />
                             <StyledCheckBox label='Договірна' />
                         </Box>
                     </Box>
@@ -154,31 +329,68 @@ const AdvertCreatePage: React.FC = () => {
                     }}>
                         <StyledLabel text="Фото" type='head' textType='head' textColor='black' />
                         <StyledLabel text="Додайте фото*" type='primary' textType='small' textColor='black' />
-                        <Box sx={{
+                        <Box className='images-container' sx={{
                             display: 'flex',
                             flexDirection: 'row',
-                            justifyContent: 'space-between',
                             gap: '24px',
-                            width: '750px',
-                            flexWrap: 'wrap',
-                            alignItems: 'end',
                         }}>
-                            <StyledButton text='Додати фото' type='contained' primaryColor='var(--green)' secondaryColor='black' hoverBackColor='var(--light-blue)' />
-                            <StyledButton text='Додати фото' type='contained' primaryColor='var(--green)' secondaryColor='black' hoverBackColor='var(--light-blue)' />
-                            <StyledButton text='Додати фото' type='contained' primaryColor='var(--green)' secondaryColor='black' hoverBackColor='var(--light-blue)' />
-                            <StyledButton text='Додати фото' type='contained' primaryColor='var(--green)' secondaryColor='black' hoverBackColor='var(--light-blue)' />
-                            <StyledButton text='Додати фото' type='contained' primaryColor='var(--green)' secondaryColor='black' hoverBackColor='var(--light-blue)' />
-                            <StyledButton text='Додати фото' type='contained' primaryColor='var(--green)' secondaryColor='black' hoverBackColor='var(--light-blue)' />
-                            <StyledButton text='Додати фото' type='contained' primaryColor='var(--green)' secondaryColor='black' hoverBackColor='var(--light-blue)' />
-                            <StyledButton text='Додати фото' type='contained' primaryColor='var(--green)' secondaryColor='black' hoverBackColor='var(--light-blue)' />
+                            {selectedImages.map((image, index) => (
+                                <Box
+                                    key={index}
+                                    className='image-wrapper'
+                                    sx={{
+                                        position: 'relative',
+                                        width: '185px',
+                                        height: '185px',
+                                    }}
+                                >
+                                    <img
+                                        src={URL.createObjectURL(image)}
+                                        alt={`Selected image ${index + 1}`}
+                                        style={{
+                                            width: '100%',
+                                            height: '100%',
+                                            objectFit: 'cover',
+                                        }}
+                                    />
+                                    <IconButton
+                                        onClick={() => handleDeleteImage(index)}
+                                        className='delete-button'
+                                        aria-label="delete"
+                                        sx={{
+                                            position: 'absolute',
+                                            top: '50%',
+                                            left: '50%',
+                                            transform: 'translate(-50%, -50%)',
+                                            color: 'red',
+                                            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                                            '&:hover': {
+                                                backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                                            },
+                                        }}
+                                    >
+                                        <DeleteIcon />
+                                    </IconButton>
+                                </Box>
+                            ))}
                         </Box>
-                        <Box sx={{
-                            display: 'flex',
-                            justifyContent: 'center',
-                            width: '812px',
-                        }}>
-                            <StyledButton text='Завантажити більше фотографій' type='outlined' primaryColor='black' hoverBackColor='var(--light-blue)' />
-                        </Box>
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleMultipleImageUpload}
+                            ref={fileInputRef}
+                            style={{ display: 'none' }}
+                            multiple
+                        />
+                        <StyledButton
+                            text='Додати фото'
+                            type='contained'
+                            primaryColor='var(--green)'
+                            secondaryColor='black'
+                            hoverBackColor='var(--light-blue)'
+                            onClick={handleButtonClick}
+                        />
+                        {errors.image && <div className="error-message">{errors.image}</div>}
                     </Box>
                     <Box sx={{
                         width: '100%',
@@ -189,30 +401,31 @@ const AdvertCreatePage: React.FC = () => {
                         borderRadius: '5px',
                         padding: '33px 118px',
                         textAlign: 'left',
-                    }}>
-                        <StyledLabel text="Опис оголошення" type='head' textType='head' textColor='black' />
-                        <StyledTextArea label='Введіть опис' required value='Будь ласка, введіть опис оголошення' maxLength={9000} minRows={18} />
-                    </Box>
-                    <Box sx={{
-                        width: '100%',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: '24px',
-                        backgroundColor: 'white',
-                        borderRadius: '5px',
-                        padding: '33px 118px',
-                        textAlign: 'left',
                         marginBottom: '120px',
                     }}>
-                        <StyledLabel text="Ваші контактні дані" type='head' textType='head' textColor='black' />
-                        <StyledInput label="Ваше ім'я" value='Вікторія' widthType='large' />
-                        <StyledInput label="Електронна адреса" value='vikka3467@gmail.com' widthType='large' />
-                        <StyledInput label="Номер телефону" value='+38 097 558 6548' widthType='large' />
-                        <StyledButton text='Додати оголошення' type='contained' primaryColor='var(--light-blue)' secondaryColor='white' hoverBackColor='var(--green)' />
+                        <StyledLabel text="Опис оголошення" type='head' textType='head' textColor='black' />
+                        <StyledTextArea label='Введіть опис' required value="Будь ласка, додайте опис оголошення" maxLength={9000} minRows={18} onChange={(e) => handleDescriptionChange(e.target.value)} />
+                        {errors.description && <div className="error-message">{errors.description}</div>}
+                        <StyledButton text='Додати оголошення' type='contained' primaryColor='var(--light-blue)' secondaryColor='white' hoverBackColor='var(--green)' onClick={handleSubmit} />
                     </Box>
                 </form>
             </Box>
             <StyledFooter />
+            <Dialog
+                open={openErrorDialog}
+                onClose={() => setOpenErrorDialog(false)}
+                aria-labelledby="error-dialog-title"
+            >
+                <DialogTitle id="error-dialog-title">Error</DialogTitle>
+                <DialogContent>
+                    <p>{errorMessage}</p>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setOpenErrorDialog(false)} color="primary">
+                        OK
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </StyledEngineProvider >
     );
 };
