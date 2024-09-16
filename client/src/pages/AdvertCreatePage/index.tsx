@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Header } from '../../components/header';
 import { StyledEngineProvider, Box, Button } from '@mui/material';
@@ -16,11 +16,17 @@ import { useRef } from 'react';
 import { IconButton } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import './styles.css';
+import { Category } from '@mui/icons-material';
 
 const AdvertCreatePage: React.FC = () => {
     const [openErrorDialog, setOpenErrorDialog] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [selectedImages, setSelectedImages] = useState<File[]>([]);
+    const [cities, setCities] = useState<string[]>([]);
+    const [categories, setCategories] = useState<{ id: string; name: string; picture: string }[]>([]);
+    const [selectedCategory, setSelectedCategory] = useState<{ id: string; name: string; picture: string }>();
+    const [subCategories, setSubCategories] = useState<string[]>([]);
+    const [currencies, setCurrencies] = useState<string[]>([]);
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const storage = getStorage();
 
@@ -161,6 +167,75 @@ const AdvertCreatePage: React.FC = () => {
         }
     };
 
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const response = await axios.get('http://localhost:5000/categories');
+
+                // const names = response.data.map((category: { name: string }) => category.name);
+                console.log(response.data);
+                setCategories(response.data);
+            } catch (error) {
+                console.error('Error fetching categories', error);
+            }
+        };
+
+        fetchCategories();
+    }, []);
+
+    useEffect(() => {
+        const fetchSubCategories = async () => {
+            try {
+                const categoryId = selectedCategory?.id;
+                if (!categoryId) {
+                    return;
+                }
+
+                const response = await axios.get(`http://localhost:5000/subcategories/by-category/${categoryId}`);
+
+                const names = response.data.map((subcategory: { name: string }) => subcategory.name);
+                setSubCategories(names);
+            } catch (error) {
+                console.error('Error fetching subcategories', error);
+            }
+        };
+
+        fetchSubCategories();
+    }, []);
+
+    useEffect(() => {
+        const fetchCurrency = async () => {
+            try {
+                const response = await axios.get('http://localhost:5000/currencies');
+                const currencies = response.data.map((currency: { abbrEng: string }) => currency.abbrEng);
+
+                console.log(currencies);
+                setCurrencies(currencies);
+            } catch (error) {
+                console.error('Error fetching currencies', error);
+            }
+        };
+
+        fetchCurrency();
+    }, []);
+
+    const fetchCities = async (value: string) => {
+        try {
+            const response = await axios.post('http://localhost:5000/cities', {
+                apiKey: '15d0f1b8de9dc0f5370abcf1906f03cd',
+                modelName: "AddressGeneral",
+                calledMethod: "getSettlements",
+                methodProperties: {
+                    FindByString: value
+                }
+            });
+            const cities = response.data.data.map((city: any) => city.Description);
+            setCities(cities);
+        } catch (error) {
+            console.error('Error fetching cities', error);
+        }
+    };
+
     const handleNameChange = (value: string) => {
         setFormData({ ...formData, name: value });
     }
@@ -228,8 +303,14 @@ const AdvertCreatePage: React.FC = () => {
                         }}>
                             <StyledLabel text="Категорія" type='head' textType='head' textColor='black' />
                             <StyledLabel text="Вкажіть категорію*" type='primary' textType='small' textColor='black' />
-                            <StyledDropdown value='Оберіть категорію' type='large' values={['Категорія 1', 'Категорія 2', 'Категорія 3']} />
-                            <StyledDropdown value="Рубрика категорії" type='large' values={['Рубрика 1', 'Рубрика 2', 'Рубрика 3']} onChange={(e) => handleSubCategoryChange(e.target.value)} />
+                            <StyledDropdown selectOnly placeholder='Оберіть категорію' type='large' values={categories.map(category => {
+                                return category.name;
+                            })} onChange={(e) => categories.forEach(element => {
+                                if (element.name === e.target.value) {
+                                    setSelectedCategory(element);
+                                }
+                            })} />
+                            <StyledDropdown selectOnly placeholder="Рубрика категорії" type='large' values={subCategories} onChange={(e) => handleSubCategoryChange(e.target.value)} />
                             {errors.subCategoryId && <div className="error-message">{errors.subCategoryId}</div>}
                         </Box>
                     </Box>
@@ -245,7 +326,10 @@ const AdvertCreatePage: React.FC = () => {
                     }}>
                         <StyledLabel text="Місцезнаходження" type='head' textType='head' textColor='black' />
                         <StyledLabel text="Оберіть назву населеного пункту*" type='primary' textType='small' textColor='black' />
-                        <StyledDropdown value="Оберіть місто" type='large' values={['Місто 1', 'Місто 2', 'Місто 3']} onChange={(e) => handleLocationChange(e.target.value)} />
+                        <StyledDropdown placeholder="Оберіть місто" type='large' values={cities} onInput={(e) => {
+                            const value = e.target.value;
+                            fetchCities(value);
+                        }} onChange={(e) => handleLocationChange(e.target.value)} />
                         {errors.location && <div className="error-message">{errors.location}</div>}
                     </Box>
                     <Box sx={{
@@ -313,7 +397,7 @@ const AdvertCreatePage: React.FC = () => {
                             alignItems: 'end',
                         }}>
                             <StyledInput label='Вкажіть ціну' value="1080" widthType='middle' onChange={(e) => handlePriceChange(e.target.value)} />
-                            <StyledDropdown value="Валюта" values={["UAH", "USD", "EUR"]} type='middle' onChange={(e) => handleCurrencyChange(e.target.value)} />
+                            <StyledDropdown selectOnly placeholder="Валюта" values={currencies} type='middle' onChange={(e) => handleCurrencyChange(e.target.value)} />
                             <StyledCheckBox label='Договірна' />
                         </Box>
                     </Box>

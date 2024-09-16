@@ -18,6 +18,7 @@ interface StyledDropdownProps {
     selectOnly?: boolean;
     type?: "small" | "middle" | "large";
     onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+    onInput?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 const StyledDropdown: React.FC<StyledDropdownProps> = ({
@@ -26,6 +27,7 @@ const StyledDropdown: React.FC<StyledDropdownProps> = ({
     selectOnly,
     type,
     onChange,
+    onInput,
 }) => {
     const [currentValue, setCurrentValue] = useState('');
     const [filteredItems, setFilteredItems] = useState(values);
@@ -85,6 +87,7 @@ const StyledDropdown: React.FC<StyledDropdownProps> = ({
                     onFocus={handleFocus}
                     onBlur={handleBlur}
                     variant="outlined"
+                    onInput={onInput}
                     fullWidth
                     InputProps={{
                         placeholder: placeholder,
