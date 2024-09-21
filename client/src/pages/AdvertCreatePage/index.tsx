@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { auth } from '../../../firebaseConfig';
+import { User, onAuthStateChanged } from 'firebase/auth';
 import { Header } from '../../components/header';
-import { StyledEngineProvider, Box, Button } from '@mui/material';
+import { StyledEngineProvider, Box, Button, Select, MenuItem, InputLabel, FormControl } from '@mui/material';
 import StyledFooter from '../../components/footer';
 import StyledLabel from '../../components/lable';
 import { StyledInput } from '../../components/input';
@@ -16,18 +18,22 @@ import { useRef } from 'react';
 import { IconButton } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import './styles.css';
-import { Category } from '@mui/icons-material';
 
 const AdvertCreatePage: React.FC = () => {
+    const [currentUser, setCurrentUser] = useState<User | null>(null);
     const [openErrorDialog, setOpenErrorDialog] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [selectedImages, setSelectedImages] = useState<File[]>([]);
     const [cities, setCities] = useState<string[]>([]);
-    const [categories, setCategories] = useState<{ id: string; name: string; picture: string }[]>([]);
-    const [selectedCategory, setSelectedCategory] = useState<{ id: string; name: string; picture: string }>();
+    const [category, setCategory] = useState('');
+    const [categories, setCategories] = useState<{ id: string; name: string; picture: string; subcategories: [] }[]>([]);
     const [subCategories, setSubCategories] = useState<string[]>([]);
     const [currencies, setCurrencies] = useState<string[]>([]);
     const fileInputRef = useRef<HTMLInputElement | null>(null);
+    const [successMessage, setSuccessMessage] = useState('');
+    const [openSuccessDialog, setOpenSuccessDialog] = useState(false);
+
+
     const storage = getStorage();
 
     const [errors, setErrors] = useState({
@@ -39,7 +45,7 @@ const AdvertCreatePage: React.FC = () => {
     });
 
     const [formData, setFormData] = useState({
-        userId: 'user1234',
+        userId: '',
         subCategoryId: '',
         name: '',
         description: '',
@@ -160,6 +166,9 @@ const AdvertCreatePage: React.FC = () => {
         try {
             const response = await axios.post('http://localhost:5000/adverts', formData);
             console.log('Advert created successfully', response.data);
+
+            setSuccessMessage('Оголошення додано успішно!');
+            setOpenSuccessDialog(true);
         } catch (error) {
             console.error('Error creating advert', error);
             setErrorMessage('Помилка створення оголошення.');
@@ -172,8 +181,6 @@ const AdvertCreatePage: React.FC = () => {
             try {
                 const response = await axios.get('http://localhost:5000/categories');
 
-                // const names = response.data.map((category: { name: string }) => category.name);
-                console.log(response.data);
                 setCategories(response.data);
             } catch (error) {
                 console.error('Error fetching categories', error);
@@ -184,32 +191,11 @@ const AdvertCreatePage: React.FC = () => {
     }, []);
 
     useEffect(() => {
-        const fetchSubCategories = async () => {
-            try {
-                const categoryId = selectedCategory?.id;
-                if (!categoryId) {
-                    return;
-                }
-
-                const response = await axios.get(`http://localhost:5000/subcategories/by-category/${categoryId}`);
-
-                const names = response.data.map((subcategory: { name: string }) => subcategory.name);
-                setSubCategories(names);
-            } catch (error) {
-                console.error('Error fetching subcategories', error);
-            }
-        };
-
-        fetchSubCategories();
-    }, []);
-
-    useEffect(() => {
         const fetchCurrency = async () => {
             try {
                 const response = await axios.get('http://localhost:5000/currencies');
                 const currencies = response.data.map((currency: { abbrEng: string }) => currency.abbrEng);
 
-                console.log(currencies);
                 setCurrencies(currencies);
             } catch (error) {
                 console.error('Error fetching currencies', error);
@@ -217,6 +203,21 @@ const AdvertCreatePage: React.FC = () => {
         };
 
         fetchCurrency();
+    }, []);
+
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            setCurrentUser(user);
+            console.log(user);
+            if (user?.uid) {
+                setFormData((prevFormData) => ({
+                    ...prevFormData,
+                    userId: user.uid,
+                }));
+            }
+        });
+
+        return () => unsubscribe();
     }, []);
 
     const fetchCities = async (value: string) => {
@@ -264,6 +265,21 @@ const AdvertCreatePage: React.FC = () => {
         setFormData({ ...formData, currencyId: value });
     }
 
+    const handleCategory = async (value: string) => {
+        setSubCategories([]);
+        setCategory(value);
+        const res = await axios.get("http://localhost:5000/subcategories/by-category/" + value);
+        if (res.data === undefined) {
+            setSubCategories([]);
+        } else {
+            let names: string[] = [];
+            res.data.forEach((element: { name: string }) => {
+                names.push(element.name);
+            });
+            setSubCategories(names);
+        }
+    }
+
     return (
         <StyledEngineProvider injectFirst>
             <Header />
@@ -303,14 +319,40 @@ const AdvertCreatePage: React.FC = () => {
                         }}>
                             <StyledLabel text="Категорія" type='head' textType='head' textColor='black' />
                             <StyledLabel text="Вкажіть категорію*" type='primary' textType='small' textColor='black' />
-                            <StyledDropdown selectOnly placeholder='Оберіть категорію' type='large' values={categories.map(category => {
-                                return category.name;
-                            })} onChange={(e) => categories.forEach(element => {
-                                if (element.name === e.target.value) {
-                                    setSelectedCategory(element);
-                                }
-                            })} />
-                            <StyledDropdown selectOnly placeholder="Рубрика категорії" type='large' values={subCategories} onChange={(e) => handleSubCategoryChange(e.target.value)} />
+                            <FormControl fullWidth sx={{ width: '600px' }}>
+                                <InputLabel id='category'>Категорія</InputLabel>
+                                <Select labelId='category' label='Категорія' value={category} onChange={(e) => handleCategory(e.target.value as string)}>
+                                    {categories.map((item, index) => (
+                                        <MenuItem
+                                            key={index}
+                                            value={item.id}
+                                            sx={{
+                                                fontFamily: "Nunito",
+                                                fontSize: "18px",
+                                            }}
+                                        >
+                                            {item.name}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                            <FormControl fullWidth sx={{ width: '600px' }}>
+                                <InputLabel id='subCategory'>Підкатегорія</InputLabel>
+                                <Select labelId='subCategory' label='Категорія' value={formData.subCategoryId} onChange={(e) => handleSubCategoryChange(e.target.value as string)}>
+                                    {subCategories.map((item, index) => (
+                                        <MenuItem
+                                            key={index}
+                                            value={item}
+                                            sx={{
+                                                fontFamily: "Nunito",
+                                                fontSize: "18px",
+                                            }}
+                                        >
+                                            {item}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
                             {errors.subCategoryId && <div className="error-message">{errors.subCategoryId}</div>}
                         </Box>
                     </Box>
@@ -397,7 +439,23 @@ const AdvertCreatePage: React.FC = () => {
                             alignItems: 'end',
                         }}>
                             <StyledInput label='Вкажіть ціну' value="1080" widthType='middle' onChange={(e) => handlePriceChange(e.target.value)} />
-                            <StyledDropdown selectOnly placeholder="Валюта" values={currencies} type='middle' onChange={(e) => handleCurrencyChange(e.target.value)} />
+                            <FormControl fullWidth sx={{ width: '300px' }}>
+                                <InputLabel id='currency'>Валюта</InputLabel>
+                                <Select labelId='currency' label='Валюта' value={formData.currencyId} onChange={(e) => handleCurrencyChange(e.target.value as string)}>
+                                    {currencies.map((item, index) => (
+                                        <MenuItem
+                                            key={index}
+                                            value={item}
+                                            sx={{
+                                                fontFamily: "Nunito",
+                                                fontSize: "18px",
+                                            }}
+                                        >
+                                            {item}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
                             <StyledCheckBox label='Договірна' />
                         </Box>
                     </Box>
@@ -495,6 +553,21 @@ const AdvertCreatePage: React.FC = () => {
                 </form>
             </Box>
             <StyledFooter />
+            <Dialog
+                open={openSuccessDialog}
+                onClose={() => setOpenErrorDialog(false)}
+                aria-labelledby="success-message"
+            >
+                <DialogTitle id="success-message">Оголошення успішно додане</DialogTitle>
+                <DialogActions>
+                    <Button onClick={() => {
+                        setOpenSuccessDialog(false);
+                        window.location.reload();
+                    }} color="primary">
+                        OK
+                    </Button>
+                </DialogActions>
+            </Dialog>
             <Dialog
                 open={openErrorDialog}
                 onClose={() => setOpenErrorDialog(false)}
