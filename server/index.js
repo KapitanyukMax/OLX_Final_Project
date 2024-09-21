@@ -26,6 +26,7 @@ app.use('/currencies', require('./routes/currencies.js'));
 app.use('/resetPass', require('./routes/resetPass.js'));
 app.use(errorHandler);
 
+
 app.listen(PORT, (err) => {
     if (err) {
         const message = err?.message ?? 'Unknown server error';
