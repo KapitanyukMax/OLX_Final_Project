@@ -32,6 +32,8 @@ const AdvertCreatePage: React.FC = () => {
         image: '',
     });
 
+    const host = import.meta.env.VITE_HOST;
+
     const [formData, setFormData] = useState({
         userId: 'user1234',
         subCategoryId: '',
@@ -152,7 +154,7 @@ const AdvertCreatePage: React.FC = () => {
         }
 
         try {
-            const response = await axios.post('http://localhost:5000/adverts', formData);
+            const response = await axios.post(`${host}/adverts`, formData);
             console.log('Advert created successfully', response.data);
         } catch (error) {
             console.error('Error creating advert', error);

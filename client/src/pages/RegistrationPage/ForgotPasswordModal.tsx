@@ -13,6 +13,9 @@ export const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({ onSwit
     const [contact, setContact] = useState('');
     const [error, setError] = useState<string>('');
 
+    const host = import.meta.env.VITE_HOST;
+
+
     const handleContactChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setContact(e.target.value);
         setError('');
@@ -25,14 +28,15 @@ export const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({ onSwit
         }
     
         try {
-            const response = await fetch('http://localhost:5000/resetPass/request-password-reset', {
+            console.log(host);
+            const response = await fetch(`${host}/resetPass/request-password-reset`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({ contact }),
             });
-    
+            
             if (response.ok) {
                 console.log('Password reset code sent');
                 onSwitchToEnterVerifyCode(contact);
