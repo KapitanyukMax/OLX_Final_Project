@@ -15,6 +15,8 @@ export const EnterVerifyModal: React.FC<EnterVerifyModalProps> = ({ email, onSwi
   const [isCodeValid, setIsCodeValid] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
+  const host = import.meta.env.VITE_HOST;
+
   useEffect(() => {
     if (timer > 0) {
       const countdown = setInterval(() => {
@@ -29,7 +31,7 @@ export const EnterVerifyModal: React.FC<EnterVerifyModalProps> = ({ email, onSwi
 
   const ReSendPassword = async () => {
     try {
-      const response = await fetch('http://localhost:5000/resetPass/re-send-reset-code', {
+      const response = await fetch(`${host}/resetPass/re-send-reset-code`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -52,7 +54,7 @@ export const EnterVerifyModal: React.FC<EnterVerifyModalProps> = ({ email, onSwi
 
   const handleVerifyCode = async () => {
     try {
-      const response = await fetch('http://localhost:5000/resetPass/verify-reset-code', {
+      const response = await fetch(`${host}/resetPass/verify-reset-code`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -64,6 +66,7 @@ export const EnterVerifyModal: React.FC<EnterVerifyModalProps> = ({ email, onSwi
       if (response.ok) {
         console.log('Код підтверджено успішно');
         setIsCodeValid(true);
+        localStorage.setItem('resetUserId', result.userId);
         onSwitchToResetPassword();
       } else {
         setErrorMessage(result.message || 'Невірний код.');

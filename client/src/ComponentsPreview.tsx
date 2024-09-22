@@ -78,6 +78,11 @@ import MastercardIcon from './components/icons/mastercard';
 import ApplePayIcon from './components/icons/applePay';
 import OComponentIcon from './components/icons/oicon';
 import HorizontalLineIcon from './components/icons/horizontalLine';
+import Chat from './components/chat';
+import SendMessageIcon from './components/icons/sendMessageIcon';
+import MeestCorpIcon from './components/icons/meestIcon';
+import NovaPostIcon1 from './components/icons/novaPost1';
+import NovaPostIcon2 from './components/icons/novaPost2';
 
 const ComponentsPreview = () => {
     return (
@@ -90,6 +95,10 @@ const ComponentsPreview = () => {
                     minHeight: '100vh'
                 }}>
                 <Typography variant="h3">Components Preview</Typography>
+                <Box>
+                    <Typography variant='h5' textAlign='start'>Chat</Typography>
+                    <Chat messages={['Hello', 'World']} onSend={(message) => { console.log(message)}} />
+                </Box>
                 <Box>
                     <Typography variant='h5' textAlign='start'>Information Section</Typography>
                     <InformationSection></InformationSection>
@@ -164,7 +173,10 @@ const ComponentsPreview = () => {
                                     gap: '8px',
                                     justifyContent: 'space-between',
                                 }}>
-
+                                <SendMessageIcon/>
+                                <MeestCorpIcon/>
+                                <NovaPostIcon1/>
+                                <NovaPostIcon2/>
                                 <ArrowDownBlackIcon />
                                 <ArrowDownWhiteIcon />
                                 <SearchIcon />

@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Box, StyledEngineProvider } from '@mui/material';
 import StyledLabel from '../../components/lable';
 import PasswordIcon from '../../components/icons/password';
 import { StyledInput } from '../../components/input';
-
+import { getAuth, updatePassword} from 'firebase/auth';
 interface ResetPasswordModalProps {
     onSwitchToSuccessPageModal:()=>void; 
 }
@@ -14,6 +14,79 @@ export const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({ onSwitch
     const [password, setPassword] = useState<string>(''); 
     const [confirmPassword, setConfirmPassword] = useState<string>('');
     const [error, setError] = useState<string>('');
+    const [userId, setUserId] = useState<string | null>(null);
+    const [email, setEmail] = useState<string>('');
+
+    
+    useEffect(() => {
+        const storedUserId = localStorage.getItem('resetUserId');
+        const storedEmail = localStorage.getItem('resetUserEmail'); // Отримання email
+        if (storedUserId) {
+            setUserId(storedUserId);
+        }
+        if (storedEmail) {
+            setEmail(storedEmail);
+        }
+    }, []);
+
+    const auth = getAuth();
+    const user = auth.currentUser;
+
+    const host = import.meta.env.VITE_HOST;
+
+    const handleResetPassword = async () => {
+        if (password.length < 6) {
+            setError('Пароль має містити принаймні 6 символів');
+            return;
+        }
+
+        if (password !== confirmPassword) {
+            setError('Паролі не співпадають');
+            return;
+        }
+        
+        try {
+            const response = await fetch(`${host}/resetPass/reset-password`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    userId: userId,
+                    newPassword: password,
+                }),
+            });
+
+            
+            const data = await response.json();
+                console.log(userId);
+                console.log(password);
+                console.log(data.message);
+                console.log(response.status);
+
+                
+            if (response.ok) {
+                try {
+                    if (user) {
+                        await updatePassword(user, password);
+                        console.log("Пароль успішно змінено");
+                    } else {
+                        console.log("Користувач не автентифікований");
+                    }
+                } catch (error) {
+                    console.error("Помилка при зміні пароля:", error);
+                }
+                onSwitchToSuccessPageModal();
+            } else {
+                
+                setError(data.message || 'Помилка при оновленні паролю');
+            }
+        } catch (error) {
+            console.error('Помилка при скиданні паролю:', error);
+            setError('Помилка при з\'єднанні з сервером');
+        }
+    };
+
 
     const handleTogglePasswordVisibility1 = () => {
         setShowPassword1(!showPassword1);
@@ -62,8 +135,7 @@ export const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({ onSwitch
                             <StyledLabel text='Новий пароль' textType='small' type='with-icon' textColor='var(--black)' />
                             <StyledInput 
                                 widthType='big' 
-                                value={password} 
-                                isPassword 
+                                value={password}
                                 iconEnd={PasswordIcon} 
                                 iconEndClick={handleTogglePasswordVisibility1} 
                                 type={showPassword1 ? 'text' : 'password'}
@@ -74,8 +146,7 @@ export const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({ onSwitch
                             <StyledLabel text='Підтвердіть пароль' textType='small' type='with-icon' textColor='var(--black)' />
                             <StyledInput 
                                 widthType='big' 
-                                value={confirmPassword} 
-                                isPassword 
+                                value={confirmPassword}
                                 iconEnd={PasswordIcon} 
                                 iconEndClick={handleTogglePasswordVisibility2} 
                                 type={showPassword2 ? 'text' : 'password'}
@@ -89,7 +160,7 @@ export const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({ onSwitch
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '100%', gap: '42px', marginTop: '36px' }}>
                 <StyledEngineProvider injectFirst>
                     <Button 
-                        onClick={ onSwitchToSuccessPageModal} 
+                        onClick={ handleResetPassword} 
                         sx={{ 
                             width: '456px', 
                             height: '48px', 
