@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { auth } from '../../../firebaseConfig';
+import axios from 'axios';
 import { User, onAuthStateChanged } from 'firebase/auth';
 import { Header } from '../../components/header';
 import { StyledEngineProvider, Box } from '@mui/material';
@@ -14,9 +15,12 @@ import IInCircleIcon from '../../components/icons/iInCircle';
 import { Link } from 'react-router-dom';
 import { StyledDropdown } from '../../components/dropdown';
 import SearchIcon from '../../components/icons/search';
+import { StyledAdvert } from '../../components/advert';
 
 const ProfilePage: React.FC = () => {
     const [currentUser, setCurrentUser] = useState<User | null>(null);
+    const [isEditable, setIsEditable] = useState(true);
+    const [adverts, setAdverts] = useState([]);
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -26,6 +30,29 @@ const ProfilePage: React.FC = () => {
 
         return () => unsubscribe();
     }, []);
+
+    useEffect(() => {
+        const getAdverts = async () => {
+            if (currentUser) {
+                const response = await axios.get(`http://localhost:5000/adverts?userId=${currentUser.uid}`);
+                if (response) {
+                    const data = response.data.adverts;
+                    setAdverts(data);
+                    console.log(data);
+                } else {
+                    return;
+                }
+            } else {
+                console.log('User is not authenticated');
+            }
+        }
+
+        getAdverts();
+    }, [currentUser]);
+
+    const handleEditClick = () => {
+        setIsEditable((prevState) => !prevState);
+    };
 
     return (
         <StyledEngineProvider injectFirst>
@@ -44,20 +71,20 @@ const ProfilePage: React.FC = () => {
                     height: '100%',
                 }}>
                     <Box sx={{ marginTop: '80px', marginBottom: '40px', display: 'flex', flexDirection: 'row', justifyContent: 'end' }}>
-                        <StyledButton text='Редагувати профіль' type='contained' secondaryColor='black' icon={PenFluentIcon} />
+                        <StyledButton text='Редагувати профіль' type='contained' secondaryColor='black' icon={PenFluentIcon} onClick={handleEditClick} />
                     </Box>
                     <Box sx={{ display: 'flex', flexDirection: 'row', gap: '50px' }}>
                         <ImageComponent src='https://via.placeholder.com/204' alt='user' width='204px' height='204px' />
                         <Box sx={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
                             <Box sx={{ display: 'flex', flexDirection: 'row', gap: '50px' }}>
-                                <StyledInput value='Вікторія' label="Ім'я" widthType='middle' />
-                                <StyledInput value='+38 098 326 09 10' label="Номер телефону" widthType='middle' />
-                                <StyledInput value='Рівненська область' label="Регіон" widthType='middle' />
+                                <StyledInput value={currentUser?.displayName ?? ''} label="Ім'я" widthType='middle' disabled={isEditable} />
+                                <StyledInput value={currentUser?.phoneNumber ?? ''} label="Номер телефону" widthType='middle' disabled={isEditable} />
+                                <StyledInput value='Рівненська область' label="Регіон" widthType='middle' disabled={isEditable} />
                             </Box>
                             <Box sx={{ display: 'flex', flexDirection: 'row', gap: '50px' }}>
-                                <StyledInput value='Ромашко' label="Прізвище" widthType='middle' />
-                                <StyledInput value='vikka3467@gmail.com' label="Електронна пошта" widthType='middle' />
-                                <StyledInput value='Рівне' label="Назва населеного пункту" widthType='middle' />
+                                <StyledInput value='Ромашко' label="Прізвище" widthType='middle' disabled={isEditable} />
+                                <StyledInput value={currentUser?.email ?? ''} label="Електронна пошта" widthType='middle' disabled={isEditable} />
+                                <StyledInput value='Рівне' label="Назва населеного пункту" widthType='middle' disabled={isEditable} />
                             </Box>
                         </Box>
                     </Box>
@@ -109,13 +136,12 @@ const ProfilePage: React.FC = () => {
                     alignItems: 'center',
                     marginTop: '40px',
                     width: '100%',
-                    height: '1103px',
                     backgroundColor: 'rgba(0, 37, 121, 0.08)',
                 }}>
                     <Box sx={{
                         display: 'flex',
                         flexDirection: 'column',
-                        width: '1371px',
+                        width: '1400px',
                         height: '100%',
                     }}>
                         <Box sx={{ display: 'flex', flexDirection: 'row', marginTop: '38px', gap: '30px' }}>
@@ -134,13 +160,34 @@ const ProfilePage: React.FC = () => {
                             <StyledDropdown values={[]} placeholder='Сортувати' />
                         </Box>
 
-                        <Box sx={{ display: 'flex', flexDirection: 'row', marginTop: '100px', width: '100%', justifyContent: 'center' }}>
-                            <Box sx={{ display: 'flex', flexDirection: 'column', width: '831px', justifyContent: 'center', alignItems: 'center', gap: '30px' }}>
-                                <ImageComponent src='https://via.placeholder.com/363' alt='user' width='363px' height='321px' />
-                                <StyledLabel text='Активні оголошення відображаються тут до закінчення їх терміну дії' type='primary' textType='middle' textColor='black' />
-                                <StyledLabel text='Ці оголошення доступні для перегляду всім і стають неактивними через 30 днів після їх активації' type='primary' textType='small' textColor='black' />
-                                <StyledButton text='Додати оголошення' type='contained' />
-                            </Box>
+                        <Box sx={{ display: 'flex', flexDirection: 'row', marginTop: '100px', width: '100%', marginBottom: '40px' }}>
+                            {adverts.length === 0 ? (
+                                <Box sx={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
+                                    <Box sx={{ display: 'flex', flexDirection: 'column', width: '831px', justifyContent: 'center', alignItems: 'center', gap: '30px' }}>
+                                        <ImageComponent src='https://via.placeholder.com/363' alt='user' width='363px' height='321px' />
+                                        <StyledLabel text='Активні оголошення відображаються тут до закінчення їх терміну дії' type='primary' textType='middle' textColor='black' />
+                                        <StyledLabel text='Ці оголошення доступні для перегляду всім і стають неактивними через 30 днів після їх активації' type='primary' textType='small' textColor='black' />
+                                        <StyledButton text='Додати оголошення' type='contained' onClick={() => { window.location.href = '/advert-create' }} />
+                                    </Box>
+                                </Box>
+                            ) : (
+                                <Box sx={{
+                                    display: 'flex',
+                                    flexDirection: 'row',
+                                    gap: '30px',
+                                    flexWrap: 'wrap'
+                                }}>
+                                    {adverts.map((advert: any) => {
+                                        return (
+                                            <StyledAdvert key={advert.id} title={advert.name} location={advert.location} date={advert.creationDate} image={advert.pictures[0]} price={advert.price} onClick={
+                                                () => {
+                                                    console.log('Advert clicked');
+                                                }
+                                            } />
+                                        );
+                                    })}
+                                </Box>
+                            )}
                         </Box>
                     </Box>
                 </Box>

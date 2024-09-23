@@ -14,3 +14,8 @@
     font-family: Nunito;
     text-align: left;
 }
+
+.modified {
+    font-family: "Nunito-Regular", Helvetica;
+    color: #1e1e1e;
+}
