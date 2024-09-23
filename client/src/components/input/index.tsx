@@ -8,6 +8,7 @@ interface StyledInputProps {
     widthType?: 'small' | 'middle' | 'big' | 'large';
     width?: string;
     label?: string;
+    sx?: any;
     required?: boolean;
     maxLength?: number;
     type?: 'password' | 'text';
@@ -22,6 +23,7 @@ interface StyledInputProps {
 const StyledInput: React.FC<StyledInputProps> = ({
     label,
     value,
+    sx,
     required,
     widthType,
     width,
@@ -76,6 +78,7 @@ const StyledInput: React.FC<StyledInputProps> = ({
                     id='input'
                     placeholder={currentValue}
                     type={type}
+                    sx={sx}
                     disabled={disabled}
                     className='basic-input'
                     onChange={handleChange}
