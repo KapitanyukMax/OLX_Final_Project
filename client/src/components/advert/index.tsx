@@ -10,6 +10,7 @@ import "./styles.css";
 import StyledIconButton from "../iconButton";
 
 interface StyledAdvertProps {
+    key?: string;
     title: string;
     location: string;
     date: string;
@@ -21,10 +22,10 @@ interface StyledAdvertProps {
     price: number;
 };
 
-const StyledAdvert: React.FC<StyledAdvertProps> = ({ title, location, date, image, isVIP, isTOP, price, onClick, onHeartClick }) => {
+const StyledAdvert: React.FC<StyledAdvertProps> = ({ key, title, location, date, image, isVIP, isTOP, price, onClick, onHeartClick }) => {
     return (
         <StyledEngineProvider injectFirst>
-            <Box className='advert' onClick={onClick} style={{ cursor: 'pointer' }}>
+            <Box className='advert' onClick={onClick} style={{ cursor: 'pointer' }} key={key}>
                 <Box className='imageContainer'>
                     <ImageComponent src={image} alt={title} />
                     {

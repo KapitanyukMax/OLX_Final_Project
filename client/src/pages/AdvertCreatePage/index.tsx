@@ -322,8 +322,8 @@ const AdvertCreatePage: React.FC = () => {
                             <StyledLabel text="Категорія" type='head' textType='head' textColor='black' />
                             <StyledLabel text="Вкажіть категорію*" type='primary' textType='small' textColor='black' />
                             <FormControl fullWidth sx={{ width: '600px' }}>
-                                <InputLabel id='category'>Категорія</InputLabel>
-                                <Select labelId='category' label='Категорія' value={category} onChange={(e) => handleCategory(e.target.value as string)}>
+                                <InputLabel id='category' className='modified' sx={{ fontSize: '16px', fontWeight: '400' }}>Категорія</InputLabel>
+                                <Select labelId='category' className='modified' sx={{ borderRadius: '10px', border: '1px solid #000' }} label='Категорія' value={category} onChange={(e) => handleCategory(e.target.value as string)}>
                                     {categories.map((item, index) => (
                                         <MenuItem
                                             key={index}
@@ -331,7 +331,9 @@ const AdvertCreatePage: React.FC = () => {
                                             sx={{
                                                 fontFamily: "Nunito",
                                                 fontSize: "18px",
+                                                fontWeight: '400',
                                             }}
+                                            className='modified'
                                         >
                                             {item.name}
                                         </MenuItem>
@@ -340,7 +342,7 @@ const AdvertCreatePage: React.FC = () => {
                             </FormControl>
                             <FormControl fullWidth sx={{ width: '600px' }}>
                                 <InputLabel id='subCategory'>Підкатегорія</InputLabel>
-                                <Select labelId='subCategory' label='Категорія' value={formData.subCategoryId} onChange={(e) => handleSubCategoryChange(e.target.value as string)}>
+                                <Select labelId='subCategory' label='Категорія' sx={{ borderRadius: '10px', border: '1px solid #000' }} value={formData.subCategoryId} onChange={(e) => handleSubCategoryChange(e.target.value as string)}>
                                     {subCategories.map((item, index) => (
                                         <MenuItem
                                             key={index}
@@ -348,6 +350,8 @@ const AdvertCreatePage: React.FC = () => {
                                             sx={{
                                                 fontFamily: "Nunito",
                                                 fontSize: "18px",
+                                                fontWeight: '400',
+                                                color: '#737070'
                                             }}
                                         >
                                             {item}
@@ -443,7 +447,7 @@ const AdvertCreatePage: React.FC = () => {
                             <StyledInput label='Вкажіть ціну' value="1080" widthType='middle' onChange={(e) => handlePriceChange(e.target.value)} />
                             <FormControl fullWidth sx={{ width: '300px' }}>
                                 <InputLabel id='currency'>Валюта</InputLabel>
-                                <Select labelId='currency' label='Валюта' value={formData.currencyId} onChange={(e) => handleCurrencyChange(e.target.value as string)}>
+                                <Select labelId='currency' label='Валюта' sx={{ borderRadius: '10px', border: '1px solid #000' }} value={formData.currencyId} onChange={(e) => handleCurrencyChange(e.target.value as string)}>
                                     {currencies.map((item, index) => (
                                         <MenuItem
                                             key={index}

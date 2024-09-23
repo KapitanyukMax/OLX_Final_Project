@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { auth } from '../../../firebaseConfig';
+import { User, onAuthStateChanged } from 'firebase/auth';
 import { StyledEngineProvider } from '@mui/material/styles'
 import { Box, Link } from "@mui/material";
 import { Typography } from '@mui/material';
@@ -12,6 +14,17 @@ import { StyledHeaderDropdown } from '../dropdown';
 import DDXLogoIcon from '../icons/ddxLogo';
 
 const Header: React.FC = () => {
+    const [currentUser, setCurrentUser] = useState<User | null>(null);
+
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            setCurrentUser(user);
+            console.log(user);
+        });
+
+        return () => unsubscribe();
+    }, []);
+
     return (
         <StyledEngineProvider injectFirst>
             <Box sx={{
@@ -48,7 +61,7 @@ const Header: React.FC = () => {
                         }}>
                             Головна
                         </Link>
-                            <StyledHeaderDropdown placeholder={'Категорії'} values={["Електроніка", "Одяг"]}/>
+                        <StyledHeaderDropdown placeholder={'Категорії'} values={["Електроніка", "Одяг"]} />
                     </Box>
                     <Box sx={{
                         display: 'flex',
@@ -56,11 +69,21 @@ const Header: React.FC = () => {
                     }}>
                         <StyledIconButton icon={HeartWhiteIcon} />
                         <StyledIconButton icon={MessageWhiteIcon} />
-                        <StyledIconButton icon={UserProfileWhiteIcon} />
+                        <StyledIconButton icon={UserProfileWhiteIcon} onClick={() => {
+                            if (currentUser) {
+                                window.location.href = '/profile-page';
+                            } else {
+                                window.location.href = '/registration';
+                            }
+                        }} />
                     </Box>
                     <StyledButton text='Додати оголошення' type='contained' icon={PlusIcon} primaryColor='var(--green)' secondaryColor='white' hoverBackColor='var(--light-blue)' className='button-fit'
                         onClick={() => {
-                            window.location.href = '/advert-create';
+                            if (currentUser) {
+                                window.location.href = '/advert-create';
+                            } else {
+                                window.location.href = '/registration';
+                            }
                         }} />
                     <Box sx={{
                         display: 'flex',
