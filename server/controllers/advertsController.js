@@ -6,7 +6,7 @@ const db = admin.firestore();
 
 const getAllAdverts = async (req, res, next) => {
     try {
-        const { limit = 10, startAfter } = req.query; // Default limit is 10
+        const { limit = 10, startAfter, searchTerm } = req.query;
         let query = db.collection('adverts').orderBy('creationDate').limit(parseInt(limit));
 
         if (startAfter) {
@@ -20,10 +20,14 @@ const getAllAdverts = async (req, res, next) => {
         const result = [];
 
         snapshot.forEach((doc) => {
-            result.push({
-                id: doc.id,
-                ...doc.data()
-            });
+            const data = doc.data();
+
+            if (!searchTerm || data.name.toLowerCase().includes(searchTerm.toLowerCase())) {
+                result.push({
+                    id: doc.id,
+                    ...data
+                });
+            }
         });
 
         const lastVisible = snapshot.docs[snapshot.docs.length - 1];
@@ -58,7 +62,7 @@ const getAdvertById = async (req, res, next) => {
 
 const getAdvertsByCategoryId = async (req, res, next) => {
     try {
-        const { limit = 10, startAfter } = req.query;
+        const { limit = 10, startAfter, searchTerm } = req.query;
         const snapshot = await db.collection('subcategories')
             .where('categoryId', '==', req.query.categoryId)
             .get();
@@ -91,10 +95,12 @@ const getAdvertsByCategoryId = async (req, res, next) => {
             const advertsSnapshot = await query.get();
 
             advertsSnapshot.forEach((doc) => {
-                result.push({
-                    id: doc.id,
-                    ...doc.data()
-                });
+                if (!searchTerm || doc.name.toLowerCase().includes(searchTerm.toLowerCase())) {
+                    result.push({
+                        id: doc.id,
+                        ...doc.data()
+                    });
+                }
             });
 
             if (advertsSnapshot.docs.length > 0) {
@@ -115,7 +121,7 @@ const getAdvertsByCategoryId = async (req, res, next) => {
 
 const getAdvertsByUserId = async (req, res, next) => {
     try {
-        const { limit = 10, startAfter } = req.query;
+        const { limit = 10, startAfter, searchTerm } = req.query;
         let query = db.collection('adverts')
             .where('userId', '==', req.query.userId)
             .orderBy('creationDate')
@@ -136,10 +142,12 @@ const getAdvertsByUserId = async (req, res, next) => {
 
         const result = [];
         snapshot.forEach((doc) => {
-            result.push({
-                id: doc.id,
-                ...doc.data()
-            });
+            if (!searchTerm || doc.name.toLowerCase().includes(searchTerm.toLowerCase())) {
+                result.push({
+                    id: doc.id,
+                    ...doc.data()
+                });
+            }
         });
 
         const lastVisible = snapshot.docs[snapshot.docs.length - 1];
@@ -157,7 +165,7 @@ const getAdvertsByUserId = async (req, res, next) => {
 
 const getAdvertsBySubcategoryId = async (req, res, next) => {
     try {
-        const { limit = 10, startAfter } = req.query;
+        const { limit = 10, startAfter, searchTerm } = req.query;
         let query = db.collection('adverts')
             .where('subCategoryId', '==', req.query.subcategoryId)
             .orderBy('creationDate')
@@ -178,10 +186,12 @@ const getAdvertsBySubcategoryId = async (req, res, next) => {
 
         const result = [];
         snapshot.forEach((doc) => {
-            result.push({
-                id: doc.id,
-                ...doc.data()
-            });
+            if (!searchTerm || doc.name.toLowerCase().includes(searchTerm.toLowerCase())) {
+                result.push({
+                    id: doc.id,
+                    ...doc.data()
+                });
+            }
         });
 
         const lastVisible = snapshot.docs[snapshot.docs.length - 1];
@@ -288,7 +298,7 @@ const deleteAdvert = async (req, res, next) => {
 
 const getAdvertsByTOP = async (req, res, next) => {
     try {
-        const { limit = 10, startAfter } = req.query;
+        const { limit = 10, startAfter, searchTerm } = req.query;
         let query = db.collection('adverts')
             .orderBy('viewsCount', 'desc')
             .limit(parseInt(limit));
@@ -308,10 +318,12 @@ const getAdvertsByTOP = async (req, res, next) => {
 
         const result = [];
         snapshot.forEach((doc) => {
-            result.push({
-                id: doc.id,
-                ...doc.data()
-            });
+            if (!searchTerm || doc.name.toLowerCase().includes(searchTerm.toLowerCase())) {
+                result.push({
+                    id: doc.id,
+                    ...doc.data()
+                });
+            }
         });
 
         const lastVisible = snapshot.docs[snapshot.docs.length - 1];
@@ -329,7 +341,7 @@ const getAdvertsByTOP = async (req, res, next) => {
 
 const getAdvertsByVIP = async (req, res, next) => {
     try {
-        const { limit = 10, startAfter } = req.query;
+        const { limit = 10, startAfter, searchTerm } = req.query;
         let query = db.collection('adverts')
             .where('vipUntil', '!=', null)
             .orderBy('vipUntil', 'desc')
@@ -350,10 +362,12 @@ const getAdvertsByVIP = async (req, res, next) => {
 
         const result = [];
         snapshot.forEach((doc) => {
-            result.push({
-                id: doc.id,
-                ...doc.data()
-            });
+            if (!searchTerm || doc.name.toLowerCase().includes(searchTerm.toLowerCase())) {
+                result.push({
+                    id: doc.id,
+                    ...doc.data()
+                });
+            }
         });
 
         const lastVisible = snapshot.docs[snapshot.docs.length - 1];
