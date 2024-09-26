@@ -7,7 +7,7 @@ import {
     StyledEngineProvider,
     Typography,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Header } from "../../components/header";
 import { StyledInput } from "../../components/input";
 import StyledButton from "../../components/button";
@@ -25,34 +25,85 @@ import LocationIcon from "../../components/icons/location";
 import TimeFillIcon from "../../components/icons/timeFill";
 import { StyledAdvert } from "../../components/advert";
 import StyledFooter from "../../components/footer";
+import { onAuthStateChanged, User } from "firebase/auth";
+import { auth } from "../../../firebaseConfig";
+import axios from "axios";
+import { useParams } from "react-router-dom";
 
 const AdvertPage: React.FC = () => {
+    const { advertId } = useParams<{ advertId: string }>();
+    const [currentUser, setCurrentUser] = useState<User | null>(null);
+    const [advertData, setAdvertData] = useState<any>(null);
+    const [userData, setUserData] = useState<any>(null);
+    const [userAdverts, setUserAdverts] = useState<any[]>([]);
+    const [adverts, setAdverts] = useState<any[]>([]);
     const [openImage, setOpenImage] = useState(false);
     const [selectedImage, setSelectedImage] = useState<string>("");
+    const [isLoading, setIsLoading] = useState(true);
 
-    const handleClickImageOpen = (image: any) => {
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, async (user) => {
+            setCurrentUser(user);
+        });
+
+        return () => unsubscribe();
+    }, []);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const advertResponse = await axios.get(
+                    `http://localhost:5000/adverts/id/?id=${advertId}`
+                );
+                setAdvertData(advertResponse.data);
+
+                const userId = advertResponse.data.userId;
+                const userResponse = await axios.get(
+                    `http://localhost:5000/users/${userId}`
+                );
+                setUserData(userResponse.data);
+
+                const userAdvertsResponse = await axios.get(
+                    `http://localhost:5000/adverts/userId/?userId=${userId}`
+                );
+                setUserAdverts(userAdvertsResponse.data.adverts);
+
+                const advertsResponse = await axios.get(
+                    `http://localhost:5000/adverts`
+                );
+                setAdverts(advertsResponse.data.adverts);
+
+                console.log(advertResponse.data);
+                console.log(userResponse.data);
+                console.log(userAdvertsResponse.data);
+                console.log(advertsResponse.data);
+            } catch (error) {
+                console.error("Error getting data: ", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchData();
+    }, [advertId]);
+
+    const handleClickImageOpen = (image: string) => {
         setSelectedImage(image);
         setOpenImage(true);
     };
 
     const handleImageClose = () => {
         setOpenImage(false);
-        setSelectedImage(null);
+        setSelectedImage("");
     };
 
-    const images = [
-        "https://cdn3.riastatic.com/photosnew/auto/photo/bmw_m3__565465833hd.webp",
-        "https://cdn2.riastatic.com/photosnew/auto/photo/bmw_m3__565465837hd.webp",
-        "https://cdn0.riastatic.com/photosnew/auto/photo/bmw_m3__565465835hd.webp",
-        "https://cdn3.riastatic.com/photosnew/auto/photo/bmw_m3__565465843hd.webp",
-        "https://cdn4.riastatic.com/photosnew/auto/photo/bmw_m3__565465849hd.webp",
-        "https://cdn1.riastatic.com/photosnew/auto/photo/bmw_m3__565465846hd.webp",
-        "https://cdn0.riastatic.com/photosnew/auto/photo/bmw_m3__565465855hd.webp",
-        "https://cdn0.riastatic.com/photosnew/auto/photo/bmw_m3__565465865hd.webp",
-        "https://cdn1.riastatic.com/photosnew/auto/photo/bmw_m3__565466001hd.webp",
-        "https://cdn2.riastatic.com/photosnew/auto/photo/bmw_m3__565465997hd.webp",
-        "https://cdn2.riastatic.com/photosnew/auto/photo/bmw_m3__565465992hd.webp",
-    ];
+    const handleAdvertClick = (advertId: string) => {
+        window.location.href = `/advert/${advertId}`;
+    };
+
+    if (isLoading) {
+        return <Box>Завантаження...</Box>;
+    }
 
     return (
         <StyledEngineProvider injectFirst>
@@ -129,28 +180,32 @@ const AdvertPage: React.FC = () => {
                                         },
                                     }}
                                 >
-                                    {images.map((item, index) => (
-                                        <Paper
-                                            key={index}
-                                            elevation={3}
-                                            sx={{
-                                                boxShadow: "none",
-                                            }}
-                                        >
-                                            <img
-                                                src={item}
-                                                alt={""}
-                                                style={{
-                                                    width: "800px",
-                                                    height: "485px",
-                                                    objectFit: "cover",
+                                    {advertData.pictures.map(
+                                        (item: any, index: number) => (
+                                            <Paper
+                                                key={index}
+                                                elevation={3}
+                                                sx={{
+                                                    boxShadow: "none",
                                                 }}
-                                                onClick={() =>
-                                                    handleClickImageOpen(item)
-                                                }
-                                            />
-                                        </Paper>
-                                    ))}
+                                            >
+                                                <img
+                                                    src={item}
+                                                    alt={""}
+                                                    style={{
+                                                        width: "800px",
+                                                        height: "485px",
+                                                        objectFit: "cover",
+                                                    }}
+                                                    onClick={() =>
+                                                        handleClickImageOpen(
+                                                            item
+                                                        )
+                                                    }
+                                                />
+                                            </Paper>
+                                        )
+                                    )}
                                 </Carousel>
                                 <Dialog
                                     open={openImage}
@@ -181,9 +236,11 @@ const AdvertPage: React.FC = () => {
                                             src={selectedImage}
                                             alt="Selected"
                                             style={{
-                                                width: "100%",
-                                                height: "100%",
+                                                width: "90vw",
+                                                height: "90vh",
                                                 objectFit: "contain",
+                                                maxWidth: "90%",
+                                                maxHeight: "90%",
                                             }}
                                         />
                                     </Box>
@@ -207,7 +264,7 @@ const AdvertPage: React.FC = () => {
                             }}
                         >
                             <StyledLabel
-                                text={"Опубліковано сьогодні"}
+                                text={"Опубліковано сьогодні"} // creationDate : TODO
                                 type={"primary"}
                                 textType={"small"}
                                 textColor="var(--light-gray)"
@@ -231,7 +288,7 @@ const AdvertPage: React.FC = () => {
                                     textAlign: "left",
                                 }}
                             >
-                                Продам BMW M3 G80 2021
+                                {advertData.name}
                             </Typography>
                             <Typography
                                 sx={{
@@ -241,7 +298,11 @@ const AdvertPage: React.FC = () => {
                                     textAlign: "left",
                                 }}
                             >
-                                4049000 грн.
+                                {advertData.currencyId == "USD"
+                                    ? `${advertData.price}$`
+                                    : advertData.currencyId == "EUR"
+                                    ? `${advertData.price}€`
+                                    : `${advertData.price} грн.`}
                             </Typography>
                         </Box>
                         <Box
@@ -262,7 +323,7 @@ const AdvertPage: React.FC = () => {
                                 }}
                             />
                             <StyledButton
-                                text={"Показати телефон"}
+                                text={"Показати телефон"} // TODO
                                 type={"outlined"}
                                 sx={{
                                     height: "65px",
@@ -290,6 +351,8 @@ const AdvertPage: React.FC = () => {
                     <Box
                         sx={{
                             backgroundColor: "#fff",
+                            display: "flex",
+                            flexDirection: "column",
                             borderRadius: "5px",
                             padding: "25px 30px",
                             width: "806px",
@@ -389,7 +452,7 @@ const AdvertPage: React.FC = () => {
                                         alignItems: "center",
                                     }}
                                 >
-                                    Стан: вживане
+                                    Стан: {advertData.status}
                                 </Typography>
                             </Box>
                             <Box
@@ -411,7 +474,7 @@ const AdvertPage: React.FC = () => {
                                         display: "flex",
                                         gap: "5px",
                                         alignItems: "center",
-                                    }}
+                                    }} // TODO
                                 >
                                     Марка: Canon
                                 </Typography>
@@ -436,17 +499,7 @@ const AdvertPage: React.FC = () => {
                                 margin: "30px 0",
                             }}
                         >
-                            М3 G80 COMPETITION Стан нового авто! Максимальна
-                            комплектація! Замовний колір! Салон Individual!
-                            Повністю заводський карбоновий пакет, камери 360,
-                            повний привід, що відключається, проекція на лобове
-                            скло, індивідуальний салон з карбоновими сидіннями і
-                            розширеним шкіряним пакетом для торпеди і дверних
-                            карт, розширений клімат для пасажирів заднього ряду,
-                            фари Black Laser з авто дальним, всі асистенти
-                            водія, екстер'єр в індивідуальному кольорі Nardo
-                            gray, та багато іншого. Автомобіль у стоку, без чіп
-                            тюнінгу.
+                            {advertData.description}
                         </Typography>
                         <Box
                             sx={{
@@ -455,6 +508,7 @@ const AdvertPage: React.FC = () => {
                                 alignItems: "center",
                                 borderTop: "1px solid #000",
                                 padding: "10px",
+                                marginTop: "auto",
                             }}
                         >
                             <Typography
@@ -465,11 +519,12 @@ const AdvertPage: React.FC = () => {
                                     fontWeight: "400",
                                 }}
                             >
-                                Переглядів: 1254
+                                Переглядів: {advertData.viewsCount}
                             </Typography>
                         </Box>
                         <Typography
                             sx={{
+                                justifySelf: "flex-end",
                                 color: "#737070",
                                 fontFamily: "Nunito",
                                 fontSize: "16px",
@@ -478,7 +533,7 @@ const AdvertPage: React.FC = () => {
                                 marginTop: "10px",
                             }}
                         >
-                            ID: 115154742
+                            ID: {advertData.id}
                         </Typography>
                     </Box>
                     <Box
@@ -487,6 +542,7 @@ const AdvertPage: React.FC = () => {
                             borderRadius: "5px",
                             padding: "25px 30px",
                             width: "546px",
+                            maxHeight: "596px",
                             display: "flex",
                             flexDirection: "column",
                         }}
@@ -515,10 +571,8 @@ const AdvertPage: React.FC = () => {
                                 borderRadius="86px"
                                 width="86px"
                                 height="86px"
-                                src={
-                                    "https://s3-alpha-sig.figma.com/img/2dd0/3dbc/b26f802d324fad24e23ed1651c7e0951?Expires=1728259200&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=BEGe9~LcCSdS1E0birpDENmM38lf6ZSOAexR9yp0JHa-1VGbNhfoYbT603dzLzDnMsleWCaQQ0mUSnIHAdO8xbE5M~pM6UvLGPJSHBs9vF6V0GPXGBKN54jYILn20mGQF8kI3HuvLk4zDZmrE3eHLISb9G~PgdrAyxdE8eDifTYOq0npwwW11dMybBWWDDNtcVTeg8YUZ~7VKjxXe1-8elXPUyu2EAGiBonCuPuCg6OQZbAE6~zTdAUhs~k4gatxu5B204uJ4aexu7RHtrI6rLBzqKCtBt~OEcLiNZO99yjrLbajhticcTgQ08pQdkiIkx9nU~2EGlk1NWnvyvdP~w__"
-                                }
-                                alt={""}
+                                src={userData.picture}
+                                alt={"user-avatar"}
                             />
                             <Typography
                                 sx={{
@@ -527,7 +581,7 @@ const AdvertPage: React.FC = () => {
                                     fontWeight: "400",
                                 }}
                             >
-                                Володимир Романюк
+                                {userData.name}
                             </Typography>
                         </Box>
                         <Box
@@ -553,7 +607,7 @@ const AdvertPage: React.FC = () => {
                                     gap: "12px",
                                 }}
                             >
-                                <Rating value={3} readOnly />
+                                <Rating value={userData.rating} readOnly />
                                 <Typography
                                     sx={{
                                         fontFamily: "Nunito",
@@ -561,7 +615,7 @@ const AdvertPage: React.FC = () => {
                                         fontWeight: "400",
                                     }}
                                 >
-                                    3.0
+                                    {userData.rating}
                                 </Typography>
                             </Box>
                         </Box>
@@ -577,7 +631,7 @@ const AdvertPage: React.FC = () => {
                         >
                             <StyledLabel
                                 icon={CarFillIcon}
-                                text={"80+ успішних доставок з DDX"}
+                                text={"80+ успішних доставок з DDX"} // TODO
                                 type={"with-icon"}
                                 textType={"small"}
                             />
@@ -600,7 +654,7 @@ const AdvertPage: React.FC = () => {
                                         fontWeight: "500",
                                     }}
                                 >
-                                    Львів
+                                    {advertData.location}
                                 </Typography>
                             </Box>
                             <Box
@@ -611,7 +665,7 @@ const AdvertPage: React.FC = () => {
                             >
                                 <StyledLabel
                                     icon={TimeFillIcon}
-                                    text={"Останній візит"}
+                                    text={"Останній візит"} // ?????
                                     type={"with-icon"}
                                     textType={"small"}
                                 />
@@ -659,57 +713,27 @@ const AdvertPage: React.FC = () => {
                     sx={{
                         display: "flex",
                         margin: "40px 0",
-                        gap: "18px",
+                        gap: "17px",
+                        flexWrap: "wrap",
                     }}
                 >
-                    <StyledAdvert
-                        title={"Плівковий Nikon Em"}
-                        location={"Львів"}
-                        date={"09.08.2024"}
-                        image={
-                            "https://s3-alpha-sig.figma.com/img/c8ef/cf9b/4a12d8d907b3b06dc7724ba6e098edb8?Expires=1728259200&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=p0Fvy~DWFy1CYOfOIM8-dKBn008eKbXItjAEzq3uHulrMzgab4pVVWrg2pU3q4j~GKow30u1dknXtq5XUfyHwi4aFqigjqOZnEvanLwkUVLU4Iu5Yw~dp1EBZDbvSklPmfnbDklbuq-8IYKQzeYBd2JsqR3~C5btifnYVSXKHCBvHe~0miEuQEWVNn835epCwEGYtM1A3Lvt0lrH6zsUjiGyNC56-KBlXzXixJE8xkzVl8iY4x9pLaXz094XgYqZjkGJp4IKfo8jiDq9pNVw-HnXJjisyM7ykyG5XSuIyuJ6Ey4Uj2XXg2XwBJNnH4RR7KIhyJyKR4Iozi3u-fhs7g__"
-                        }
-                        onClick={function (): void {
-                            throw new Error("Function not implemented.");
-                        }}
-                        price={3500}
-                    />
-                    <StyledAdvert
-                        title={"Плівковий Nikon Em"}
-                        location={"Львів"}
-                        date={"09.08.2024"}
-                        image={
-                            "https://s3-alpha-sig.figma.com/img/c8ef/cf9b/4a12d8d907b3b06dc7724ba6e098edb8?Expires=1728259200&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=p0Fvy~DWFy1CYOfOIM8-dKBn008eKbXItjAEzq3uHulrMzgab4pVVWrg2pU3q4j~GKow30u1dknXtq5XUfyHwi4aFqigjqOZnEvanLwkUVLU4Iu5Yw~dp1EBZDbvSklPmfnbDklbuq-8IYKQzeYBd2JsqR3~C5btifnYVSXKHCBvHe~0miEuQEWVNn835epCwEGYtM1A3Lvt0lrH6zsUjiGyNC56-KBlXzXixJE8xkzVl8iY4x9pLaXz094XgYqZjkGJp4IKfo8jiDq9pNVw-HnXJjisyM7ykyG5XSuIyuJ6Ey4Uj2XXg2XwBJNnH4RR7KIhyJyKR4Iozi3u-fhs7g__"
-                        }
-                        onClick={function (): void {
-                            throw new Error("Function not implemented.");
-                        }}
-                        price={3500}
-                    />
-                    <StyledAdvert
-                        title={"Плівковий Nikon Em"}
-                        location={"Львів"}
-                        date={"09.08.2024"}
-                        image={
-                            "https://s3-alpha-sig.figma.com/img/c8ef/cf9b/4a12d8d907b3b06dc7724ba6e098edb8?Expires=1728259200&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=p0Fvy~DWFy1CYOfOIM8-dKBn008eKbXItjAEzq3uHulrMzgab4pVVWrg2pU3q4j~GKow30u1dknXtq5XUfyHwi4aFqigjqOZnEvanLwkUVLU4Iu5Yw~dp1EBZDbvSklPmfnbDklbuq-8IYKQzeYBd2JsqR3~C5btifnYVSXKHCBvHe~0miEuQEWVNn835epCwEGYtM1A3Lvt0lrH6zsUjiGyNC56-KBlXzXixJE8xkzVl8iY4x9pLaXz094XgYqZjkGJp4IKfo8jiDq9pNVw-HnXJjisyM7ykyG5XSuIyuJ6Ey4Uj2XXg2XwBJNnH4RR7KIhyJyKR4Iozi3u-fhs7g__"
-                        }
-                        onClick={function (): void {
-                            throw new Error("Function not implemented.");
-                        }}
-                        price={3500}
-                    />
-                    <StyledAdvert
-                        title={"Плівковий Nikon Em"}
-                        location={"Львів"}
-                        date={"09.08.2024"}
-                        image={
-                            "https://s3-alpha-sig.figma.com/img/c8ef/cf9b/4a12d8d907b3b06dc7724ba6e098edb8?Expires=1728259200&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=p0Fvy~DWFy1CYOfOIM8-dKBn008eKbXItjAEzq3uHulrMzgab4pVVWrg2pU3q4j~GKow30u1dknXtq5XUfyHwi4aFqigjqOZnEvanLwkUVLU4Iu5Yw~dp1EBZDbvSklPmfnbDklbuq-8IYKQzeYBd2JsqR3~C5btifnYVSXKHCBvHe~0miEuQEWVNn835epCwEGYtM1A3Lvt0lrH6zsUjiGyNC56-KBlXzXixJE8xkzVl8iY4x9pLaXz094XgYqZjkGJp4IKfo8jiDq9pNVw-HnXJjisyM7ykyG5XSuIyuJ6Ey4Uj2XXg2XwBJNnH4RR7KIhyJyKR4Iozi3u-fhs7g__"
-                        }
-                        onClick={function (): void {
-                            throw new Error("Function not implemented.");
-                        }}
-                        price={3500}
-                    />
+                    {userAdverts.length === 0 ? (
+                        <Typography>
+                            У користувача ще немає оголошень...
+                        </Typography>
+                    ) : (
+                        userAdverts.slice(0, 4).map((advert) => (
+                            <StyledAdvert
+                                key={advert.id}
+                                title={advert.name}
+                                location={advert.location}
+                                date={advert.creationDate}
+                                image={advert.pictures[0]}
+                                onClick={() => { handleAdvertClick(advert.id) }}
+                                price={advert.price}
+                            />
+                        ))
+                    )}
                 </Box>
                 <StyledButton
                     sx={{
@@ -729,108 +753,25 @@ const AdvertPage: React.FC = () => {
                 >
                     Схожі оголошення
                 </Typography>
-                <Box sx={{
-                    display: "flex",
-                    margin: "40px 0",
-                    flexWrap: "wrap",
-                    gap: "17px",
-                }}>
-                    <StyledAdvert
-                        title={"Плівковий Nikon Em"}
-                        location={"Львів"}
-                        date={"09.08.2024"}
-                        image={
-                            "https://s3-alpha-sig.figma.com/img/c8ef/cf9b/4a12d8d907b3b06dc7724ba6e098edb8?Expires=1728259200&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=p0Fvy~DWFy1CYOfOIM8-dKBn008eKbXItjAEzq3uHulrMzgab4pVVWrg2pU3q4j~GKow30u1dknXtq5XUfyHwi4aFqigjqOZnEvanLwkUVLU4Iu5Yw~dp1EBZDbvSklPmfnbDklbuq-8IYKQzeYBd2JsqR3~C5btifnYVSXKHCBvHe~0miEuQEWVNn835epCwEGYtM1A3Lvt0lrH6zsUjiGyNC56-KBlXzXixJE8xkzVl8iY4x9pLaXz094XgYqZjkGJp4IKfo8jiDq9pNVw-HnXJjisyM7ykyG5XSuIyuJ6Ey4Uj2XXg2XwBJNnH4RR7KIhyJyKR4Iozi3u-fhs7g__"
-                        }
-                        onClick={function (): void {
-                            throw new Error("Function not implemented.");
-                        }}
-                        price={3500}
-                    />
-                    <StyledAdvert
-                        title={"Плівковий Nikon Em"}
-                        location={"Львів"}
-                        date={"09.08.2024"}
-                        image={
-                            "https://s3-alpha-sig.figma.com/img/c8ef/cf9b/4a12d8d907b3b06dc7724ba6e098edb8?Expires=1728259200&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=p0Fvy~DWFy1CYOfOIM8-dKBn008eKbXItjAEzq3uHulrMzgab4pVVWrg2pU3q4j~GKow30u1dknXtq5XUfyHwi4aFqigjqOZnEvanLwkUVLU4Iu5Yw~dp1EBZDbvSklPmfnbDklbuq-8IYKQzeYBd2JsqR3~C5btifnYVSXKHCBvHe~0miEuQEWVNn835epCwEGYtM1A3Lvt0lrH6zsUjiGyNC56-KBlXzXixJE8xkzVl8iY4x9pLaXz094XgYqZjkGJp4IKfo8jiDq9pNVw-HnXJjisyM7ykyG5XSuIyuJ6Ey4Uj2XXg2XwBJNnH4RR7KIhyJyKR4Iozi3u-fhs7g__"
-                        }
-                        onClick={function (): void {
-                            throw new Error("Function not implemented.");
-                        }}
-                        price={3500}
-                    />
-                    <StyledAdvert
-                        title={"Плівковий Nikon Em"}
-                        location={"Львів"}
-                        date={"09.08.2024"}
-                        image={
-                            "https://s3-alpha-sig.figma.com/img/c8ef/cf9b/4a12d8d907b3b06dc7724ba6e098edb8?Expires=1728259200&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=p0Fvy~DWFy1CYOfOIM8-dKBn008eKbXItjAEzq3uHulrMzgab4pVVWrg2pU3q4j~GKow30u1dknXtq5XUfyHwi4aFqigjqOZnEvanLwkUVLU4Iu5Yw~dp1EBZDbvSklPmfnbDklbuq-8IYKQzeYBd2JsqR3~C5btifnYVSXKHCBvHe~0miEuQEWVNn835epCwEGYtM1A3Lvt0lrH6zsUjiGyNC56-KBlXzXixJE8xkzVl8iY4x9pLaXz094XgYqZjkGJp4IKfo8jiDq9pNVw-HnXJjisyM7ykyG5XSuIyuJ6Ey4Uj2XXg2XwBJNnH4RR7KIhyJyKR4Iozi3u-fhs7g__"
-                        }
-                        onClick={function (): void {
-                            throw new Error("Function not implemented.");
-                        }}
-                        price={3500}
-                    />
-                    <StyledAdvert
-                        title={"Плівковий Nikon Em"}
-                        location={"Львів"}
-                        date={"09.08.2024"}
-                        image={
-                            "https://s3-alpha-sig.figma.com/img/c8ef/cf9b/4a12d8d907b3b06dc7724ba6e098edb8?Expires=1728259200&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=p0Fvy~DWFy1CYOfOIM8-dKBn008eKbXItjAEzq3uHulrMzgab4pVVWrg2pU3q4j~GKow30u1dknXtq5XUfyHwi4aFqigjqOZnEvanLwkUVLU4Iu5Yw~dp1EBZDbvSklPmfnbDklbuq-8IYKQzeYBd2JsqR3~C5btifnYVSXKHCBvHe~0miEuQEWVNn835epCwEGYtM1A3Lvt0lrH6zsUjiGyNC56-KBlXzXixJE8xkzVl8iY4x9pLaXz094XgYqZjkGJp4IKfo8jiDq9pNVw-HnXJjisyM7ykyG5XSuIyuJ6Ey4Uj2XXg2XwBJNnH4RR7KIhyJyKR4Iozi3u-fhs7g__"
-                        }
-                        onClick={function (): void {
-                            throw new Error("Function not implemented.");
-                        }}
-                        price={3500}
-                    />
-                    <StyledAdvert
-                        title={"Плівковий Nikon Em"}
-                        location={"Львів"}
-                        date={"09.08.2024"}
-                        image={
-                            "https://s3-alpha-sig.figma.com/img/c8ef/cf9b/4a12d8d907b3b06dc7724ba6e098edb8?Expires=1728259200&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=p0Fvy~DWFy1CYOfOIM8-dKBn008eKbXItjAEzq3uHulrMzgab4pVVWrg2pU3q4j~GKow30u1dknXtq5XUfyHwi4aFqigjqOZnEvanLwkUVLU4Iu5Yw~dp1EBZDbvSklPmfnbDklbuq-8IYKQzeYBd2JsqR3~C5btifnYVSXKHCBvHe~0miEuQEWVNn835epCwEGYtM1A3Lvt0lrH6zsUjiGyNC56-KBlXzXixJE8xkzVl8iY4x9pLaXz094XgYqZjkGJp4IKfo8jiDq9pNVw-HnXJjisyM7ykyG5XSuIyuJ6Ey4Uj2XXg2XwBJNnH4RR7KIhyJyKR4Iozi3u-fhs7g__"
-                        }
-                        onClick={function (): void {
-                            throw new Error("Function not implemented.");
-                        }}
-                        price={3500}
-                    />
-                    <StyledAdvert
-                        title={"Плівковий Nikon Em"}
-                        location={"Львів"}
-                        date={"09.08.2024"}
-                        image={
-                            "https://s3-alpha-sig.figma.com/img/c8ef/cf9b/4a12d8d907b3b06dc7724ba6e098edb8?Expires=1728259200&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=p0Fvy~DWFy1CYOfOIM8-dKBn008eKbXItjAEzq3uHulrMzgab4pVVWrg2pU3q4j~GKow30u1dknXtq5XUfyHwi4aFqigjqOZnEvanLwkUVLU4Iu5Yw~dp1EBZDbvSklPmfnbDklbuq-8IYKQzeYBd2JsqR3~C5btifnYVSXKHCBvHe~0miEuQEWVNn835epCwEGYtM1A3Lvt0lrH6zsUjiGyNC56-KBlXzXixJE8xkzVl8iY4x9pLaXz094XgYqZjkGJp4IKfo8jiDq9pNVw-HnXJjisyM7ykyG5XSuIyuJ6Ey4Uj2XXg2XwBJNnH4RR7KIhyJyKR4Iozi3u-fhs7g__"
-                        }
-                        onClick={function (): void {
-                            throw new Error("Function not implemented.");
-                        }}
-                        price={3500}
-                    />
-                    <StyledAdvert
-                        title={"Плівковий Nikon Em"}
-                        location={"Львів"}
-                        date={"09.08.2024"}
-                        image={
-                            "https://s3-alpha-sig.figma.com/img/c8ef/cf9b/4a12d8d907b3b06dc7724ba6e098edb8?Expires=1728259200&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=p0Fvy~DWFy1CYOfOIM8-dKBn008eKbXItjAEzq3uHulrMzgab4pVVWrg2pU3q4j~GKow30u1dknXtq5XUfyHwi4aFqigjqOZnEvanLwkUVLU4Iu5Yw~dp1EBZDbvSklPmfnbDklbuq-8IYKQzeYBd2JsqR3~C5btifnYVSXKHCBvHe~0miEuQEWVNn835epCwEGYtM1A3Lvt0lrH6zsUjiGyNC56-KBlXzXixJE8xkzVl8iY4x9pLaXz094XgYqZjkGJp4IKfo8jiDq9pNVw-HnXJjisyM7ykyG5XSuIyuJ6Ey4Uj2XXg2XwBJNnH4RR7KIhyJyKR4Iozi3u-fhs7g__"
-                        }
-                        onClick={function (): void {
-                            throw new Error("Function not implemented.");
-                        }}
-                        price={3500}
-                    />
-                    <StyledAdvert
-                        title={"Плівковий Nikon Em"}
-                        location={"Львів"}
-                        date={"09.08.2024"}
-                        image={
-                            "https://s3-alpha-sig.figma.com/img/c8ef/cf9b/4a12d8d907b3b06dc7724ba6e098edb8?Expires=1728259200&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=p0Fvy~DWFy1CYOfOIM8-dKBn008eKbXItjAEzq3uHulrMzgab4pVVWrg2pU3q4j~GKow30u1dknXtq5XUfyHwi4aFqigjqOZnEvanLwkUVLU4Iu5Yw~dp1EBZDbvSklPmfnbDklbuq-8IYKQzeYBd2JsqR3~C5btifnYVSXKHCBvHe~0miEuQEWVNn835epCwEGYtM1A3Lvt0lrH6zsUjiGyNC56-KBlXzXixJE8xkzVl8iY4x9pLaXz094XgYqZjkGJp4IKfo8jiDq9pNVw-HnXJjisyM7ykyG5XSuIyuJ6Ey4Uj2XXg2XwBJNnH4RR7KIhyJyKR4Iozi3u-fhs7g__"
-                        }
-                        onClick={function (): void {
-                            throw new Error("Function not implemented.");
-                        }}
-                        price={3500}
-                    />
+                <Box
+                    sx={{
+                        display: "flex",
+                        margin: "40px 0",
+                        flexWrap: "wrap",
+                        gap: "17px",
+                    }}
+                >
+                    {adverts.slice(0, 8).map((advert) => (
+                        <StyledAdvert
+                            key={advert.id}
+                            title={advert.name}
+                            location={advert.location}
+                            date={advert.creationDate}
+                            image={advert.pictures[0]}
+                            onClick={() => { handleAdvertClick(advert.id) }}
+                            price={advert.price}
+                        />
+                    ))}
                 </Box>
             </Box>
             <StyledFooter />
