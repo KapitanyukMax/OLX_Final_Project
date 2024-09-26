@@ -121,9 +121,10 @@ const getAdvertsByCategoryId = async (req, res, next) => {
 
 const getAdvertsByUserId = async (req, res, next) => {
     try {
-        const { limit = 10, startAfter, searchTerm } = req.query;
+        const { limit = 10, startAfter, searchTerm, userId } = req.query;
+        logger.info(userId);
         let query = db.collection('adverts')
-            .where('userId', '==', req.query.userId)
+            .where('userId', '==', userId)
             .orderBy('creationDate')
             .limit(parseInt(limit));
 
@@ -142,10 +143,11 @@ const getAdvertsByUserId = async (req, res, next) => {
 
         const result = [];
         snapshot.forEach((doc) => {
-            if (!searchTerm || doc.name.toLowerCase().includes(searchTerm.toLowerCase())) {
+            const data = doc.data();
+            if (!searchTerm || (data.name && data.name.toLowerCase().includes(searchTerm.toLowerCase()))) {
                 result.push({
                     id: doc.id,
-                    ...doc.data()
+                    ...data
                 });
             }
         });

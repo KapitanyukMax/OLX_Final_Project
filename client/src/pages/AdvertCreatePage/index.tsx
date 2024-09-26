@@ -46,7 +46,20 @@ const AdvertCreatePage: React.FC = () => {
 
     const host = import.meta.env.VITE_HOST;
 
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState<{
+        userId: string;
+        subCategoryId: string;
+        name: string;
+        description: string;
+        price: number;
+        location: string;
+        status: string;
+        pictures: string[];
+        orderType: string;
+        currencyId: string;
+        delivery: string;
+        isHidden: boolean;
+    }>({
         userId: '',
         subCategoryId: '',
         name: '',
@@ -54,7 +67,7 @@ const AdvertCreatePage: React.FC = () => {
         price: 0,
         location: '',
         status: '',
-        pictures: [''],
+        pictures: [],
         orderType: '',
         currencyId: '',
         delivery: '',
@@ -65,7 +78,8 @@ const AdvertCreatePage: React.FC = () => {
         const sizes = [200, 400, 800];
 
         try {
-            const originalRef = ref(storage, `${path}/original.jpg`);
+            const timestamp = Date.now(); // Зберігаємо один і той же timestamp для всіх варіантів розміру
+            const originalRef = ref(storage, `${path}/original-${timestamp}.jpg`);
             await uploadBytes(originalRef, file);
 
             for (let size of sizes) {
@@ -75,7 +89,7 @@ const AdvertCreatePage: React.FC = () => {
                 };
 
                 const resizedFile = await imageCompression(file, options);
-                const resizedRef = ref(storage, `${path}/resized-${size}.jpg`);
+                const resizedRef = ref(storage, `${path}/resized-${size}-${timestamp}.jpg`);
                 await uploadBytes(resizedRef, resizedFile);
             }
 
@@ -88,22 +102,32 @@ const AdvertCreatePage: React.FC = () => {
     const uploadMultipleImages = async (files: FileList) => {
         const path = `images/${formData.userId}`;
 
-        for (let i = 0; i < files.length; i++) {
-            const file = files[i];
-            await uploadResizedImages(file, `${path}/image-${i}`);
+        const uploadPromises = Array.from(files).map(async (file, i) => {
+            const timestamp = Date.now(); // Generate a unique timestamp for each file
+            const uniquePath = `${path}/image-${i}-${timestamp}`; // Add timestamp to path
 
-            // Отримуємо URL завантаженого зображення і додаємо його до стану
-            const downloadURL = await getDownloadURL(ref(storage, `${path}/image-${i}/original.jpg`));
-            setFormData((prevFormData) => ({
-                ...prevFormData,
-                pictures: [...prevFormData.pictures, downloadURL],
-            }));
-        }
+            await uploadResizedImages(file, uniquePath);
+
+            // Get the exact URL of the uploaded image
+            const downloadURL = await getDownloadURL(ref(storage, `${uniquePath}/original-${timestamp}.jpg`));
+            return downloadURL;
+        });
+
+        // Wait for all image uploads to complete
+        const uploadedImageURLs = await Promise.all(uploadPromises);
+        console.log('Uploaded image URLs:', uploadedImageURLs); // Debugging line
+
+        // Ensure that pictures are updated after images are uploaded
+        setFormData((prevFormData) => ({
+            ...prevFormData,
+            pictures: [...uploadedImageURLs],
+        }));
     };
+
 
     const handleMultipleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const files = Array.from(event.target.files || []);
-        setSelectedImages([...selectedImages, ...files]);
+        setSelectedImages((prevImages) => [...prevImages, ...files]);
         if (event.target.files && event.target.files.length > 0) {
             await uploadMultipleImages(event.target.files);
         }
@@ -152,7 +176,7 @@ const AdvertCreatePage: React.FC = () => {
             formIsValid = false;
         }
 
-        if (selectedImages.length === 0) {
+        if (formData.pictures.length === 0) { // Перевіряємо pictures, а не selectedImages
             newErrors.image = 'Додайте хоча б одне зображення';
             formIsValid = false;
         }
