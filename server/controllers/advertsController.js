@@ -154,10 +154,17 @@ const getAdvertsByUserId = async (req, res, next) => {
 
         const lastVisible = snapshot.docs[snapshot.docs.length - 1];
 
+        const totalCountSnapshot = await db.collection('adverts')
+            .where('userId', '==', userId)
+            .get();
+
+        const totalCount = totalCountSnapshot.size;
+
         logger.info(`Adverts received successfully`);
         res.status(200).json({
             adverts: result,
             lastVisibleId: lastVisible ? lastVisible.id : null,
+            totalCount,
         });
     } catch (error) {
         next(error);

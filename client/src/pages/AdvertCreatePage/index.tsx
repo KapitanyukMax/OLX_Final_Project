@@ -592,7 +592,7 @@ const AdvertCreatePage: React.FC = () => {
                 <DialogActions>
                     <Button onClick={() => {
                         setOpenSuccessDialog(false);
-                        window.location.reload();
+                        window.location.href = '/profile-page';
                     }} color="primary">
                         OK
                     </Button>

@@ -22,12 +22,15 @@ const ProfilePage: React.FC = () => {
     const [currentUser, setCurrentUser] = useState<User | null>(null);
     const [userData, setUserData] = useState<any>(null);
     const [isEditable, setIsEditable] = useState(true);
-    const [adverts, setAdverts] = useState([]);
+    const [adverts, setAdverts] = useState<any[]>([]);
     const [searchTerm, setSearchTerm] = useState<string | null>(null);
 
     const [displayName, setDisplayName] = useState<string>('');
     const [phoneNumber, setPhoneNumber] = useState<string>('');
     const [image, setImage] = useState<string | File>('');
+
+    const [currentPage, setCurrentPage] = useState<number>(1);
+    const [totalPages, setTotalPages] = useState<number>(1);
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -38,16 +41,30 @@ const ProfilePage: React.FC = () => {
         return () => unsubscribe();
     }, []);
 
-    const getAdverts = async (search?: string) => {
+    const getAdverts = async (page: number = 1, searchTerm?: string) => {
         if (userData) {
             let response;
-            if (search && search.length > 0)
-                response = await axios.get(`http://localhost:5000/adverts/userId?userId=${userData.id}&searchTerm=${search}`);
-            else
-                response = await axios.get(`http://localhost:5000/adverts/userId?userId=${userData.id}`);
+            const limit = 2; // Кількість оголошень на сторінці
+            let startAfterParam = page > 1 ? adverts[adverts.length - 1].id : null;
+
+            // Якщо є пошуковий термін, скидаємо пагінацію і шукаємо по всіх оголошеннях
+            if (searchTerm && searchTerm.length > 0) {
+                startAfterParam = null; // Ігноруємо пагінацію
+                response = await axios.get(`http://localhost:5000/adverts/userId?userId=${userData.id}&searchTerm=${searchTerm}`);
+            } else {
+                // Якщо пошуковий термін відсутній, виконуємо запит з пагінацією
+                response = await axios.get(`http://localhost:5000/adverts/userId?userId=${userData.id}&limit=${limit}&startAfter=${startAfterParam}`);
+            }
+
             if (response) {
-                const data = response.data.adverts;
+                const { adverts: data, totalCount } = response.data;
                 setAdverts(data);
+
+                // Оновлюємо кількість сторінок тільки для звичайних запитів (без пошуку)
+                if (!searchTerm || searchTerm.length === 0) {
+                    setTotalPages(Math.ceil(totalCount / limit));
+                }
+
                 console.log(data);
             } else {
                 return;
@@ -55,15 +72,38 @@ const ProfilePage: React.FC = () => {
         } else {
             console.log('User is not authenticated');
         }
-    }
+    };
 
     useEffect(() => {
         getAdverts();
     }, [userData]);
 
     useEffect(() => {
-        getAdverts(searchTerm || '');
+        getAdverts(currentPage);
+    }, [currentPage]);
+
+    useEffect(() => {
+        getAdverts(currentPage, searchTerm || '');
     }, [searchTerm]);
+
+    const handlePageChange = (pageNumber: number) => {
+        setCurrentPage(pageNumber);
+    };
+
+    const renderPaginationButtons = () => {
+        const buttons = [];
+        for (let i = 1; i <= totalPages; i++) {
+            buttons.push(
+                <StyledButton
+                    key={i}
+                    text={i.toString()}
+                    type={currentPage === i ? 'contained' : 'outlined'}
+                    onClick={() => handlePageChange(i)}
+                />
+            );
+        }
+        return buttons;
+    };
 
     useEffect(() => {
         const setUser = async () => {
@@ -317,19 +357,28 @@ const ProfilePage: React.FC = () => {
                             ) : (
                                 <Box sx={{
                                     display: 'flex',
-                                    flexDirection: 'row',
-                                    gap: '30px',
+                                    flexDirection: 'column',
+                                    width: '100%',
                                     flexWrap: 'wrap'
                                 }}>
-                                    {adverts.map((advert: any) => {
-                                        return (
-                                            <StyledAdvert key={advert.id} title={advert.name} location={advert.location} date={advert.creationDate} image={advert.pictures[0]} price={advert.price} onClick={
-                                                () => {
-                                                    console.log('Advert clicked');
-                                                }
-                                            } />
-                                        );
-                                    })}
+                                    <Box sx={{ display: 'flex', flexDirection: 'row', gap: "24px", width: '100%', marginBottom: '40px' }}>
+                                        {adverts.length === 0 ? (
+                                            <p>No adverts available.</p>
+                                        ) : (
+                                            adverts.map((advert) => (
+                                                <StyledAdvert key={advert.id} title={advert.name} location={advert.location} date={advert.creationDate} image={advert.pictures[0]} price={advert.price} onClick={
+                                                    () => {
+                                                        window.location.href = `/advert/${advert.id}`;
+                                                    }
+                                                } />
+                                            ))
+                                        )}
+                                    </Box>
+
+                                    {/* Pagination Buttons */}
+                                    <Box sx={{ display: 'flex', flexDirection: "row", justifyContent: 'center', marginTop: '20px', gap: "5px" }}>
+                                        {renderPaginationButtons()}
+                                    </Box>
                                 </Box>
                             )}
                         </Box>
