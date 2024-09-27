@@ -8,7 +8,6 @@ import {
     Typography,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { Header } from "../../components/header";
 import { StyledInput } from "../../components/input";
 import StyledButton from "../../components/button";
 import ImageComponent from "../../components/image";
@@ -24,7 +23,6 @@ import CarFillIcon from "../../components/icons/carFill";
 import LocationIcon from "../../components/icons/location";
 import TimeFillIcon from "../../components/icons/timeFill";
 import { StyledAdvert } from "../../components/advert";
-import StyledFooter from "../../components/footer";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { auth } from "../../../firebaseConfig";
 import axios from "axios";
@@ -107,7 +105,6 @@ const AdvertPage: React.FC = () => {
 
     return (
         <StyledEngineProvider injectFirst>
-            <Header />
             <Box
                 sx={{
                     width: "1360px",
@@ -774,7 +771,6 @@ const AdvertPage: React.FC = () => {
                     ))}
                 </Box>
             </Box>
-            <StyledFooter />
         </StyledEngineProvider>
     );
 };
