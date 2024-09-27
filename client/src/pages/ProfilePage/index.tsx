@@ -3,9 +3,7 @@ import { auth } from '../../../firebaseConfig';
 import axios from 'axios';
 import { User, onAuthStateChanged, updateProfile } from 'firebase/auth';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { Header } from '../../components/header';
 import { StyledEngineProvider, Box } from '@mui/material';
-import StyledFooter from '../../components/footer';
 import StyledButton from '../../components/button';
 import PenFluentIcon from '../../components/icons/penFluent';
 import ImageComponent from '../../components/image';
@@ -200,7 +198,6 @@ const ProfilePage: React.FC = () => {
 
     return (
         <StyledEngineProvider injectFirst>
-            <Header />
             <Box sx={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -385,7 +382,6 @@ const ProfilePage: React.FC = () => {
                     </Box>
                 </Box>
             </Box>
-            <StyledFooter />
         </StyledEngineProvider >
     );
 };
