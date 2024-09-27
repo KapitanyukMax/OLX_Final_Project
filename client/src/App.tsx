@@ -4,6 +4,7 @@ import { AdvertCreatePage } from './pages/AdvertCreatePage';
 import { AuthModal } from './pages/RegistrationPage/AuthModal';
 import { AdvertPage } from './pages/AdvertPage';
 import { ProfilePage } from './pages/ProfilePage';
+import { HomePage } from './pages/HomePage';
 import './App.css';
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
                     <Route path="/registration" element={<AuthModal />} />
                     <Route path="/advert/:advertId" element={<AdvertPage />} />
                     <Route path="/profile-page" element={<ProfilePage />} />
+                    <Route path="/home" element={<HomePage />} />
                 </Routes>
             </Router>
         </>
