@@ -91,13 +91,8 @@ const HomePage: React.FC = () => {
         getTopAdverts();
     }, []);
 
-    // useEffect(() => {
-    //     getAdverts(searchTerm || '', 20);
-    // }, [searchTerm]);
-
     return (
         <StyledEngineProvider injectFirst>
-            <Header />
             <Box sx={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -123,10 +118,10 @@ const HomePage: React.FC = () => {
                         <StyledInput value={searchTerm || 'Що шукаємо?'} iconEnd={StyledSearchIcon} width="522px" onChange={handleSearchChange} />
                         <StyledInput value='Вся Україна' iconEnd={StyledSearchIcon} width="254px" />
                         <StyledInput value='Місто/село' iconEnd={StyledSearchIcon} width="254px" />
-                        <StyledButton text='Пошук' type='contained' primaryColor='var(--dark-blue)' hoverColor='black' className='button-small' />
+                        <StyledButton text='Пошук' type='contained' primaryColor='var(--dark-blue)' hoverColor='black' className='button-small' onClick={handleSearchClick} />
                     </Box>
 
-                    {searchTerm
+                    {isSearching
                         ? (<>
                             <Box sx={{
                                 display: 'flex',
@@ -327,51 +322,71 @@ const HomePage: React.FC = () => {
                                 <StyledButton text='Велосипед' type='outlined' className='button-fit'
                                     onClick={() => {
                                         setSearchTerm('Велосипед');
+                                        setIsSearching(true);
+                                        getAdverts(searchTerm || '', 20);
                                     }} />
 
                                 <StyledButton text='Купальник' type='outlined' className='button-fit'
                                     onClick={() => {
                                         setSearchTerm('Купальник');
+                                        setIsSearching(true);
+                                        getAdverts(searchTerm || '', 20);
                                     }} />
 
                                 <StyledButton text='Кошенята' type='outlined' className='button-fit'
                                     onClick={() => {
                                         setSearchTerm('Кошенята');
+                                        setIsSearching(true);
+                                        getAdverts(searchTerm || '', 20);
                                     }} />
 
                                 <StyledButton text='Квартира' type='outlined' className='button-fit'
                                     onClick={() => {
                                         setSearchTerm('Квартира');
+                                        setIsSearching(true);
+                                        getAdverts(searchTerm || '', 20);
                                     }} />
 
                                 <StyledButton text='Генератор' type='outlined' className='button-fit'
                                     onClick={() => {
                                         setSearchTerm('Генератор');
+                                        setIsSearching(true);
+                                        getAdverts(searchTerm || '', 20);
                                     }} />
 
                                 <StyledButton text='Холодильник' type='outlined' className='button-fit'
                                     onClick={() => {
                                         setSearchTerm('Холодильник');
+                                        setIsSearching(true);
+                                        getAdverts(searchTerm || '', 20);
                                     }} />
 
                                 <StyledButton text='Акваріум' type='outlined' className='button-fit'
                                     onClick={() => {
                                         setSearchTerm('Акваріум');
+                                        setIsSearching(true);
+                                        getAdverts(searchTerm || '', 20);
                                     }} />
 
                                 <StyledButton text='Павербанк' type='outlined' className='button-fit'
                                     onClick={() => {
                                         setSearchTerm('Павербанк');
+                                        setIsSearching(true);
+                                        getAdverts(searchTerm || '', 20);
                                     }} />
 
                                 <StyledButton text='Дерева' type='outlined' className='button-fit'
                                     onClick={() => {
                                         setSearchTerm('Дерева');
+                                        setIsSearching(true);
+                                        getAdverts(searchTerm || '', 20);
                                     }} />
 
                                 <StyledButton text='Ноутбук' type='outlined' className='button-fit'
                                     onClick={() => {
                                         setSearchTerm('Ноутбук');
+                                        setIsSearching(true);
+                                        getAdverts(searchTerm || '', 20);
                                     }} />
                             </Box>
 
@@ -659,7 +674,6 @@ const HomePage: React.FC = () => {
                     }
                 </Box>
             </Box>
-            <StyledFooter />
         </StyledEngineProvider>
     );
 };
