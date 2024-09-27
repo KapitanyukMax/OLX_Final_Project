@@ -6,6 +6,7 @@ import { AdvertPage } from './pages/AdvertPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { Layout } from './Layout';
 import './App.css';
+import { UserProfilePage } from './pages/UserProfilePage';
 
 function App() {
     return (
@@ -16,6 +17,7 @@ function App() {
                         <Route path="advert/:advertId" element={<AdvertPage />} />
                         <Route path="profile-page" element={<ProfilePage />} />
                         <Route path="advert-create" element={<AdvertCreatePage />} />
+                        <Route path="user/:userId" element={<UserProfilePage />} />
                     </Route>
 
                     <Route path="/components-preview" element={<ComponentsPreview />} />
