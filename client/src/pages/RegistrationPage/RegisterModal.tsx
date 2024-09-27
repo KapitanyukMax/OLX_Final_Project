@@ -8,6 +8,8 @@ import FacebookIcon from '../../components/icons/facebook';
 import AppleIcon from '../../components/icons/apple';
 import PasswordIcon from '../../components/icons/password';
 import { iconBoxStyles } from './Styles';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../../../firebaseConfig';
 
 interface RegisterModalProps {
     onSwitchToLogin: () => void;
@@ -19,6 +21,8 @@ export const RegisterModal: React.FC<RegisterModalProps> = ({ onSwitchToLogin })
     const [error, setError] = useState<string>('');
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const [name, setName] = useState<string>('');
+
+    const host = import.meta.env.VITE_HOST;
 
     const handleTogglePasswordVisibility = () => {
         setShowPassword(!showPassword);
@@ -66,7 +70,7 @@ export const RegisterModal: React.FC<RegisterModalProps> = ({ onSwitchToLogin })
         }
         
         try {
-            const response = await fetch('http://localhost:5000/users', {
+            const response = await fetch(`${host}/users`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -90,7 +94,8 @@ export const RegisterModal: React.FC<RegisterModalProps> = ({ onSwitchToLogin })
                 setError(`Помилка реєстрації: ${errorData.message}`);
                 return;
             }
-    
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            console.log("User was added to Firebase : ", userCredential);
             onSwitchToLogin();
             console.log('User registered and added to Firestore successfully');
         } catch (error: any) {
@@ -130,7 +135,7 @@ export const RegisterModal: React.FC<RegisterModalProps> = ({ onSwitchToLogin })
                         </Box>
                         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'left', gap: '8px', width: '100%' }}>
                             <StyledLabel text='Пароль' textType='small' type='with-icon' textColor='var(--black)' />
-                            <StyledInput widthType='big' value={password} isPassword iconEnd={PasswordIcon} iconEndClick={handleTogglePasswordVisibility} type={showPassword ? 'text' : 'password'} onChange={handlePasswordChange} />
+                            <StyledInput widthType='big' value={password} iconEnd={PasswordIcon} iconEndClick={handleTogglePasswordVisibility} type={showPassword ? 'text' : 'password'} onChange={handlePasswordChange} />
                         </Box>
                     </Box>
                     <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '100%', gap: '42px', margin:' 36px 0px 42px 0px' }}>

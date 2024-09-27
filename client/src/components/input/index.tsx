@@ -8,9 +8,11 @@ interface StyledInputProps {
     widthType?: 'small' | 'middle' | 'big' | 'large';
     width?: string;
     label?: string;
+    sx?: any;
     required?: boolean;
     maxLength?: number;
     type?: 'password' | 'text';
+    disabled?: boolean;
     onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
     iconStart?: React.ElementType<SvgIconProps>;
     iconEnd?: React.ElementType<SvgIconProps>;
@@ -21,12 +23,14 @@ interface StyledInputProps {
 const StyledInput: React.FC<StyledInputProps> = ({
     label,
     value,
+    sx,
     required,
     widthType,
     width,
     maxLength,
     iconStart: IconStart,
     iconEnd: IconEnd,
+    disabled,
     iconEndClick,
     iconStartClick,
     type = 'text', // За замовчуванням 'text'
@@ -74,6 +78,8 @@ const StyledInput: React.FC<StyledInputProps> = ({
                     id='input'
                     placeholder={currentValue}
                     type={type}
+                    sx={sx}
+                    disabled={disabled}
                     className='basic-input'
                     onChange={handleChange}
                     required={required}

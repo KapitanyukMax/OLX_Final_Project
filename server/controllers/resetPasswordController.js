@@ -1,5 +1,6 @@
 require('dotenv').config();
 const admin = require('../database');
+
 const logger = require('../logger/logger');
 const nodemailer = require('nodemailer');
 const db = admin.firestore();
@@ -9,9 +10,61 @@ const accountSid = process.env.ACCOUNT_SID;
 const authToken = process.env.AUTH_TOKEN;
 const userMail = process.env.USER_MAIL_SEND;
 const userMailPass = process.env.USER_PASS_SEND;
-
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
 
 const client = twilio(accountSid, authToken);
+
+const resetPassword = async (req, res) => {
+    try {
+        const { userId, newPassword } = req.body;
+        const docRef = db.collection('users').doc(userId);
+        const doc = await docRef.get();
+
+        if (!doc.exists) {
+            return res.status(400).json({ message: 'User does not exist in Firestore.' });
+        }
+
+        const userData = doc.data();
+        const email = userData.email;
+
+        const user = await admin.auth().getUserByEmail(email);
+        if (!user) {
+            return res.status(400).json({ message: 'User does not exist in Firebase Auth.' });
+        }
+
+        const hashedPassword = await hashPassword(newPassword);
+
+        await admin.auth().updateUser(user.uid, { password: newPassword });
+
+        await docRef.update({ password: hashedPassword, resetCode: null, resetCodeExpiry: null });
+
+        res.status(200).json({ message: 'Password reset successfully.' });
+    } catch (error) {
+        console.error('Error resetting password:', error);
+        res.status(500).json({ message: 'Error resetting password.' });
+    }
+};
+
+
+const hashPassword = async (password) => {
+    try {
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
+        return hashedPassword;
+    } catch (error) {
+        console.error('Error hashing password:', error);
+        throw new Error('Error hashing password');
+    }
+};
+const verifyPassword = async (plainPassword, hashedPassword) => {
+    try {
+        const match = await bcrypt.compare(plainPassword, hashedPassword);
+        return match;
+    } catch (error) {
+        console.error('Error verifying password:', error);
+        throw new Error('Error verifying password');
+    }
+};
 
 const generateResetCode = () => {
     return Math.floor(100000 + Math.random() * 900000).toString();
@@ -132,34 +185,6 @@ const verifyResetCode = async (req, res, next) => {
     }
 };
 
-
-
-
-const resetPassword = async (req, res, next) => {
-    try {
-        const { userId, newPassword } = req.body;
-        const docRef = db.collection('users').doc(userId);
-        const doc = await docRef.get();
-
-        if (!doc.exists) {
-            return res.status(400).json({ message: 'User does not exist.' });
-        }
-
-        const userData = doc.data();
-        const currentTime = new Date();
-        if (userData.resetCodeExpiry < currentTime) {
-            return res.status(400).json({ message: 'Reset code expired.' });
-        }
-
-        await docRef.update({ password: hashPassword(newPassword) });
-
-        await docRef.update({ resetCode: null, resetCodeExpiry: null });
-
-        res.status(200).json({ message: 'Password reset successfully.' });
-    } catch (error) {
-        next(error);
-    }
-};
 
 const reSendResetCode = async (req, res, next) => {
     try {

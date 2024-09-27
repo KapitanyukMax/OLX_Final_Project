@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Box, StyledEngineProvider } from '@mui/material';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { auth } from './../../../firebaseConfig';
 import StyledLabel from '../../components/lable';
 import { StyledInput } from '../../components/input';
@@ -12,6 +12,7 @@ import AppleIcon from '../../components/icons/apple';
 import PasswordIcon from '../../components/icons/password';
 import { useNavigate } from 'react-router-dom';
 import { iconBoxStyles } from './Styles';
+import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 
 interface LoginModalProps {
     onSwitchToRegister: () => void;
@@ -35,6 +36,8 @@ export const LoginModal: React.FC<LoginModalProps> = ({ onSwitchToRegister, onSw
             setRememberMe(true);
         }
     }, []);
+
+    const host = import.meta.env.VITE_HOST;
 
     const handleTogglePasswordVisibility = () => {
         setShowPassword(!showPassword);
@@ -70,6 +73,8 @@ export const LoginModal: React.FC<LoginModalProps> = ({ onSwitchToRegister, onSw
         }
 
         try {
+            console.log(auth);
+            await signOut(auth);
             await signInWithEmailAndPassword(auth, email, password);
             console.log('User logged in successfully');
             
@@ -88,13 +93,110 @@ export const LoginModal: React.FC<LoginModalProps> = ({ onSwitchToRegister, onSw
             setError('Помилка входу: ' + (error || 'Невідома помилка'));
         }
     };
-
+    // const handleLogin = async () => {
+    //     setError('');
+    //     if (!validateEmail(email)) {
+    //         setError('Неправильний формат електронної пошти');
+    //         return;
+    //     }
+    
+    //     if (!password) {
+    //         setError('Будь ласка, введіть пароль');
+    //         return;
+    //     }
+    
+    //     try {
+    //         // Запит на сервер для аутентифікації
+    //         const response = await fetch(`${host}/api/login`, {
+    //             method: 'POST',
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //             },
+    //             body: JSON.stringify({
+    //                 email: email,
+    //                 password: password,
+    //             }),
+    //         });
+    
+    //         const data = await response.json();
+    
+    //         if (!response.ok) {
+    //             // Якщо сервер повернув помилку, відобразити її
+    //             setError(data.message || 'Помилка входу');
+    //             return;
+    //         }
+    
+    //         console.log('User logged in successfully', data);
+    
+    //         // Збереження токена в localStorage або sessionStorage
+    //         if (rememberMe) {
+    //             localStorage.setItem('token', data.token);
+    //         } else {
+    //             sessionStorage.setItem('token', data.token);
+    //         }
+    
+    //         // Навігація до потрібної сторінки
+    //         navigate('/components-preview');
+    
+    //     } catch (error) {
+    //         console.error('Error logging in:', error);
+    //         setError('Помилка входу: ' + (error || 'Невідома помилка'));
+    //     }
+    // };
+    
+    // const handleLogin = async (email: string, password: string) => {
+    //     try {
+    //       const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    //       console.log("Успішний вхід:", userCredential);
+    //       // Логіка після успішного входу, наприклад, редірект
+    //     } catch (error: any) {
+    //       console.error("Помилка входу:", error.message);
+    //       // Виведення повідомлення про помилку
+    //     }
+    //   };
     const handleAppleLogin = () => {
         console.log('Apple login clicked');
     };
 
-    const handleGoogleLogin = () => {
-        console.log('Google login clicked');
+    const handleGoogleLogin = async() => {
+        const provider = new GoogleAuthProvider();
+
+        try{
+            const result = await signInWithPopup(auth, provider);
+            const user = result.user;
+
+            console.log('Google login successful', user);
+
+            const userData = {
+                // googleId:user.uid,
+                // name: user.displayName,
+                // email: user.email,
+                    name:user.displayName,
+                    email: user.email ?? null,
+                    phone: user.phoneNumber ?? null,
+                    currencyId: '',
+                    isAdmin: false,
+                    password,
+                    picture: '',
+                    rating: 0,
+                    verifyCode: '',
+                    resetCodeExpiry:'',
+            };
+
+            await fetch(`${host}/users`,{
+                method:'POST',
+                headers:{
+                    'Content-Type':'application/json',
+                },
+                body: JSON.stringify(userData),
+            });
+
+            navigate('/components-preview');
+        }
+        catch(error){
+            console.error('Google login error:', error);
+            setError('Помилка входу через Google: ' + (error || 'Невідома помилка'));
+        }
     };
 
     const handleFacebookLogin = () => {
@@ -115,7 +217,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ onSwitchToRegister, onSw
                         </Box>
                         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'left', gap: '8px', width: '100%' }}>
                             <StyledLabel text='Пароль' textType='small' type='with-icon' textColor='var(--black)' />
-                            <StyledInput widthType='big' value={password} isPassword iconEnd={PasswordIcon} iconEndClick={handleTogglePasswordVisibility} type={showPassword ? 'text' : 'password'}
+                            <StyledInput widthType='big' value={password} iconEnd={PasswordIcon} iconEndClick={handleTogglePasswordVisibility} type={showPassword ? 'text' : 'password'}
                                 onChange={handlePasswordChange} />
                         </Box>
                     </Box>
