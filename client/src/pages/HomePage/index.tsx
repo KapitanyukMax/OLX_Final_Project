@@ -2,8 +2,6 @@ import React, { useEffect, useState } from "react";
 import axios from 'axios';
 import Box from "@mui/material/Box";
 import { StyledEngineProvider } from "@mui/material/styles";
-import { Header } from "../../components/header";
-import StyledFooter from '../../components/footer';
 import { StyledInput } from "../../components/input";
 import SearchIcon from '@mui/icons-material/Search';
 import StyledButton from "../../components/button";
@@ -42,7 +40,7 @@ const HomePage: React.FC = () => {
         limit ??= 8;
         let response;
         if (search && search.length > 0) {
-            response = await axios.get(`http://localhost:5000/adverts?limit=${limit}?searchTerm=${search}`);
+            response = await axios.get(`http://localhost:5000/adverts?limit=${limit}&searchTerm=${search}`);
         }
         else {
             response = await axios.get(`http://localhost:5000/adverts?limit=${limit}`);
@@ -79,6 +77,7 @@ const HomePage: React.FC = () => {
     };
 
     const handleSearchClick = () => {
+        console.log(searchTerm);
         if (searchTerm) {
             setIsSearching(true);
             getAdverts(searchTerm || '', 20);
@@ -115,7 +114,7 @@ const HomePage: React.FC = () => {
                         justifyContent: 'space-between',
                         alignItems: 'center'
                     }}>
-                        <StyledInput value={searchTerm || 'Що шукаємо?'} iconEnd={StyledSearchIcon} width="522px" onChange={handleSearchChange} />
+                        <StyledInput value={searchTerm || 'Що шукаємо?'} iconEnd={StyledSearchIcon} width="522px" onChange={e => handleSearchChange(e.target.value)} />
                         <StyledInput value='Вся Україна' iconEnd={StyledSearchIcon} width="254px" />
                         <StyledInput value='Місто/село' iconEnd={StyledSearchIcon} width="254px" />
                         <StyledButton text='Пошук' type='contained' primaryColor='var(--dark-blue)' hoverColor='black' className='button-small' onClick={handleSearchClick} />
@@ -125,6 +124,7 @@ const HomePage: React.FC = () => {
                         ? (<>
                             <Box sx={{
                                 display: 'flex',
+                                width: '100%',
                                 flexDirection: 'row',
                                 gap: '24px',
                                 flexWrap: 'wrap',
@@ -192,6 +192,7 @@ const HomePage: React.FC = () => {
 
                             <Box sx={{
                                 display: 'flex',
+                                width: '100%',
                                 flexDirection: 'row',
                                 gap: '24px',
                                 flexWrap: 'wrap',
@@ -238,6 +239,7 @@ const HomePage: React.FC = () => {
 
                             <Box sx={{
                                 display: 'flex',
+                                width: '100%',
                                 flexDirection: 'row',
                                 gap: '24px',
                                 flexWrap: 'wrap',
@@ -274,6 +276,7 @@ const HomePage: React.FC = () => {
 
                             <Box sx={{
                                 display: 'flex',
+                                width: '100%',
                                 flexDirection: 'row',
                                 gap: '24px',
                                 flexWrap: 'wrap',
