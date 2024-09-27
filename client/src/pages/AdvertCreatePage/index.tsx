@@ -2,9 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { auth } from '../../../firebaseConfig';
 import { User, onAuthStateChanged } from 'firebase/auth';
-import { Header } from '../../components/header';
 import { StyledEngineProvider, Box, Button, Select, MenuItem, InputLabel, FormControl } from '@mui/material';
-import StyledFooter from '../../components/footer';
 import StyledLabel from '../../components/lable';
 import { StyledInput } from '../../components/input';
 import { StyledDropdown } from '../../components/dropdown';
@@ -116,24 +114,17 @@ const AdvertCreatePage: React.FC = () => {
         const uploadedImageURLs = await Promise.all(uploadPromises);
         console.log('Uploaded image URLs:', uploadedImageURLs); // Debugging line
 
-        if (formData.pictures.length === 0) {
-            setFormData((prevFormData) => ({
-                ...prevFormData,
-                pictures: [...uploadedImageURLs],
-            }));
-        }
-
-        else {
-            // Ensure that pictures are updated after images are uploaded
-            setFormData((prevFormData) => ({
+        setFormData((prevFormData) => {
+            return {
                 ...prevFormData,
                 pictures: [...prevFormData.pictures, ...uploadedImageURLs],
-            }));
-        }
-
-        console.log('Pictures:', formData.pictures); // Debugging line
+            };
+        });
     };
 
+    useEffect(() => {
+        console.log('Updated pictures:', formData.pictures); // Відстежуємо зміни в pictures
+    }, [formData.pictures]);
 
     const handleMultipleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const files = Array.from(event.target.files || []);
@@ -253,13 +244,14 @@ const AdvertCreatePage: React.FC = () => {
     }, []);
 
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
-            setCurrentUser(user);
+        const unsubscribe = onAuthStateChanged(auth, async (user) => {
             console.log(user);
-            if (user?.uid) {
+            if (user?.email) {
+                const response = await axios.get(`http://localhost:5000/users/email?email=${user.email}`);
+                setCurrentUser(response.data);
                 setFormData((prevFormData) => ({
                     ...prevFormData,
-                    userId: user.uid,
+                    userId: response.data.id,
                 }));
             }
         });
@@ -329,7 +321,6 @@ const AdvertCreatePage: React.FC = () => {
 
     return (
         <StyledEngineProvider injectFirst>
-            <Header />
             <Box sx={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -603,7 +594,6 @@ const AdvertCreatePage: React.FC = () => {
                     </Box>
                 </form>
             </Box>
-            <StyledFooter />
             <Dialog
                 open={openSuccessDialog}
                 onClose={() => setOpenErrorDialog(false)}

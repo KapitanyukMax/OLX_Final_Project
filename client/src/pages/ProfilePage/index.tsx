@@ -3,9 +3,7 @@ import { auth } from '../../../firebaseConfig';
 import axios from 'axios';
 import { User, onAuthStateChanged, updateProfile } from 'firebase/auth';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { Header } from '../../components/header';
 import { StyledEngineProvider, Box } from '@mui/material';
-import StyledFooter from '../../components/footer';
 import StyledButton from '../../components/button';
 import PenFluentIcon from '../../components/icons/penFluent';
 import ImageComponent from '../../components/image';
@@ -44,7 +42,7 @@ const ProfilePage: React.FC = () => {
     const getAdverts = async (page: number = 1, searchTerm?: string) => {
         if (userData) {
             let response;
-            const limit = 2; // Кількість оголошень на сторінці
+            const limit = 8; // Кількість оголошень на сторінці
             let startAfterParam = page > 1 ? adverts[adverts.length - 1].id : null;
 
             // Якщо є пошуковий термін, скидаємо пагінацію і шукаємо по всіх оголошеннях
@@ -150,7 +148,6 @@ const ProfilePage: React.FC = () => {
 
         if (displayName.length < 0 || phoneNumber.length < 0) return;
 
-
         try {
             let downloadURL = image; // Keep the current image URL by default.
 
@@ -200,7 +197,6 @@ const ProfilePage: React.FC = () => {
 
     return (
         <StyledEngineProvider injectFirst>
-            <Header />
             <Box sx={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -361,7 +357,7 @@ const ProfilePage: React.FC = () => {
                                     width: '100%',
                                     flexWrap: 'wrap'
                                 }}>
-                                    <Box sx={{ display: 'flex', flexDirection: 'row', gap: "24px", width: '100%', marginBottom: '40px' }}>
+                                    <Box sx={{ display: 'flex', flexDirection: 'row', gap: "24px", flexWrap: "wrap", width: '100%', marginBottom: '40px' }}>
                                         {adverts.length === 0 ? (
                                             <p>No adverts available.</p>
                                         ) : (
@@ -385,7 +381,6 @@ const ProfilePage: React.FC = () => {
                     </Box>
                 </Box>
             </Box>
-            <StyledFooter />
         </StyledEngineProvider >
     );
 };
