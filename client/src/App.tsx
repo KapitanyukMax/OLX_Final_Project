@@ -14,7 +14,7 @@ function App() {
                     <Route path="/components-preview" element={<ComponentsPreview />} />
                     <Route path="/advert-create" element={<AdvertCreatePage />} />
                     <Route path="/registration" element={<AuthModal />} />
-                    <Route path="/advert-page" element={<AdvertPage />} />
+                    <Route path="/advert/:advertId" element={<AdvertPage />} />
                     <Route path="/profile-page" element={<ProfilePage />} />
                 </Routes>
             </Router>
