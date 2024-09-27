@@ -2,9 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { auth } from '../../../firebaseConfig';
 import { User, onAuthStateChanged } from 'firebase/auth';
-import { Header } from '../../components/header';
 import { StyledEngineProvider, Box, Button, Select, MenuItem, InputLabel, FormControl } from '@mui/material';
-import StyledFooter from '../../components/footer';
 import StyledLabel from '../../components/lable';
 import { StyledInput } from '../../components/input';
 import { StyledDropdown } from '../../components/dropdown';
@@ -322,7 +320,6 @@ const AdvertCreatePage: React.FC = () => {
 
     return (
         <StyledEngineProvider injectFirst>
-            <Header />
             <Box sx={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -596,7 +593,6 @@ const AdvertCreatePage: React.FC = () => {
                     </Box>
                 </form>
             </Box>
-            <StyledFooter />
             <Dialog
                 open={openSuccessDialog}
                 onClose={() => setOpenErrorDialog(false)}
