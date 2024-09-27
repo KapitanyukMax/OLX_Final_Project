@@ -246,13 +246,14 @@ const AdvertCreatePage: React.FC = () => {
     }, []);
 
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
-            setCurrentUser(user);
+        const unsubscribe = onAuthStateChanged(auth, async (user) => {
             console.log(user);
-            if (user?.uid) {
+            if (user?.email) {
+                const response = await axios.get(`http://localhost:5000/users/email?email=${user.email}`);
+                setCurrentUser(response.data);
                 setFormData((prevFormData) => ({
                     ...prevFormData,
-                    userId: user.uid,
+                    userId: response.data.id,
                 }));
             }
         });

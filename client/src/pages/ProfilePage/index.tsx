@@ -150,7 +150,6 @@ const ProfilePage: React.FC = () => {
 
         if (displayName.length < 0 || phoneNumber.length < 0) return;
 
-
         try {
             let downloadURL = image; // Keep the current image URL by default.
 
