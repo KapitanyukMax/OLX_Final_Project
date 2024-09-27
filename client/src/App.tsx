@@ -5,6 +5,7 @@ import { AuthModal } from './pages/RegistrationPage/AuthModal';
 import { AdvertPage } from './pages/AdvertPage';
 import { ProfilePage } from './pages/ProfilePage';
 import './App.css';
+import { UserProfilePage } from './pages/UserProfilePage';
 
 function App() {
     return (
@@ -16,6 +17,7 @@ function App() {
                     <Route path="/registration" element={<AuthModal />} />
                     <Route path="/advert/:advertId" element={<AdvertPage />} />
                     <Route path="/profile-page" element={<ProfilePage />} />
+                    <Route path="/user/:userId" element={<UserProfilePage />} />
                 </Routes>
             </Router>
         </>
