@@ -44,7 +44,7 @@ const ProfilePage: React.FC = () => {
     const getAdverts = async (page: number = 1, searchTerm?: string) => {
         if (userData) {
             let response;
-            const limit = 2; // Кількість оголошень на сторінці
+            const limit = 8; // Кількість оголошень на сторінці
             let startAfterParam = page > 1 ? adverts[adverts.length - 1].id : null;
 
             // Якщо є пошуковий термін, скидаємо пагінацію і шукаємо по всіх оголошеннях
@@ -361,7 +361,7 @@ const ProfilePage: React.FC = () => {
                                     width: '100%',
                                     flexWrap: 'wrap'
                                 }}>
-                                    <Box sx={{ display: 'flex', flexDirection: 'row', gap: "24px", width: '100%', marginBottom: '40px' }}>
+                                    <Box sx={{ display: 'flex', flexDirection: 'row', gap: "24px", flexWrap: "wrap", width: '100%', marginBottom: '40px' }}>
                                         {adverts.length === 0 ? (
                                             <p>No adverts available.</p>
                                         ) : (

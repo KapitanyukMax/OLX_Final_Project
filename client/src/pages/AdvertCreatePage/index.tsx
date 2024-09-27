@@ -116,24 +116,17 @@ const AdvertCreatePage: React.FC = () => {
         const uploadedImageURLs = await Promise.all(uploadPromises);
         console.log('Uploaded image URLs:', uploadedImageURLs); // Debugging line
 
-        if (formData.pictures.length === 0) {
-            setFormData((prevFormData) => ({
-                ...prevFormData,
-                pictures: [...uploadedImageURLs],
-            }));
-        }
-
-        else {
-            // Ensure that pictures are updated after images are uploaded
-            setFormData((prevFormData) => ({
+        setFormData((prevFormData) => {
+            return {
                 ...prevFormData,
                 pictures: [...prevFormData.pictures, ...uploadedImageURLs],
-            }));
-        }
-
-        console.log('Pictures:', formData.pictures); // Debugging line
+            };
+        });
     };
 
+    useEffect(() => {
+        console.log('Updated pictures:', formData.pictures); // Відстежуємо зміни в pictures
+    }, [formData.pictures]);
 
     const handleMultipleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const files = Array.from(event.target.files || []);
