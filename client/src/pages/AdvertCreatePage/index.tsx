@@ -13,7 +13,7 @@ import StyledButton from '../../components/button';
 import { StyledTextArea } from '../../components/textArea';
 import { Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import imageCompression from 'browser-image-compression';
-import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import { useRef } from 'react';
 import { IconButton } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -32,7 +32,6 @@ const AdvertCreatePage: React.FC = () => {
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const [successMessage, setSuccessMessage] = useState('');
     const [openSuccessDialog, setOpenSuccessDialog] = useState(false);
-
 
     const storage = getStorage();
 
@@ -117,11 +116,22 @@ const AdvertCreatePage: React.FC = () => {
         const uploadedImageURLs = await Promise.all(uploadPromises);
         console.log('Uploaded image URLs:', uploadedImageURLs); // Debugging line
 
-        // Ensure that pictures are updated after images are uploaded
-        setFormData((prevFormData) => ({
-            ...prevFormData,
-            pictures: [...uploadedImageURLs],
-        }));
+        if (formData.pictures.length === 0) {
+            setFormData((prevFormData) => ({
+                ...prevFormData,
+                pictures: [...uploadedImageURLs],
+            }));
+        }
+
+        else {
+            // Ensure that pictures are updated after images are uploaded
+            setFormData((prevFormData) => ({
+                ...prevFormData,
+                pictures: [...prevFormData.pictures, ...uploadedImageURLs],
+            }));
+        }
+
+        console.log('Pictures:', formData.pictures); // Debugging line
     };
 
 
@@ -133,7 +143,18 @@ const AdvertCreatePage: React.FC = () => {
         }
     };
 
-    const handleDeleteImage = (index: number) => {
+    const handleDeleteImage = async (index: number) => {
+        // Step 1: Remove image from Firebase Storage (optional)
+        const imageToDelete = formData.pictures[index];
+        const imageRef = ref(storage, imageToDelete); // imageToDelete should be the exact URL or path
+        try {
+            await deleteObject(imageRef);
+            console.log('Image successfully deleted from Firebase Storage');
+        } catch (error) {
+            console.error('Error deleting image from Firebase Storage:', error);
+        }
+
+        // Step 2: Update state
         setSelectedImages((prevImages) => prevImages.filter((_, i) => i !== index));
         setFormData((prevFormData) => ({
             ...prevFormData,
