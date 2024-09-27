@@ -26,6 +26,7 @@ const ProfilePage: React.FC = () => {
     const [displayName, setDisplayName] = useState<string>('');
     const [phoneNumber, setPhoneNumber] = useState<string>('');
     const [image, setImage] = useState<string | File>('');
+    const [prevImage, setPrevImage] = useState<string>('');
 
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [totalPages, setTotalPages] = useState<number>(1);
@@ -140,6 +141,7 @@ const ProfilePage: React.FC = () => {
     const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files && event.target.files[0]) {
             setImage(event.target.files[0]);
+            setPrevImage(URL.createObjectURL(event.target.files[0]));
         }
     };
 
@@ -175,6 +177,7 @@ const ProfilePage: React.FC = () => {
 
             console.log('User profile updated successfully');
             setIsEditable(true);
+            window.location.reload();
         } catch (err) {
             console.error('Error getting user data:', err);
         }
@@ -189,6 +192,7 @@ const ProfilePage: React.FC = () => {
 
         try {
             await auth.signOut();
+            window.location.href = '/registration';
             console.log('User signed out successfully');
         } catch (error) {
             console.error('Error signing out:', error);
@@ -214,13 +218,13 @@ const ProfilePage: React.FC = () => {
                         <StyledButton text='Редагувати профіль' type='contained' secondaryColor='white' icon={PenFluentIcon} onClick={handleEditClick} />
                         <StyledButton text='Вийти' type='contained' secondaryColor='white' primaryColor='red' onClick={() => {
                             handleLogout();
-                            window.location.href = '/registration';
                         }} />
 
                     </Box>
                     <Box sx={{ display: 'flex', flexDirection: 'row', gap: '50px' }}>
                         {!isEditable ? (
                             <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                                <ImageComponent src={typeof prevImage === 'string' ? prevImage : 'https://via.placeholder.com/204'} borderRadius='204px' alt='user' width='204px' height='204px' />
                                 <StyledButton text="Вибрати фото" type="outlined" onClick={() => document.getElementById('fileInput')?.click()} />
                                 <input
                                     id="fileInput"
@@ -255,7 +259,7 @@ const ProfilePage: React.FC = () => {
                             <Box sx={{ display: 'flex', flexDirection: 'row', gap: '50px' }}>
                                 {/* <StyledInput value='Ромашко' label="Прізвище" widthType='middle' disabled={isEditable} /> */}
                                 {userData ? (
-                                    <StyledInput value={userData?.email || 'Електронна пошта не вказана'} label="Електронна пошта" widthType='middle' disabled={isEditable} />
+                                    <StyledInput value={userData?.email || 'Електронна пошта не вказана'} label="Електронна пошта" widthType='middle' disabled={true} />
                                 ) : (
                                     <p>Loading user data...</p>
                                 )}
