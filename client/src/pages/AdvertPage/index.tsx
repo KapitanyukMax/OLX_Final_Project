@@ -40,6 +40,7 @@ const AdvertPage: React.FC = () => {
     const [openImage, setOpenImage] = useState(false);
     const [selectedImage, setSelectedImage] = useState<string>("");
     const [isLoading, setIsLoading] = useState(true);
+    const [showPhoneNumber, setShowPhoneNumber] = useState(false);
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -100,6 +101,10 @@ const AdvertPage: React.FC = () => {
     const handleAdvertClick = (advertId: string) => {
         window.location.href = `/advert/${advertId}`;
     };
+
+    const handleShowPhoneNumber = () => {
+        setShowPhoneNumber(true);
+    }
 
     if (isLoading) {
         return <Box>Завантаження...</Box>;
@@ -263,12 +268,17 @@ const AdvertPage: React.FC = () => {
                                 justifyContent: "space-between",
                             }}
                         >
-                            <StyledLabel
-                                text={"Опубліковано сьогодні"} // creationDate : TODO
-                                type={"primary"}
-                                textType={"small"}
-                                textColor="var(--light-gray)"
-                            />
+                            <Typography sx={{
+                                color: "#737070",
+                                fontFamily: "Nunito",
+                                fontSize: "16px",
+                            }}>
+                                Опубліковано {" "}
+                                {
+                                new Date(advertData.creationDate).toLocaleDateString() === new Date().toLocaleDateString()
+                                    ? "сьогодні"
+                                    : new Date(advertData.creationDate).toLocaleDateString()}
+                            </Typography>
                             <HeartIcon />
                         </Box>
                         <Box
@@ -323,8 +333,11 @@ const AdvertPage: React.FC = () => {
                                 }}
                             />
                             <StyledButton
-                                text={"Показати телефон"} // TODO
+                                text={
+                                    showPhoneNumber ? userData.phone : "Показати телефон"
+                                }
                                 type={"outlined"}
+                                onClick={() => handleShowPhoneNumber()}
                                 sx={{
                                     height: "65px",
                                     width: "436px",
@@ -729,7 +742,9 @@ const AdvertPage: React.FC = () => {
                                 location={advert.location}
                                 date={advert.creationDate}
                                 image={advert.pictures[0]}
-                                onClick={() => { handleAdvertClick(advert.id) }}
+                                onClick={() => {
+                                    handleAdvertClick(advert.id);
+                                }}
                                 price={advert.price}
                             />
                         ))
@@ -768,7 +783,9 @@ const AdvertPage: React.FC = () => {
                             location={advert.location}
                             date={advert.creationDate}
                             image={advert.pictures[0]}
-                            onClick={() => { handleAdvertClick(advert.id) }}
+                            onClick={() => {
+                                handleAdvertClick(advert.id);
+                            }}
                             price={advert.price}
                         />
                     ))}
