@@ -26,7 +26,7 @@ import { StyledAdvert } from "../../components/advert";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { auth } from "../../../firebaseConfig";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 const AdvertPage: React.FC = () => {
     const { advertId } = useParams<{ advertId: string }>();
@@ -691,7 +691,15 @@ const AdvertPage: React.FC = () => {
                                     fontWeight: "600",
                                 }}
                             >
-                                Переглянути профіль
+                                <Link
+                                    to={`/user/${userData.id}`}
+                                    style={{
+                                        textDecoration: "none",
+                                        color: "#000",
+                                    }}
+                                >
+                                    Переглянути профіль
+                                </Link>
                             </Typography>
                         </Box>
                     </Box>
@@ -726,7 +734,9 @@ const AdvertPage: React.FC = () => {
                                 location={advert.location}
                                 date={advert.creationDate}
                                 image={advert.pictures[0]}
-                                onClick={() => { handleAdvertClick(advert.id) }}
+                                onClick={() => {
+                                    handleAdvertClick(advert.id);
+                                }}
                                 price={advert.price}
                             />
                         ))
@@ -765,7 +775,9 @@ const AdvertPage: React.FC = () => {
                             location={advert.location}
                             date={advert.creationDate}
                             image={advert.pictures[0]}
-                            onClick={() => { handleAdvertClick(advert.id) }}
+                            onClick={() => {
+                                handleAdvertClick(advert.id);
+                            }}
                             price={advert.price}
                         />
                     ))}
