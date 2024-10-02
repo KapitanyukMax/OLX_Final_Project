@@ -28,11 +28,12 @@ import StyledFooter from "../../components/footer";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { auth } from "../../../firebaseConfig";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 const AdvertPage: React.FC = () => {
     const { advertId } = useParams<{ advertId: string }>();
     const [currentUser, setCurrentUser] = useState<User | null>(null);
+    const [isAuthorized, setIsAuthorized] = useState(false);
     const [advertData, setAdvertData] = useState<any>(null);
     const [userData, setUserData] = useState<any>(null);
     const [userAdverts, setUserAdverts] = useState<any[]>([]);
@@ -44,7 +45,13 @@ const AdvertPage: React.FC = () => {
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
-            setCurrentUser(user);
+            if (user) {
+                setCurrentUser(user);
+                setIsAuthorized(true);
+                console.log(user);
+            } else {
+                setIsAuthorized(false);
+            }
         });
 
         return () => unsubscribe();
@@ -104,7 +111,7 @@ const AdvertPage: React.FC = () => {
 
     const handleShowPhoneNumber = () => {
         setShowPhoneNumber(true);
-    }
+    };
 
     if (isLoading) {
         return <Box>Завантаження...</Box>;
@@ -268,16 +275,22 @@ const AdvertPage: React.FC = () => {
                                 justifyContent: "space-between",
                             }}
                         >
-                            <Typography sx={{
-                                color: "#737070",
-                                fontFamily: "Nunito",
-                                fontSize: "16px",
-                            }}>
-                                Опубліковано {" "}
-                                {
-                                new Date(advertData.creationDate).toLocaleDateString() === new Date().toLocaleDateString()
+                            <Typography
+                                sx={{
+                                    color: "#737070",
+                                    fontFamily: "Nunito",
+                                    fontSize: "16px",
+                                }}
+                            >
+                                Опубліковано{" "}
+                                {new Date(
+                                    advertData.creationDate
+                                ).toLocaleDateString() ===
+                                new Date().toLocaleDateString()
                                     ? "сьогодні"
-                                    : new Date(advertData.creationDate).toLocaleDateString()}
+                                    : new Date(
+                                          advertData.creationDate
+                                      ).toLocaleDateString()}
                             </Typography>
                             <HeartIcon />
                         </Box>
@@ -315,43 +328,77 @@ const AdvertPage: React.FC = () => {
                                     : `${advertData.price} грн.`}
                             </Typography>
                         </Box>
-                        <Box
-                            sx={{
-                                display: "flex",
-                                flexDirection: "column",
-                                justifyContent: "space-between",
-                                alignItems: "center",
-                                gap: "24px",
-                            }}
-                        >
-                            <StyledButton
-                                text={"Написати повідомлення"}
-                                type={"contained"}
+                        {isAuthorized ? (
+                            <Box
                                 sx={{
-                                    height: "65px",
-                                    width: "436px",
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    justifyContent: "space-between",
+                                    alignItems: "center",
+                                    gap: "24px",
                                 }}
-                            />
-                            <StyledButton
-                                text={
-                                    showPhoneNumber ? userData.phone : "Показати телефон"
-                                }
-                                type={"outlined"}
-                                onClick={() => handleShowPhoneNumber()}
+                            >
+                                <StyledButton
+                                    text={"Написати повідомлення"}
+                                    type={"contained"}
+                                    sx={{
+                                        height: "65px",
+                                        width: "436px",
+                                    }}
+                                />
+                                <StyledButton
+                                    text={
+                                        showPhoneNumber
+                                            ? userData.phone
+                                            : "Показати телефон"
+                                    }
+                                    type={"outlined"}
+                                    onClick={() => handleShowPhoneNumber()}
+                                    sx={{
+                                        height: "65px",
+                                        width: "436px",
+                                    }}
+                                />
+                                <StyledButton
+                                    text={"DDX доставка"}
+                                    type={"outlined"}
+                                    sx={{
+                                        height: "65px",
+                                        width: "436px",
+                                    }}
+                                />
+                            </Box>
+                        ) : (
+                            <Box
                                 sx={{
-                                    height: "65px",
-                                    width: "436px",
+                                    display: "flex",
+                                    flex: "1.5",
+                                    flexDirection: "column",
                                 }}
-                            />
-                            <StyledButton
-                                text={"DDX доставка"}
-                                type={"outlined"}
-                                sx={{
-                                    height: "65px",
-                                    width: "436px",
-                                }}
-                            />
-                        </Box>
+                            >
+                                <Typography
+                                    sx={{
+                                        fontFamily: "Nunito",
+                                        fontSize: "20px",
+                                        textAlign: "left",
+                                    }}
+                                >
+                                    Увійдіть у свій профіль DDX або створіть
+                                    новий, щоб зв’язатися з автором
+                                </Typography>
+                                <Link to={"/registration"}>
+                                    <StyledButton
+                                        sx={{
+                                            borderRadius: "15px",
+                                            height: "48px",
+                                            marginTop: "20px",
+                                        }}
+                                        text={"Увійти або створити профіль"}
+                                        type={"contained"}
+                                    />
+                                </Link>
+                            </Box>
+                        )}
                     </Box>
                 </Box>
                 <Box
