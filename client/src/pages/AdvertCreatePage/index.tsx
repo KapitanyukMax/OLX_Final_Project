@@ -25,7 +25,7 @@ const AdvertCreatePage: React.FC = () => {
     const [cities, setCities] = useState<string[]>([]);
     const [category, setCategory] = useState('');
     const [categories, setCategories] = useState<{ id: string; name: string; picture: string; subcategories: [] }[]>([]);
-    const [subCategories, setSubCategories] = useState<string[]>([]);
+    const [subCategories, setSubCategories] = useState<{ id: string, name: string }[]>([]);
     const [currencies, setCurrencies] = useState<string[]>([]);
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const [successMessage, setSuccessMessage] = useState('');
@@ -311,11 +311,11 @@ const AdvertCreatePage: React.FC = () => {
         if (res.data === undefined) {
             setSubCategories([]);
         } else {
-            let names: string[] = [];
-            res.data.forEach((element: { name: string }) => {
-                names.push(element.name);
-            });
-            setSubCategories(names);
+            // let names: string[] = [];
+            // res.data.forEach((element: { id: string, name: string }) => {
+            //     names.push(element.name);
+            // });
+            setSubCategories(res.data);
         }
     }
 
@@ -382,7 +382,7 @@ const AdvertCreatePage: React.FC = () => {
                                     {subCategories.map((item, index) => (
                                         <MenuItem
                                             key={index}
-                                            value={item}
+                                            value={item.id}
                                             sx={{
                                                 fontFamily: "Nunito",
                                                 fontSize: "18px",
@@ -390,7 +390,7 @@ const AdvertCreatePage: React.FC = () => {
                                                 color: '#737070'
                                             }}
                                         >
-                                            {item}
+                                            {item.name}
                                         </MenuItem>
                                     ))}
                                 </Select>
