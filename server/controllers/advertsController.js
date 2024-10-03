@@ -6,8 +6,8 @@ const db = admin.firestore();
 
 const getAllAdverts = async (req, res, next) => {
     try {
-        const { limit = 10, startAfter, searchTerm, city } = req.query;
-        let query = db.collection('adverts').orderBy('creationDate').limit(parseInt(limit));
+        const { limit = 10, startAfter, searchTerm, city, sortBy = 'creationDate', sortOrder = 'desc' } = req.query;
+        let query = db.collection('adverts').orderBy(sortBy, sortOrder).limit(parseInt(limit));
 
         if (startAfter) {
             const lastDoc = await db.collection('adverts').doc(startAfter).get();
@@ -72,11 +72,12 @@ const getAdvertById = async (req, res, next) => {
 
 const getAdvertsByCategoryId = async (req, res, next) => {
     try {
-        const { limit = 10, startAfter, searchTerm, categoryId, city } = req.query;
+        const { limit = 10, startAfter, searchTerm, categoryId, city, sortBy = 'creationDate', sortOrder = 'desc' } = req.query;
 
         // Fetch subcategories by categoryId
         const subCategoriesSnapshot = await db.collection('subcategories')
             .where('categoryId', '==', categoryId)
+            .orderBy(sortBy, sortOrder)
             .get();
 
         if (subCategoriesSnapshot.empty) {
@@ -153,11 +154,11 @@ const getAdvertsByCategoryId = async (req, res, next) => {
 
 const getAdvertsByUserId = async (req, res, next) => {
     try {
-        const { limit = 10, startAfter, searchTerm, userId, city } = req.query;
+        const { limit = 10, startAfter, searchTerm, userId, city, sortBy = 'creationDate', sortOrder = 'desc' } = req.query;
         logger.info(userId);
         let query = db.collection('adverts')
             .where('userId', '==', userId)
-            .orderBy('creationDate')
+            .orderBy(sortBy, sortOrder)
             .limit(parseInt(limit));
 
         if (startAfter) {
@@ -210,12 +211,12 @@ const getAdvertsByUserId = async (req, res, next) => {
 
 const getAdvertsBySubcategoryId = async (req, res, next) => {
     try {
-        const { limit = 10, startAfter, searchTerm, subcategoryId, city } = req.query;
+        const { limit = 10, startAfter, searchTerm, subcategoryId, city, sortBy = 'creationDate', sortOrder = 'desc' } = req.query;
 
         // Query for paginated adverts
         let query = db.collection('adverts')
             .where('subCategoryId', '==', subcategoryId)
-            .orderBy('creationDate')
+            .orderBy(sortBy, sortOrder)
             .limit(parseInt(limit));
 
         if (startAfter) {
