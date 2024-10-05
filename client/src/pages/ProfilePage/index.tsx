@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button } from '@mui/material';
+import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
 import { auth } from '../../../firebaseConfig';
 import axios from 'axios';
 import { User, onAuthStateChanged, updateProfile } from 'firebase/auth';
@@ -20,7 +20,9 @@ import { StyledAdvert } from '../../components/advert';
 const ProfilePage: React.FC = () => {
     const [currentUser, setCurrentUser] = useState<User | null>(null);
     const [userData, setUserData] = useState<any>(null);
+
     const [isEditable, setIsEditable] = useState(true);
+
     const [adverts, setAdverts] = useState<any[]>([]);
     const [searchTerm, setSearchTerm] = useState<string | null>(null);
 
@@ -34,6 +36,12 @@ const ProfilePage: React.FC = () => {
 
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [totalPages, setTotalPages] = useState<number>(1);
+
+    const [sortValue, setSortValue] = useState<string>('По даті(спадання)');
+    const sortValues = ['По даті(спадання)', 'По даті(зростання)', 'По ціні(спадання)', 'По ціні(зростання)'];
+
+    const [categories, setCategories] = useState<{ id: string; name: string; picture: string; subcategories: [] }[]>([]);
+    const [category, setCategory] = useState<string>('');
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -50,22 +58,44 @@ const ProfilePage: React.FC = () => {
             const limit = 8;
             let startAfterParam = page > 1 ? adverts[adverts.length - 1].id : null;
 
+            const sortQuery = sortValue === 'По даті(спадання)' ? 'sortBy=creationDate&sortOrder=desc' :
+                sortValue === 'По даті(зростання)' ? 'sortBy=creationDate&sortOrder=asc' :
+                    sortValue === 'По ціні(спадання)' ? 'sortBy=price&sortOrder=desc' :
+                        sortValue === 'По ціні(зростання)' ? 'sortBy=price&sortOrder=asc' : '';
+
             if (searchTerm && searchTerm.length > 0) {
                 startAfterParam = null;
-                response = await axios.get(`http://localhost:5000/adverts/userId?userId=${userData.id}&searchTerm=${searchTerm}`);
+                response = await axios.get(`http://localhost:5000/adverts/userId?userId=${userData.id}&searchTerm=${searchTerm}&${sortQuery}`);
             } else {
-                response = await axios.get(`http://localhost:5000/adverts/userId?userId=${userData.id}&limit=${limit}&startAfter=${startAfterParam}`);
+                response = await axios.get(`http://localhost:5000/adverts/userId?userId=${userData.id}&limit=${limit}&startAfter=${startAfterParam}&${sortQuery}`);
             }
 
             if (response) {
-                const { adverts: data, totalCount } = response.data;
-                setAdverts(data);
+                if (category === '' || category === 'Всі категорії') {
+                    const { adverts: data, totalCount } = response.data;
+                    setAdverts(data);
 
-                if (!searchTerm || searchTerm.length === 0) {
-                    setTotalPages(Math.ceil(totalCount / limit));
+                    if (!searchTerm || searchTerm.length === 0) {
+                        setTotalPages(Math.ceil(totalCount / limit));
+                    }
+
+                    console.log(data);
                 }
+                else {
+                    const { adverts: data, totalCount } = response.data;
+                    const subcategoriesRef = await axios.get(`http://localhost:5000/subcategories/by-category/${category}`);
+                    if (subcategoriesRef.data.length > 0) {
+                        const subcategories = subcategoriesRef.data.map((subcategory: any) => subcategory.id);
+                        const filteredData = data.filter((advert: any) => subcategories.includes(advert.subCategoryId));
+                        setAdverts(filteredData);
+                    }
 
-                console.log(data);
+                    if (!searchTerm || searchTerm.length === 0) {
+                        setTotalPages(Math.ceil(totalCount / limit));
+                    }
+
+                    console.log(data);
+                }
             } else {
                 return;
             }
@@ -86,6 +116,47 @@ const ProfilePage: React.FC = () => {
         getAdverts(currentPage, searchTerm || '');
     }, [searchTerm]);
 
+    useEffect(() => {
+        const setUser = async () => {
+            if (currentUser) {
+                try {
+                    const response = await axios.get(`http://localhost:5000/users/email?email=${currentUser.email}`);
+                    setUserData(response.data);
+                    setDisplayName(response.data.name);
+                    setPhoneNumber(response.data.phone);
+                    setImage(response.data.picture);
+                } catch (error) {
+                    console.error('Error getting user data:', error);
+                }
+            }
+        }
+
+        setUser();
+    }, [currentUser]);
+
+    useEffect(() => {
+        getAdverts(currentPage, searchTerm || '');
+    }, [sortValue]);
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const response = await axios.get('http://localhost:5000/categories');
+
+                setCategories(response.data);
+                setCategories([{ id: '', name: 'Всі категорії', picture: '', subcategories: [] }, ...response.data]);
+            } catch (error) {
+                console.error('Error fetching categories', error);
+            }
+        };
+
+        fetchCategories();
+    }, []);
+
+    useEffect(() => {
+        getAdverts(currentPage, searchTerm || '');
+    }, [category]);
+
     const handlePageChange = (pageNumber: number) => {
         setCurrentPage(pageNumber);
     };
@@ -104,24 +175,6 @@ const ProfilePage: React.FC = () => {
         }
         return buttons;
     };
-
-    useEffect(() => {
-        const setUser = async () => {
-            if (currentUser) {
-                try {
-                    const response = await axios.get(`http://localhost:5000/users/email?email=${currentUser.email}`);
-                    setUserData(response.data);
-                    setDisplayName(response.data.name);
-                    setPhoneNumber(response.data.phone);
-                    setImage(response.data.picture);
-                } catch (error) {
-                    console.error('Error getting user data:', error);
-                }
-            }
-        }
-
-        setUser();
-    }, [currentUser]);
 
     const handleEditClick = () => {
         setIsEditable((prevState) => !prevState);
@@ -228,6 +281,14 @@ const ProfilePage: React.FC = () => {
         setSelectedAd(null);
     };
 
+    const handleSortChange = (value: string) => {
+        setSortValue(value);
+    };
+
+    const handleCategoryChange = (value: string) => {
+        setCategory(value);
+    }
+
     return (
         <StyledEngineProvider injectFirst>
             <Box sx={{
@@ -258,7 +319,7 @@ const ProfilePage: React.FC = () => {
                                 <input
                                     id="fileInput"
                                     type="file"
-                                    style={{ display: 'none' }} // Приховуємо цей елемент
+                                    style={{ display: 'none' }}
                                     onChange={(e) => handleImageChange(e)}
                                     accept="image/*"
                                 />
@@ -339,7 +400,6 @@ const ProfilePage: React.FC = () => {
                         <StyledButton text='Платежі та рахунок DDX' type='outlined' />
                         <StyledButton text='Робота на DDX' type='outlined' />
                         <StyledButton text='DDX доставка' type='outlined' />
-                        <StyledButton text='Налаштуваня' type='outlined' />
                     </Box>
                 </Box>
 
@@ -367,10 +427,46 @@ const ProfilePage: React.FC = () => {
                         </Box>
 
                         <Box sx={{ display: 'flex', flexDirection: 'row', marginTop: '75px', gap: '60px' }}>
-                            <StyledDropdown values={[]} placeholder='Додати фільтр' type='small' />
-                            <StyledInput value={searchTerm ?? 'Заголовок, ID'} iconEnd={SearchIcon} widthType='small' onChange={(e) => { handleSearchChange(e.target.value) }} />
+                            <StyledInput value={searchTerm ?? 'Заголовок'} iconEnd={SearchIcon} widthType='small' onChange={(e) => { handleSearchChange(e.target.value) }} />
                             <StyledDropdown values={[]} placeholder='Категорія' />
-                            <StyledDropdown values={[]} placeholder='Сортувати' />
+                            <FormControl fullWidth sx={{ width: '267px' }}>
+                                <InputLabel id='category' sx={{ fontFamily: 'Nunito', fontSize: '18px', fontWeight: '400' }}>Категорія</InputLabel>
+                                <Select labelId='category' label='Категорія' sx={{ height: '50px', borderRadius: '10px', border: '1px solid #000', background: 'white', textAlign: 'left', fontFamily: 'Nunito', fontSize: '18px', fontWeight: '400' }} value={category} onChange={(e) => handleCategoryChange(e.target.value as string)}>
+                                    {categories.map((item, index) => (
+                                        <MenuItem
+                                            key={index}
+                                            value={item.id}
+                                            sx={{
+                                                fontFamily: "Nunito",
+                                                fontSize: "18px",
+                                                fontWeight: '400',
+                                                color: '#737070'
+                                            }}
+                                        >
+                                            {item.name}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                            <FormControl fullWidth sx={{ width: '267px' }}>
+                                <InputLabel id='sortValue'>Сортувати</InputLabel>
+                                <Select labelId='sortValue' label='Сортувати' sx={{ height: '50px', borderRadius: '10px', border: '1px solid #000', background: 'white', textAlign: 'left', fontFamily: 'Nunito', fontSize: '18px' }} value={sortValue} onChange={(e) => handleSortChange(e.target.value as string)}>
+                                    {sortValues.map((item, index) => (
+                                        <MenuItem
+                                            key={index}
+                                            value={item}
+                                            sx={{
+                                                fontFamily: "Nunito",
+                                                fontSize: "18px",
+                                                fontWeight: '400',
+                                                color: '#737070'
+                                            }}
+                                        >
+                                            {item}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
                         </Box>
 
                         <Box sx={{ display: 'flex', flexDirection: 'row', marginTop: '100px', width: '100%', marginBottom: '40px' }}>
