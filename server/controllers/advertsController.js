@@ -345,13 +345,14 @@ const updateAdvert = async (req, res, next) => {
 
 const deleteAdvert = async (req, res, next) => {
     try {
-        const advertRef = await db.collection('adverts').doc(req.params.id);
+        const advertRef = db.collection('adverts').doc(req.params.id);
         const doc = await advertRef.get();
 
-        if (!doc.exists)
+        if (!doc.exists) {
             return res.status(404).json({ error: 'Advert not found' });
+        }
 
-        const response = await db.collection('adverts').doc(req.query.id).delete();
+        await advertRef.delete();
 
         logger.info(`Advert deleted successfully`);
         res.sendStatus(204);
@@ -359,6 +360,7 @@ const deleteAdvert = async (req, res, next) => {
         next(error);
     }
 };
+
 
 const getAdvertsByTOP = async (req, res, next) => {
     try {

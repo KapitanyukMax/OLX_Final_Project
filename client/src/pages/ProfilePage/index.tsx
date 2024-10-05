@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button } from '@mui/material';
 import { auth } from '../../../firebaseConfig';
 import axios from 'axios';
 import { User, onAuthStateChanged, updateProfile } from 'firebase/auth';
@@ -23,6 +24,9 @@ const ProfilePage: React.FC = () => {
     const [adverts, setAdverts] = useState<any[]>([]);
     const [searchTerm, setSearchTerm] = useState<string | null>(null);
 
+    const [open, setOpen] = useState(false);
+    const [selectedAd, setSelectedAd] = useState<string | null>(null);
+
     const [displayName, setDisplayName] = useState<string>('');
     const [phoneNumber, setPhoneNumber] = useState<string>('');
     const [image, setImage] = useState<string | File>('');
@@ -43,15 +47,13 @@ const ProfilePage: React.FC = () => {
     const getAdverts = async (page: number = 1, searchTerm?: string) => {
         if (userData) {
             let response;
-            const limit = 8; // Кількість оголошень на сторінці
+            const limit = 8;
             let startAfterParam = page > 1 ? adverts[adverts.length - 1].id : null;
 
-            // Якщо є пошуковий термін, скидаємо пагінацію і шукаємо по всіх оголошеннях
             if (searchTerm && searchTerm.length > 0) {
-                startAfterParam = null; // Ігноруємо пагінацію
+                startAfterParam = null;
                 response = await axios.get(`http://localhost:5000/adverts/userId?userId=${userData.id}&searchTerm=${searchTerm}`);
             } else {
-                // Якщо пошуковий термін відсутній, виконуємо запит з пагінацією
                 response = await axios.get(`http://localhost:5000/adverts/userId?userId=${userData.id}&limit=${limit}&startAfter=${startAfterParam}`);
             }
 
@@ -59,7 +61,6 @@ const ProfilePage: React.FC = () => {
                 const { adverts: data, totalCount } = response.data;
                 setAdverts(data);
 
-                // Оновлюємо кількість сторінок тільки для звичайних запитів (без пошуку)
                 if (!searchTerm || searchTerm.length === 0) {
                     setTotalPages(Math.ceil(totalCount / limit));
                 }
@@ -151,11 +152,9 @@ const ProfilePage: React.FC = () => {
         if (displayName.length < 0 || phoneNumber.length < 0) return;
 
         try {
-            let downloadURL = image; // Keep the current image URL by default.
+            let downloadURL = image;
 
-            // Check if a new file has been selected (by checking if `image` is a File object).
             if (typeof image !== 'string') {
-                // Upload the image to Firebase Storage if a new file is selected.
                 const storage = getStorage();
                 const storageRef = ref(storage, `profileImages/${currentUser.uid}`);
 
@@ -197,6 +196,36 @@ const ProfilePage: React.FC = () => {
         } catch (error) {
             console.error('Error signing out:', error);
         }
+    };
+
+    const handleDeleteClick = (adId: string) => {
+        setSelectedAd(adId);
+        setOpen(true);
+    };
+
+    const deleteAdvert = async (adId: string | null) => {
+        if (!adId) return;
+
+        try {
+            await axios.delete(`http://localhost:5000/adverts/${adId}`);
+            console.log('Advert deleted successfully');
+            window.location.reload();
+        } catch (error) {
+            console.error('Error deleting advert:', error);
+        }
+    };
+
+    const handleConfirmDelete = () => {
+        if (selectedAd) {
+            deleteAdvert(selectedAd);
+            setOpen(false);
+            setSelectedAd(null);
+        }
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+        setSelectedAd(null);
     };
 
     return (
@@ -366,16 +395,28 @@ const ProfilePage: React.FC = () => {
                                             <p>No adverts available.</p>
                                         ) : (
                                             adverts.map((advert) => (
-                                                <StyledAdvert key={advert.id} title={advert.name} location={advert.location} date={advert.creationDate} image={advert.pictures[0]} price={advert.price} onClick={
-                                                    () => {
-                                                        window.location.href = `/advert/${advert.id}`;
+                                                <StyledAdvert
+                                                    key={advert.id}
+                                                    title={advert.name}
+                                                    location={advert.location}
+                                                    date={advert.creationDate}
+                                                    image={advert.pictures[0]}
+                                                    price={advert.price}
+                                                    onClick={
+                                                        () => {
+                                                            window.location.href = `/advert/${advert.id}`;
+                                                        }
                                                     }
-                                                } />
+                                                    onDelete={() => handleDeleteClick(advert.id)}
+                                                    onEdit={
+                                                        () => {
+                                                            window.location.href = `/advert-edit/${advert.id}`;
+                                                        }
+                                                    } />
                                             ))
                                         )}
                                     </Box>
 
-                                    {/* Pagination Buttons */}
                                     <Box sx={{ display: 'flex', flexDirection: "row", justifyContent: 'center', marginTop: '20px', gap: "5px" }}>
                                         {renderPaginationButtons()}
                                     </Box>
@@ -385,6 +426,27 @@ const ProfilePage: React.FC = () => {
                     </Box>
                 </Box>
             </Box>
+            <Dialog
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="confirm-delete-title"
+                aria-describedby="confirm-delete-description"
+            >
+                <DialogTitle id="confirm-delete-title">Підтвердження видалення</DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="confirm-delete-description">
+                        Ви дійсно хочете видалити це оголошення? Цю дію не можна буде відмінити.
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleClose} color="primary">
+                        Скасувати
+                    </Button>
+                    <Button onClick={handleConfirmDelete} color="secondary" autoFocus>
+                        Видалити
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </StyledEngineProvider >
     );
 };
