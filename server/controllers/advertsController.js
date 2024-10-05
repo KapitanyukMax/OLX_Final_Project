@@ -433,7 +433,7 @@ const getAdvertsByVIP = async (req, res, next) => {
 
         const result = [];
         snapshot.forEach((doc) => {
-            const data = soc.data();
+            const data = doc.data();
 
             const matchesSearchTerm = searchTerm ? data.name.toLowerCase().includes(searchTerm.toLowerCase()) : true;
             const matchesCity = city ? data.location.toLowerCase().includes(city.toLowerCase()) : true;

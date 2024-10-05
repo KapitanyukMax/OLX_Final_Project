@@ -24,6 +24,7 @@ import RealEstateAgentIcon from "../../components/icons/realEstateAgent";
 import FurnitureIcon from "../../components/icons/furniture";
 import { List, ListItem, Typography } from "@mui/material";
 import { StyledAdvert } from "../../components/advert";
+import InformationSection from "../../components/informationSection";
 
 const HomePage: React.FC = () => {
     const StyledSearchIcon: React.FC = () => (
@@ -63,7 +64,7 @@ const HomePage: React.FC = () => {
     };
 
     const getTopAdverts = async (limit?: number) => {
-        limit ??= 4;
+        limit ??= 8;
         const response = await axios.get(`http://localhost:5000/adverts/top?limit=${limit}`);
         if (response) {
             const data = response.data.adverts;
@@ -263,6 +264,12 @@ const HomePage: React.FC = () => {
                                     onClick={() => {
                                         window.location.href = '/components-preview';
                                     }} />
+                            </Box>
+
+                            <Box sx={{
+                                marginTop: '120px'
+                            }}>
+                                <InformationSection />
                             </Box>
 
                             <Typography sx={{
