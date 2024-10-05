@@ -6,8 +6,8 @@ const db = admin.firestore();
 
 const getAllAdverts = async (req, res, next) => {
     try {
-        const { limit = 10, startAfter, searchTerm } = req.query;
-        let query = db.collection('adverts').orderBy('creationDate').limit(parseInt(limit));
+        const { limit = 10, startAfter, searchTerm, city, sortBy = 'creationDate', sortOrder = 'desc' } = req.query;
+        let query = db.collection('adverts').orderBy(sortBy, sortOrder).limit(parseInt(limit));
 
         if (startAfter) {
             const lastDoc = await db.collection('adverts').doc(startAfter).get();
@@ -22,7 +22,11 @@ const getAllAdverts = async (req, res, next) => {
         snapshot.forEach((doc) => {
             const data = doc.data();
 
-            if (!searchTerm || data.name.toLowerCase().includes(searchTerm.toLowerCase())) {
+            const matchesSearchTerm = searchTerm ? data.name.toLowerCase().includes(searchTerm.toLowerCase()) : true;
+            const matchesCity = city ? data.location.toLowerCase().includes(city.toLowerCase()) : true;
+
+
+            if (matchesSearchTerm && matchesCity) {
                 result.push({
                     id: doc.id,
                     ...data
@@ -68,11 +72,12 @@ const getAdvertById = async (req, res, next) => {
 
 const getAdvertsByCategoryId = async (req, res, next) => {
     try {
-        const { limit = 10, startAfter, searchTerm, categoryId } = req.query;
+        const { limit = 10, startAfter, searchTerm, categoryId, city, sortBy = 'creationDate', sortOrder = 'desc' } = req.query;
 
         // Fetch subcategories by categoryId
         const subCategoriesSnapshot = await db.collection('subcategories')
             .where('categoryId', '==', categoryId)
+            .orderBy(sortBy, sortOrder)
             .get();
 
         if (subCategoriesSnapshot.empty) {
@@ -105,7 +110,11 @@ const getAdvertsByCategoryId = async (req, res, next) => {
 
             advertsSnapshot.forEach((doc) => {
                 const advertData = doc.data();
-                if (!searchTerm || advertData.name.toLowerCase().includes(searchTerm.toLowerCase())) {
+
+                const matchesSearchTerm = searchTerm ? advertData.name.toLowerCase().includes(searchTerm.toLowerCase()) : true;
+                const matchesCity = city ? advertData.location.toLowerCase().includes(city.toLowerCase()) : true;
+
+                if (matchesCity && matchesSearchTerm) {
                     result.push({
                         id: doc.id,
                         ...advertData
@@ -145,11 +154,11 @@ const getAdvertsByCategoryId = async (req, res, next) => {
 
 const getAdvertsByUserId = async (req, res, next) => {
     try {
-        const { limit = 10, startAfter, searchTerm, userId } = req.query;
+        const { limit = 10, startAfter, searchTerm, userId, city, sortBy = 'creationDate', sortOrder = 'desc' } = req.query;
         logger.info(userId);
         let query = db.collection('adverts')
             .where('userId', '==', userId)
-            .orderBy('creationDate')
+            .orderBy(sortBy, sortOrder)
             .limit(parseInt(limit));
 
         if (startAfter) {
@@ -168,7 +177,11 @@ const getAdvertsByUserId = async (req, res, next) => {
         const result = [];
         snapshot.forEach((doc) => {
             const data = doc.data();
-            if (!searchTerm || (data.name && data.name.toLowerCase().includes(searchTerm.toLowerCase()))) {
+
+            const matchesSearchTerm = searchTerm ? data.name.toLowerCase().includes(searchTerm.toLowerCase()) : true;
+            const matchesCity = city ? data.location.toLowerCase().includes(city.toLowerCase()) : true;
+
+            if (matchesSearchTerm && matchesCity) {
                 result.push({
                     id: doc.id,
                     ...data
@@ -198,12 +211,12 @@ const getAdvertsByUserId = async (req, res, next) => {
 
 const getAdvertsBySubcategoryId = async (req, res, next) => {
     try {
-        const { limit = 10, startAfter, searchTerm, subcategoryId } = req.query;
+        const { limit = 10, startAfter, searchTerm, subcategoryId, city, sortBy = 'creationDate', sortOrder = 'desc' } = req.query;
 
         // Query for paginated adverts
         let query = db.collection('adverts')
             .where('subCategoryId', '==', subcategoryId)
-            .orderBy('creationDate')
+            .orderBy(sortBy, sortOrder)
             .limit(parseInt(limit));
 
         if (startAfter) {
@@ -222,7 +235,11 @@ const getAdvertsBySubcategoryId = async (req, res, next) => {
         const result = [];
         snapshot.forEach((doc) => {
             const advertData = doc.data();
-            if (!searchTerm || advertData.name.toLowerCase().includes(searchTerm.toLowerCase())) {
+
+            const matchesSearchTerm = searchTerm ? advertData.name.toLowerCase().includes(searchTerm.toLowerCase()) : true;
+            const matchesCity = city ? advertData.location.toLowerCase().includes(city.toLowerCase()) : true;
+
+            if (matchesCity && matchesSearchTerm) {
                 result.push({
                     id: doc.id,
                     ...advertData
@@ -328,13 +345,14 @@ const updateAdvert = async (req, res, next) => {
 
 const deleteAdvert = async (req, res, next) => {
     try {
-        const advertRef = await db.collection('adverts').doc(req.params.id);
+        const advertRef = db.collection('adverts').doc(req.params.id);
         const doc = await advertRef.get();
 
-        if (!doc.exists)
+        if (!doc.exists) {
             return res.status(404).json({ error: 'Advert not found' });
+        }
 
-        const response = await db.collection('adverts').doc(req.query.id).delete();
+        await advertRef.delete();
 
         logger.info(`Advert deleted successfully`);
         res.sendStatus(204);
@@ -343,9 +361,10 @@ const deleteAdvert = async (req, res, next) => {
     }
 };
 
+
 const getAdvertsByTOP = async (req, res, next) => {
     try {
-        const { limit = 10, startAfter, searchTerm } = req.query;
+        const { limit = 10, startAfter, searchTerm, city } = req.query;
         let query = db.collection('adverts')
             .orderBy('viewsCount', 'desc')
             .limit(parseInt(limit));
@@ -365,10 +384,15 @@ const getAdvertsByTOP = async (req, res, next) => {
 
         const result = [];
         snapshot.forEach((doc) => {
-            if (!searchTerm || doc.name.toLowerCase().includes(searchTerm.toLowerCase())) {
+            const data = doc.data();
+
+            const matchesSearchTerm = searchTerm ? data.name.toLowerCase().includes(searchTerm.toLowerCase()) : true;
+            const matchesCity = city ? data.location.toLowerCase().includes(city.toLowerCase()) : true;
+
+            if (matchesCity && matchesSearchTerm) {
                 result.push({
                     id: doc.id,
-                    ...doc.data()
+                    ...data
                 });
             }
         });
@@ -388,7 +412,7 @@ const getAdvertsByTOP = async (req, res, next) => {
 
 const getAdvertsByVIP = async (req, res, next) => {
     try {
-        const { limit = 10, startAfter, searchTerm } = req.query;
+        const { limit = 10, startAfter, searchTerm, city } = req.query;
         let query = db.collection('adverts')
             .where('vipUntil', '!=', null)
             .orderBy('vipUntil', 'desc')
@@ -409,10 +433,15 @@ const getAdvertsByVIP = async (req, res, next) => {
 
         const result = [];
         snapshot.forEach((doc) => {
-            if (!searchTerm || doc.name.toLowerCase().includes(searchTerm.toLowerCase())) {
+            const data = soc.data();
+
+            const matchesSearchTerm = searchTerm ? data.name.toLowerCase().includes(searchTerm.toLowerCase()) : true;
+            const matchesCity = city ? data.location.toLowerCase().includes(city.toLowerCase()) : true;
+
+            if (matchesCity && matchesSearchTerm) {
                 result.push({
                     id: doc.id,
-                    ...doc.data()
+                    ...data
                 });
             }
         });

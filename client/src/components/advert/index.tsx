@@ -1,6 +1,6 @@
 import React from "react";
 import { StyledEngineProvider } from "@mui/material/styles";
-import { Box } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import ImageComponent from "../image";
 import StyledLabel from "../lable";
 import LocationIcon from "../icons/location";
@@ -8,6 +8,8 @@ import CalendarIcon from "../icons/calendarSolid";
 import HeartIcon from "../icons/heart";
 import "./styles.css";
 import StyledIconButton from "../iconButton";
+import PenFluentIcon from "../icons/penFluent";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 interface StyledAdvertProps {
     key?: string;
@@ -20,14 +22,29 @@ interface StyledAdvertProps {
     onClick: () => void;
     onHeartClick?: () => void;
     price: number;
+    onEdit?: () => void;
+    onDelete?: () => void;
 };
 
-const StyledAdvert: React.FC<StyledAdvertProps> = ({ key, title, location, date, image, isVIP, isTOP, price, onClick, onHeartClick }) => {
+const StyledAdvert: React.FC<StyledAdvertProps> = ({ key, title, location, date, image, isVIP, isTOP, price, onClick, onHeartClick, onDelete, onEdit }) => {
     return (
         <StyledEngineProvider injectFirst>
             <Box className='advert' onClick={onClick} style={{ cursor: 'pointer' }} key={key}>
                 <Box className='imageContainer'>
                     <ImageComponent src={image} alt={title} />
+                    {
+                        onEdit && onDelete &&
+                        <Box className='edit-delete'>
+                            <Button onClick={(event) => {
+                                event.stopPropagation();
+                                onDelete();
+                            }} startIcon={<DeleteIcon />} sx={{ background: 'red', color: 'white', height: '57px', borderRadius: '8px' }}>Видалити</Button>
+                            <Button onClick={(event) => {
+                                event.stopPropagation();
+                                onEdit();
+                            }} startIcon={PenFluentIcon()} sx={{ background: 'orange', color: 'white', height: '57px', borderRadius: '8px' }}>Змінити</Button>
+                        </Box>
+                    }
                     {
                         isVIP && isTOP &&
                         <Box className='vip-top'>

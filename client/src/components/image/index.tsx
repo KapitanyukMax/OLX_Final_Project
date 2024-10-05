@@ -1,5 +1,5 @@
 import React from "react";
-import { Box } from "@mui/material";
+import { Box, SxProps } from "@mui/material";
 
 interface ImageProps {
   src: string;
@@ -9,9 +9,10 @@ interface ImageProps {
   borderRadius?: string;
   objectFit?: 'contain' | 'cover' | 'fill' | 'none' | 'scale-down';
   onClick?: () => void;
+  sx?:SxProps;
 }
 
-const ImageComponent: React.FC<ImageProps> = ({ src, alt, width, height, borderRadius, objectFit = 'cover', onClick }) => {
+const ImageComponent: React.FC<ImageProps> = ({ src, alt, width, height, borderRadius, objectFit = 'cover', onClick, sx }) => {
   return (
     <Box
       component="img"
@@ -21,7 +22,7 @@ const ImageComponent: React.FC<ImageProps> = ({ src, alt, width, height, borderR
         width: width || '100%',
         height: height || 'auto',
         borderRadius: borderRadius || '0px',
-        objectFit: objectFit,
+        objectFit: objectFit, ...sx,
       }}
       onClick={onClick}
     />

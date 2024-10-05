@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button } from '@mui/material';
 import { auth } from '../../../firebaseConfig';
 import axios from 'axios';
 import { User, onAuthStateChanged, updateProfile } from 'firebase/auth';
@@ -23,9 +24,13 @@ const ProfilePage: React.FC = () => {
     const [adverts, setAdverts] = useState<any[]>([]);
     const [searchTerm, setSearchTerm] = useState<string | null>(null);
 
+    const [open, setOpen] = useState(false);
+    const [selectedAd, setSelectedAd] = useState<string | null>(null);
+
     const [displayName, setDisplayName] = useState<string>('');
     const [phoneNumber, setPhoneNumber] = useState<string>('');
     const [image, setImage] = useState<string | File>('');
+    const [prevImage, setPrevImage] = useState<string>('');
 
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [totalPages, setTotalPages] = useState<number>(1);
@@ -42,15 +47,13 @@ const ProfilePage: React.FC = () => {
     const getAdverts = async (page: number = 1, searchTerm?: string) => {
         if (userData) {
             let response;
-            const limit = 8; // Кількість оголошень на сторінці
+            const limit = 8;
             let startAfterParam = page > 1 ? adverts[adverts.length - 1].id : null;
 
-            // Якщо є пошуковий термін, скидаємо пагінацію і шукаємо по всіх оголошеннях
             if (searchTerm && searchTerm.length > 0) {
-                startAfterParam = null; // Ігноруємо пагінацію
+                startAfterParam = null;
                 response = await axios.get(`http://localhost:5000/adverts/userId?userId=${userData.id}&searchTerm=${searchTerm}`);
             } else {
-                // Якщо пошуковий термін відсутній, виконуємо запит з пагінацією
                 response = await axios.get(`http://localhost:5000/adverts/userId?userId=${userData.id}&limit=${limit}&startAfter=${startAfterParam}`);
             }
 
@@ -58,7 +61,6 @@ const ProfilePage: React.FC = () => {
                 const { adverts: data, totalCount } = response.data;
                 setAdverts(data);
 
-                // Оновлюємо кількість сторінок тільки для звичайних запитів (без пошуку)
                 if (!searchTerm || searchTerm.length === 0) {
                     setTotalPages(Math.ceil(totalCount / limit));
                 }
@@ -140,6 +142,7 @@ const ProfilePage: React.FC = () => {
     const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files && event.target.files[0]) {
             setImage(event.target.files[0]);
+            setPrevImage(URL.createObjectURL(event.target.files[0]));
         }
     };
 
@@ -149,11 +152,9 @@ const ProfilePage: React.FC = () => {
         if (displayName.length < 0 || phoneNumber.length < 0) return;
 
         try {
-            let downloadURL = image; // Keep the current image URL by default.
+            let downloadURL = image;
 
-            // Check if a new file has been selected (by checking if `image` is a File object).
             if (typeof image !== 'string') {
-                // Upload the image to Firebase Storage if a new file is selected.
                 const storage = getStorage();
                 const storageRef = ref(storage, `profileImages/${currentUser.uid}`);
 
@@ -175,6 +176,7 @@ const ProfilePage: React.FC = () => {
 
             console.log('User profile updated successfully');
             setIsEditable(true);
+            window.location.reload();
         } catch (err) {
             console.error('Error getting user data:', err);
         }
@@ -189,10 +191,41 @@ const ProfilePage: React.FC = () => {
 
         try {
             await auth.signOut();
+            window.location.href = '/registration';
             console.log('User signed out successfully');
         } catch (error) {
             console.error('Error signing out:', error);
         }
+    };
+
+    const handleDeleteClick = (adId: string) => {
+        setSelectedAd(adId);
+        setOpen(true);
+    };
+
+    const deleteAdvert = async (adId: string | null) => {
+        if (!adId) return;
+
+        try {
+            await axios.delete(`http://localhost:5000/adverts/${adId}`);
+            console.log('Advert deleted successfully');
+            window.location.reload();
+        } catch (error) {
+            console.error('Error deleting advert:', error);
+        }
+    };
+
+    const handleConfirmDelete = () => {
+        if (selectedAd) {
+            deleteAdvert(selectedAd);
+            setOpen(false);
+            setSelectedAd(null);
+        }
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+        setSelectedAd(null);
     };
 
     return (
@@ -214,13 +247,13 @@ const ProfilePage: React.FC = () => {
                         <StyledButton text='Редагувати профіль' type='contained' secondaryColor='white' icon={PenFluentIcon} onClick={handleEditClick} />
                         <StyledButton text='Вийти' type='contained' secondaryColor='white' primaryColor='red' onClick={() => {
                             handleLogout();
-                            window.location.href = '/registration';
                         }} />
 
                     </Box>
                     <Box sx={{ display: 'flex', flexDirection: 'row', gap: '50px' }}>
                         {!isEditable ? (
                             <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                                <ImageComponent src={typeof prevImage === 'string' ? prevImage : 'https://via.placeholder.com/204'} borderRadius='204px' alt='user' width='204px' height='204px' />
                                 <StyledButton text="Вибрати фото" type="outlined" onClick={() => document.getElementById('fileInput')?.click()} />
                                 <input
                                     id="fileInput"
@@ -255,7 +288,7 @@ const ProfilePage: React.FC = () => {
                             <Box sx={{ display: 'flex', flexDirection: 'row', gap: '50px' }}>
                                 {/* <StyledInput value='Ромашко' label="Прізвище" widthType='middle' disabled={isEditable} /> */}
                                 {userData ? (
-                                    <StyledInput value={userData?.email || 'Електронна пошта не вказана'} label="Електронна пошта" widthType='middle' disabled={isEditable} />
+                                    <StyledInput value={userData?.email || 'Електронна пошта не вказана'} label="Електронна пошта" widthType='middle' disabled={true} />
                                 ) : (
                                     <p>Loading user data...</p>
                                 )}
@@ -362,16 +395,28 @@ const ProfilePage: React.FC = () => {
                                             <p>No adverts available.</p>
                                         ) : (
                                             adverts.map((advert) => (
-                                                <StyledAdvert key={advert.id} title={advert.name} location={advert.location} date={advert.creationDate} image={advert.pictures[0]} price={advert.price} onClick={
-                                                    () => {
-                                                        window.location.href = `/advert/${advert.id}`;
+                                                <StyledAdvert
+                                                    key={advert.id}
+                                                    title={advert.name}
+                                                    location={advert.location}
+                                                    date={advert.creationDate}
+                                                    image={advert.pictures[0]}
+                                                    price={advert.price}
+                                                    onClick={
+                                                        () => {
+                                                            window.location.href = `/advert/${advert.id}`;
+                                                        }
                                                     }
-                                                } />
+                                                    onDelete={() => handleDeleteClick(advert.id)}
+                                                    onEdit={
+                                                        () => {
+                                                            window.location.href = `/advert-edit/${advert.id}`;
+                                                        }
+                                                    } />
                                             ))
                                         )}
                                     </Box>
 
-                                    {/* Pagination Buttons */}
                                     <Box sx={{ display: 'flex', flexDirection: "row", justifyContent: 'center', marginTop: '20px', gap: "5px" }}>
                                         {renderPaginationButtons()}
                                     </Box>
@@ -381,6 +426,27 @@ const ProfilePage: React.FC = () => {
                     </Box>
                 </Box>
             </Box>
+            <Dialog
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="confirm-delete-title"
+                aria-describedby="confirm-delete-description"
+            >
+                <DialogTitle id="confirm-delete-title">Підтвердження видалення</DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="confirm-delete-description">
+                        Ви дійсно хочете видалити це оголошення? Цю дію не можна буде відмінити.
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleClose} color="primary">
+                        Скасувати
+                    </Button>
+                    <Button onClick={handleConfirmDelete} color="secondary" autoFocus>
+                        Видалити
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </StyledEngineProvider >
     );
 };

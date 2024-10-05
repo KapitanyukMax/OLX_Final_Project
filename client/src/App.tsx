@@ -1,6 +1,7 @@
 import ComponentsPreview from './ComponentsPreview';
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { AdvertCreatePage } from './pages/AdvertCreatePage';
+import { AdvertEditPage } from './pages/AdvertEditPage';
 import { AuthModal } from './pages/RegistrationPage/AuthModal';
 import { AdvertPage } from './pages/AdvertPage';
 import { ProfilePage } from './pages/ProfilePage';
@@ -20,6 +21,7 @@ function App() {
                         <Route path="advert/:advertId" element={<AdvertPage />} />
                         <Route path="profile-page" element={<ProfilePage />} />
                         <Route path="advert-create" element={<AdvertCreatePage />} />
+                        <Route path="advert-edit/:advertId" element={<AdvertEditPage />} />
                         <Route path="user/:userId" element={<UserProfilePage />} />
                     </Route>
 
