@@ -7,7 +7,7 @@ import './styles.css';
 
 interface SearchProps {
     value?: string,
-    onSearchTermChange: (searchTerm: string) => void,
+    onSearchTermChange?: (searchTerm: string) => void,
     onSearch: (searchTerm: string) => void
 }
 
@@ -36,7 +36,7 @@ const Search: React.FC<SearchProps> = ({ value, onSearch, onSearchTermChange }) 
                 <Input value={searchTerm} placeholder={'Що шукаємо?'} className='basic-input'
                     onChange={e => {
                         setSearchTerm(e.target.value);
-                        onSearchTermChange(e.target.value);
+                        onSearchTermChange?.(e.target.value);
                     }}
                     endAdornment={(
                     <InputAdornment position='end'>
