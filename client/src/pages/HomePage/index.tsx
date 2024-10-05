@@ -2,8 +2,6 @@ import React, { useEffect, useState } from "react";
 import axios from 'axios';
 import Box from "@mui/material/Box";
 import { StyledEngineProvider } from "@mui/material/styles";
-import { StyledInput } from "../../components/input";
-import SearchIcon from '@mui/icons-material/Search';
 import StyledButton from "../../components/button";
 import StyledLabel from "../../components/lable";
 import CarIcon from "../../components/icons/car";
@@ -25,17 +23,14 @@ import FurnitureIcon from "../../components/icons/furniture";
 import { List, ListItem, Typography } from "@mui/material";
 import { StyledAdvert } from "../../components/advert";
 import InformationSection from "../../components/informationSection";
+import { Search } from "../../components/search";
 
 const HomePage: React.FC = () => {
-    const StyledSearchIcon: React.FC = () => (
-        <SearchIcon sx={{ color: "black" }} />
-    );
-
     const [adverts, setAdverts] = useState([]);
     const [vipAdverts, setVipAdverts] = useState([]);
     const [topAdverts, setTopAdverts] = useState([]);
-    const [searchTerm, setSearchTerm] = useState<string | null>(null);
     const [isSearching, setIsSearching] = useState(false);
+    const [searchValue, setSearchValue] = useState('');
 
     const getAdverts = async (search?: string, limit?: number) => {
         limit ??= 8;
@@ -73,17 +68,19 @@ const HomePage: React.FC = () => {
         }
     };
 
-    const handleSearchChange = (value: string) => {
-        setSearchTerm(value);
-    };
-
-    const handleSearchClick = () => {
+    const onSearch = (searchTerm: string) => {
         console.log(searchTerm);
         if (searchTerm) {
             setIsSearching(true);
-            getAdverts(searchTerm || '', 20);
+            getAdverts(searchTerm, 20);
         }
-    }
+    };
+
+    const onSearchTermChange = (searchTerm: string) => {
+        if (!searchTerm) {
+            setIsSearching(false);
+        }
+    };
 
     useEffect(() => {
         getAdverts();
@@ -108,18 +105,7 @@ const HomePage: React.FC = () => {
                     marginTop: '60px',
                     marginBottom: '90px'
                 }}>
-                    <Box sx={{
-                        display: 'flex',
-                        flexDirection: 'row',
-                        gap: '60px',
-                        justifyContent: 'space-between',
-                        alignItems: 'center'
-                    }}>
-                        <StyledInput value={searchTerm || 'Що шукаємо?'} iconEnd={StyledSearchIcon} width="522px" onChange={e => handleSearchChange(e.target.value)} />
-                        <StyledInput value='Вся Україна' iconEnd={StyledSearchIcon} width="254px" />
-                        <StyledInput value='Місто/село' iconEnd={StyledSearchIcon} width="254px" />
-                        <StyledButton text='Пошук' type='contained' primaryColor='var(--dark-blue)' hoverColor='black' className='button-small' onClick={handleSearchClick} />
-                    </Box>
+                    <Search value={searchValue} onSearch={onSearch} onSearchTermChange={onSearchTermChange} />
 
                     {isSearching
                         ? (<>
@@ -331,72 +317,72 @@ const HomePage: React.FC = () => {
                             }}>
                                 <StyledButton text='Велосипед' type='outlined' className='button-fit'
                                     onClick={() => {
-                                        setSearchTerm('Велосипед');
+                                        setSearchValue('Велосипед');
                                         setIsSearching(true);
-                                        getAdverts(searchTerm || '', 20);
+                                        getAdverts(searchValue || '', 20);
                                     }} />
 
                                 <StyledButton text='Купальник' type='outlined' className='button-fit'
                                     onClick={() => {
-                                        setSearchTerm('Купальник');
+                                        setSearchValue('Купальник');
                                         setIsSearching(true);
-                                        getAdverts(searchTerm || '', 20);
+                                        getAdverts(searchValue || '', 20);
                                     }} />
 
                                 <StyledButton text='Кошенята' type='outlined' className='button-fit'
                                     onClick={() => {
-                                        setSearchTerm('Кошенята');
+                                        setSearchValue('Кошенята');
                                         setIsSearching(true);
-                                        getAdverts(searchTerm || '', 20);
+                                        getAdverts(searchValue || '', 20);
                                     }} />
 
                                 <StyledButton text='Квартира' type='outlined' className='button-fit'
                                     onClick={() => {
-                                        setSearchTerm('Квартира');
+                                        setSearchValue('Квартира');
                                         setIsSearching(true);
-                                        getAdverts(searchTerm || '', 20);
+                                        getAdverts(searchValue || '', 20);
                                     }} />
 
                                 <StyledButton text='Генератор' type='outlined' className='button-fit'
                                     onClick={() => {
-                                        setSearchTerm('Генератор');
+                                        setSearchValue('Генератор');
                                         setIsSearching(true);
-                                        getAdverts(searchTerm || '', 20);
+                                        getAdverts(searchValue || '', 20);
                                     }} />
 
                                 <StyledButton text='Холодильник' type='outlined' className='button-fit'
                                     onClick={() => {
-                                        setSearchTerm('Холодильник');
+                                        setSearchValue('Холодильник');
                                         setIsSearching(true);
-                                        getAdverts(searchTerm || '', 20);
+                                        getAdverts(searchValue || '', 20);
                                     }} />
 
                                 <StyledButton text='Акваріум' type='outlined' className='button-fit'
                                     onClick={() => {
-                                        setSearchTerm('Акваріум');
+                                        setSearchValue('Акваріум');
                                         setIsSearching(true);
-                                        getAdverts(searchTerm || '', 20);
+                                        getAdverts(searchValue || '', 20);
                                     }} />
 
                                 <StyledButton text='Павербанк' type='outlined' className='button-fit'
                                     onClick={() => {
-                                        setSearchTerm('Павербанк');
+                                        setSearchValue('Павербанк');
                                         setIsSearching(true);
-                                        getAdverts(searchTerm || '', 20);
+                                        getAdverts(searchValue || '', 20);
                                     }} />
 
                                 <StyledButton text='Дерева' type='outlined' className='button-fit'
                                     onClick={() => {
-                                        setSearchTerm('Дерева');
+                                        setSearchValue('Дерева');
                                         setIsSearching(true);
-                                        getAdverts(searchTerm || '', 20);
+                                        getAdverts(searchValue || '', 20);
                                     }} />
 
                                 <StyledButton text='Ноутбук' type='outlined' className='button-fit'
                                     onClick={() => {
-                                        setSearchTerm('Ноутбук');
+                                        setSearchValue('Ноутбук');
                                         setIsSearching(true);
-                                        getAdverts(searchTerm || '', 20);
+                                        getAdverts(searchValue || '', 20);
                                     }} />
                             </Box>
 
