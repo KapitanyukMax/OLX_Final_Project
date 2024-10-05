@@ -1,0 +1,53 @@
+.basic-input {
+    width: 100%;
+    height: 49px;
+    align-items: center;
+    background-color: #ffffff;
+    border: 1px solid;
+    border-color: #000000;
+    border-radius: 8px;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    padding: 20px;
+    position: relative;
+}
+
+.basic-input::after {
+    border-bottom: none;
+    left: none;
+    bottom: none;
+    content: none;
+    position: none;
+    right: none;
+    -webkit-transform: none;
+    -moz-transform: none;
+    -ms-transform: none;
+    transform: none;
+    -webkit-transition: none;
+    transition: none;
+    pointer-events: none;
+}
+
+.basic-input:before {
+    border-bottom: none;
+    left: none;
+    bottom: none;
+    content: none;
+    position: none;
+    right: none;
+    -webkit-transition: none;
+    transition: none;
+    pointer-events: none;
+}
+
+.basic-input input {
+    flex: 1;
+    font-size: 16px;
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: 16px;
+    margin-top: -1px;
+    position: relative;
+    padding: 0;
+}
