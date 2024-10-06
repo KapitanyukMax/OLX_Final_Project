@@ -1,5 +1,6 @@
 import {
     Box,
+    Button,
     Dialog,
     IconButton,
     Paper,
@@ -23,14 +24,15 @@ import CarFillIcon from "../../components/icons/carFill";
 import LocationIcon from "../../components/icons/location";
 import TimeFillIcon from "../../components/icons/timeFill";
 import { StyledAdvert } from "../../components/advert";
-import { onAuthStateChanged, User } from "firebase/auth";
+import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../../../firebaseConfig";
 import axios from "axios";
 import { Link, useParams } from "react-router-dom";
+import { ReportDialog } from "../../components/reportDialog";
 
 const AdvertPage: React.FC = () => {
     const { advertId } = useParams<{ advertId: string }>();
-    const [currentUser, setCurrentUser] = useState<User | null>(null);
+    const [currentUser, setCurrentUser] = useState<any>(null);
     const [advertData, setAdvertData] = useState<any>(null);
     const [userData, setUserData] = useState<any>(null);
     const [userAdverts, setUserAdverts] = useState<any[]>([]);
@@ -39,10 +41,17 @@ const AdvertPage: React.FC = () => {
     const [selectedImage, setSelectedImage] = useState<string>("");
     const [isLoading, setIsLoading] = useState(true);
     const [showPhoneNumber, setShowPhoneNumber] = useState(false);
+    const [openReportDialog, setOpenReportDialog] = useState(false);
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
-            setCurrentUser(user);
+            if (user?.email) {
+                const response = await axios.get(
+                    `http://localhost:5000/users/email?email=${user.email}`
+                );
+                setCurrentUser(response.data);
+                console.log(response.data);
+            }
         });
 
         return () => unsubscribe();
@@ -102,10 +111,29 @@ const AdvertPage: React.FC = () => {
 
     const handleShowPhoneNumber = () => {
         setShowPhoneNumber(true);
-    }
+    };
+
+    const handleOpenReportDialog = () => {
+        setOpenReportDialog(true);
+    };
+
+    const handleCloseReportDialog = () => {
+        setOpenReportDialog(false);
+    };
 
     if (isLoading) {
-        return <Box>Завантаження...</Box>;
+        return (
+            <Box
+                sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    minHeight: "17.8vh",
+                }}
+            >
+                Завантаження...
+            </Box>
+        );
     }
 
     return (
@@ -265,16 +293,22 @@ const AdvertPage: React.FC = () => {
                                 justifyContent: "space-between",
                             }}
                         >
-                            <Typography sx={{
-                                color: "#737070",
-                                fontFamily: "Nunito",
-                                fontSize: "16px",
-                            }}>
-                                Опубліковано {" "}
-                                {
-                                new Date(advertData.creationDate).toLocaleDateString() === new Date().toLocaleDateString()
+                            <Typography
+                                sx={{
+                                    color: "#737070",
+                                    fontFamily: "Nunito",
+                                    fontSize: "16px",
+                                }}
+                            >
+                                Опубліковано{" "}
+                                {new Date(
+                                    advertData.creationDate
+                                ).toLocaleDateString() ===
+                                new Date().toLocaleDateString()
                                     ? "сьогодні"
-                                    : new Date(advertData.creationDate).toLocaleDateString()}
+                                    : new Date(
+                                          advertData.creationDate
+                                      ).toLocaleDateString()}
                             </Typography>
                             <HeartIcon />
                         </Box>
@@ -331,7 +365,9 @@ const AdvertPage: React.FC = () => {
                             />
                             <StyledButton
                                 text={
-                                    showPhoneNumber ? userData.phone : "Показати телефон"
+                                    showPhoneNumber
+                                        ? userData.phone
+                                        : "Показати телефон"
                                 }
                                 type={"outlined"}
                                 onClick={() => handleShowPhoneNumber()}
@@ -398,16 +434,27 @@ const AdvertPage: React.FC = () => {
                             >
                                 {<TopFluentIcon />}Підняти оголошення
                             </Typography>
-                            <Typography
+                            <Button
+                                onClick={handleOpenReportDialog}
                                 sx={{
+                                    textTransform: "none",
                                     fontFamily: "Nunito",
                                     fontSize: "18px",
                                     fontWeight: "600",
                                     color: "#E23030",
                                 }}
+                                style={{
+                                    backgroundColor: "transparent",
+                                }}
                             >
                                 Поскаржитися
-                            </Typography>
+                            </Button>
+                            <ReportDialog
+                                open={openReportDialog}
+                                advertId={advertData.id}
+                                userId={currentUser.id}
+                                handleClose={handleCloseReportDialog}
+                            />
                         </Box>
                         <Box
                             sx={{
