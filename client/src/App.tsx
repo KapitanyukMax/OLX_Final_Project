@@ -9,6 +9,7 @@ import { HomePage } from './pages/HomePage';
 import { Layout } from './Layout';
 import './App.css';
 import { UserProfilePage } from './pages/UserProfilePage';
+import { FavoritesPage } from './pages/FavoritesPage';
 
 function App() {
     return (
@@ -23,6 +24,7 @@ function App() {
                         <Route path="advert-create" element={<AdvertCreatePage />} />
                         <Route path="advert-edit/:advertId" element={<AdvertEditPage />} />
                         <Route path="user/:userId" element={<UserProfilePage />} />
+                        <Route path="favorites/:userId" element={<FavoritesPage />} />
                     </Route>
 
                     <Route path="/components-preview" element={<ComponentsPreview />} />
