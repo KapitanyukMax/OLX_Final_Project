@@ -11,13 +11,15 @@ import StyledButton from '../../components/button';
 import { StyledTextArea } from '../../components/textArea';
 import { Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import imageCompression from 'browser-image-compression';
-import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { useRef } from 'react';
 import { IconButton } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import './styles.css';
+import { useParams } from 'react-router-dom';
 
-const AdvertCreatePage: React.FC = () => {
+const AdvertEditPage: React.FC = () => {
+    const { advertId } = useParams<{ advertId: string }>();
     const [currentUser, setCurrentUser] = useState<User | null>(null);
     const [openErrorDialog, setOpenErrorDialog] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
@@ -30,6 +32,7 @@ const AdvertCreatePage: React.FC = () => {
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const [successMessage, setSuccessMessage] = useState('');
     const [openSuccessDialog, setOpenSuccessDialog] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     const storage = getStorage();
 
@@ -75,7 +78,7 @@ const AdvertCreatePage: React.FC = () => {
         const sizes = [200, 400, 800];
 
         try {
-            const timestamp = Date.now(); // Зберігаємо один і той же timestamp для всіх варіантів розміру
+            const timestamp = Date.now();
             const originalRef = ref(storage, `${path}/original-${timestamp}.jpg`);
             await uploadBytes(originalRef, file);
 
@@ -100,19 +103,17 @@ const AdvertCreatePage: React.FC = () => {
         const path = `images/${formData.userId}`;
 
         const uploadPromises = Array.from(files).map(async (file, i) => {
-            const timestamp = Date.now(); // Generate a unique timestamp for each file
-            const uniquePath = `${path}/image-${i}-${timestamp}`; // Add timestamp to path
+            const timestamp = Date.now();
+            const uniquePath = `${path}/image-${i}-${timestamp}`;
 
             await uploadResizedImages(file, uniquePath);
 
-            // Get the exact URL of the uploaded image
             const downloadURL = await getDownloadURL(ref(storage, `${uniquePath}/original-${timestamp}.jpg`));
             return downloadURL;
         });
 
-        // Wait for all image uploads to complete
         const uploadedImageURLs = await Promise.all(uploadPromises);
-        console.log('Uploaded image URLs:', uploadedImageURLs); // Debugging line
+        console.log('Uploaded image URLs:', uploadedImageURLs);
 
         setFormData((prevFormData) => {
             return {
@@ -123,7 +124,7 @@ const AdvertCreatePage: React.FC = () => {
     };
 
     useEffect(() => {
-        console.log('Updated pictures:', formData.pictures); // Відстежуємо зміни в pictures
+        console.log('Updated pictures:', formData.pictures);
     }, [formData.pictures]);
 
     const handleMultipleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -134,24 +135,32 @@ const AdvertCreatePage: React.FC = () => {
         }
     };
 
-    const handleDeleteImage = async (index: number) => {
-        // Step 1: Remove image from Firebase Storage (optional)
-        const imageToDelete = formData.pictures[index];
-        const imageRef = ref(storage, imageToDelete); // imageToDelete should be the exact URL or path
-        try {
-            await deleteObject(imageRef);
-            console.log('Image successfully deleted from Firebase Storage');
-        } catch (error) {
-            console.error('Error deleting image from Firebase Storage:', error);
-        }
+    const handleDeleteImage = (index: number) => {
+        const updatedPictures = formData.pictures.filter((_, i) => i !== index);
+        const updatedSelectedImages = selectedImages.filter((_, i) => i !== index);
 
-        // Step 2: Update state
-        setSelectedImages((prevImages) => prevImages.filter((_, i) => i !== index));
+        localStorage.setItem('selectedImages', JSON.stringify(updatedSelectedImages));
+        localStorage.setItem('formDataPictures', JSON.stringify(updatedPictures));
+
+        setSelectedImages(updatedSelectedImages);
         setFormData((prevFormData) => ({
             ...prevFormData,
-            pictures: prevFormData.pictures.filter((_, i) => i !== index),
+            pictures: updatedPictures,
         }));
     };
+
+    useEffect(() => {
+        const savedSelectedImages = localStorage.getItem('selectedImages');
+        const savedFormDataPictures = localStorage.getItem('formDataPictures');
+
+        if (savedSelectedImages && savedFormDataPictures) {
+            setSelectedImages(JSON.parse(savedSelectedImages));
+            setFormData((prevFormData) => ({
+                ...prevFormData,
+                pictures: JSON.parse(savedFormDataPictures),
+            }));
+        }
+    }, []);
 
     const handleButtonClick = () => {
         fileInputRef.current?.click();
@@ -188,7 +197,7 @@ const AdvertCreatePage: React.FC = () => {
             formIsValid = false;
         }
 
-        if (formData.pictures.length === 0) { // Перевіряємо pictures, а не selectedImages
+        if (formData.pictures.length === 0) {
             newErrors.image = 'Додайте хоча б одне зображення';
             formIsValid = false;
         }
@@ -202,14 +211,16 @@ const AdvertCreatePage: React.FC = () => {
         }
 
         try {
-            const response = await axios.post(`${host}/adverts`, formData);
-            console.log('Advert created successfully', response.data);
+            const response = await axios.put(`http://localhost:5000/adverts`, formData);
+            console.log('Advert updated successfully', response.data);
 
-            setSuccessMessage('Оголошення додано успішно!');
+            setSuccessMessage('Оголошення оновлено успішно!');
+            localStorage.removeItem('selectedImages');
+            localStorage.removeItem('formDataPictures');
             setOpenSuccessDialog(true);
         } catch (error) {
-            console.error('Error creating advert', error);
-            setErrorMessage('Помилка створення оголошення.');
+            console.error('Error updating advert', error);
+            setErrorMessage('Помилка оновлення оголошення.');
             setOpenErrorDialog(true);
         }
     };
@@ -258,6 +269,31 @@ const AdvertCreatePage: React.FC = () => {
 
         return () => unsubscribe();
     }, []);
+
+    useEffect(() => {
+        const fetchAdvert = async () => {
+            setLoading(true);
+            try {
+                const response = await axios.get(`http://localhost:5000/adverts/id/?id=${advertId}`);
+                if (response.data.subCategoryId) {
+                    const subCategoryResponse = await axios.get(`http://localhost:5000/subcategories/${response.data.subCategoryId}`);
+                    const categoryResponse = await axios.get(`http://localhost:5000/categories/${subCategoryResponse.data.categoryId}`);
+                    handleCategory(categoryResponse.data.id);
+                }
+                setFormData(response.data);
+                setLoading(false);
+                console.log('Advert fetched successfully', response.data);
+            } catch (error) {
+                console.error('Error fetching advert', error);
+            }
+        };
+
+        fetchAdvert();
+    }, [advertId]);
+
+    useEffect(() => {
+        console.log('FormData:', formData);
+    }, [formData]);
 
     const fetchCities = async (value: string) => {
         try {
@@ -311,12 +347,12 @@ const AdvertCreatePage: React.FC = () => {
         if (res.data === undefined) {
             setSubCategories([]);
         } else {
-            // let names: string[] = [];
-            // res.data.forEach((element: { id: string, name: string }) => {
-            //     names.push(element.name);
-            // });
             setSubCategories(res.data);
         }
+    }
+
+    if (loading) {
+        return <div>Завантаження...</div>;
     }
 
     return (
@@ -347,7 +383,7 @@ const AdvertCreatePage: React.FC = () => {
                     }}>
                         <Box>
                             <StyledLabel text="Заголовок" type='head' textType='head' textColor='black' />
-                            <StyledInput value="Вкажіть назву" label='Вкажіть назву' required widthType='large' maxLength={80} onChange={(e) => handleNameChange(e.target.value)} />
+                            <StyledInput value={formData.name} label='Вкажіть назву' required widthType='large' maxLength={80} onChange={(e) => handleNameChange(e.target.value)} />
                             {errors.name && <div className="error-message">{errors.name}</div>}
                         </Box>
                         <Box sx={{
@@ -358,7 +394,7 @@ const AdvertCreatePage: React.FC = () => {
                             <StyledLabel text="Категорія" type='head' textType='head' textColor='black' />
                             <StyledLabel text="Вкажіть категорію*" type='primary' textType='small' textColor='black' />
                             <FormControl fullWidth sx={{ width: '600px' }}>
-                                <InputLabel id='category' className='modified' sx={{ fontFamily: 'Nunito', fontSize: '18px', fontWeight: '400' }}>Категорія</InputLabel>
+                                <InputLabel id='category' className='modified' sx={{ fontSize: '16px', fontWeight: '400' }}>Категорія</InputLabel>
                                 <Select labelId='category' className='modified' sx={{ borderRadius: '10px', border: '1px solid #000' }} label='Категорія' value={category} onChange={(e) => handleCategory(e.target.value as string)}>
                                     {categories.map((item, index) => (
                                         <MenuItem
@@ -368,7 +404,6 @@ const AdvertCreatePage: React.FC = () => {
                                                 fontFamily: "Nunito",
                                                 fontSize: "18px",
                                                 fontWeight: '400',
-                                                color: '#737070'
                                             }}
                                             className='modified'
                                         >
@@ -378,7 +413,7 @@ const AdvertCreatePage: React.FC = () => {
                                 </Select>
                             </FormControl>
                             <FormControl fullWidth sx={{ width: '600px' }}>
-                                <InputLabel id='subCategory' sx={{ fontFamily: 'Nunito', fontSize: '18px', fontWeight: '400' }}>Підкатегорія</InputLabel>
+                                <InputLabel id='subCategory'>Підкатегорія</InputLabel>
                                 <Select labelId='subCategory' label='Категорія' sx={{ borderRadius: '10px', border: '1px solid #000' }} value={formData.subCategoryId} onChange={(e) => handleSubCategoryChange(e.target.value as string)}>
                                     {subCategories.map((item, index) => (
                                         <MenuItem
@@ -411,7 +446,7 @@ const AdvertCreatePage: React.FC = () => {
                     }}>
                         <StyledLabel text="Місцезнаходження" type='head' textType='head' textColor='black' />
                         <StyledLabel text="Оберіть назву населеного пункту*" type='primary' textType='small' textColor='black' />
-                        <StyledDropdown placeholder="Оберіть місто" type='large' values={cities} onInput={(e) => {
+                        <StyledDropdown placeholder={formData.location} type='large' values={cities} onInput={(e) => {
                             const value = e.target.value;
                             fetchCities(value);
                         }} onChange={(e) => handleLocationChange(e.target.value)} />
@@ -481,9 +516,9 @@ const AdvertCreatePage: React.FC = () => {
                             gap: '36px',
                             alignItems: 'end',
                         }}>
-                            <StyledInput label='Вкажіть ціну' value="1080" widthType='middle' onChange={(e) => handlePriceChange(e.target.value)} />
+                            <StyledInput label='Вкажіть ціну' value={formData.price.toString()} widthType='middle' onChange={(e) => handlePriceChange(e.target.value)} />
                             <FormControl fullWidth sx={{ width: '300px' }}>
-                                <InputLabel id='currency' sx={{ fontFamily: 'Nunito', fontSize: '18px', fontWeight: '400' }}>Валюта</InputLabel>
+                                <InputLabel id='currency'>Валюта</InputLabel>
                                 <Select labelId='currency' label='Валюта' sx={{ borderRadius: '10px', border: '1px solid #000' }} value={formData.currencyId} onChange={(e) => handleCurrencyChange(e.target.value as string)}>
                                     {currencies.map((item, index) => (
                                         <MenuItem
@@ -519,9 +554,9 @@ const AdvertCreatePage: React.FC = () => {
                             flexDirection: 'row',
                             gap: '24px',
                         }}>
-                            {selectedImages.map((image, index) => (
+                            {formData.pictures.map((imageUrl, index) => (
                                 <Box
-                                    key={index}
+                                    key={`stored-image-${index}`}
                                     className='image-wrapper'
                                     sx={{
                                         position: 'relative',
@@ -530,8 +565,8 @@ const AdvertCreatePage: React.FC = () => {
                                     }}
                                 >
                                     <img
-                                        src={URL.createObjectURL(image)}
-                                        alt={`Selected image ${index + 1}`}
+                                        src={imageUrl}
+                                        alt={`Stored image ${index + 1}`}
                                         style={{
                                             width: '100%',
                                             height: '100%',
@@ -589,9 +624,14 @@ const AdvertCreatePage: React.FC = () => {
                         marginBottom: '120px',
                     }}>
                         <StyledLabel text="Опис оголошення" type='head' textType='head' textColor='black' />
-                        <StyledTextArea label='Введіть опис' required value="Будь ласка, додайте опис оголошення" maxLength={9000} minRows={18} onChange={(e) => handleDescriptionChange(e.target.value)} />
+                        <StyledTextArea label='Введіть опис' required value={formData.description} maxLength={9000} minRows={18} onChange={(e) => handleDescriptionChange(e.target.value)} />
                         {errors.description && <div className="error-message">{errors.description}</div>}
-                        <StyledButton text='Додати оголошення' type='contained' primaryColor='var(--light-blue)' secondaryColor='white' hoverBackColor='var(--green)' onClick={handleSubmit} />
+                        <StyledButton text='Оновити оголошення' type='contained' primaryColor='var(--light-blue)' secondaryColor='white' hoverBackColor='var(--green)' onClick={handleSubmit} />
+                        <StyledButton text='Скасувати' type='contained' primaryColor='red' secondaryColor='white' hoverBackColor='var(--green)' onClick={
+                            () => {
+                                window.location.href = '/profile-page';
+                            }
+                        } />
                     </Box>
                 </form>
             </Box>
@@ -600,7 +640,7 @@ const AdvertCreatePage: React.FC = () => {
                 onClose={() => setOpenErrorDialog(false)}
                 aria-labelledby="success-message"
             >
-                <DialogTitle id="success-message">Оголошення успішно додане</DialogTitle>
+                <DialogTitle id="success-message">Оголошення успішно оновлено</DialogTitle>
                 <DialogActions>
                     <Button onClick={() => {
                         setOpenSuccessDialog(false);
@@ -630,5 +670,5 @@ const AdvertCreatePage: React.FC = () => {
 };
 
 export {
-    AdvertCreatePage,
+    AdvertEditPage,
 }

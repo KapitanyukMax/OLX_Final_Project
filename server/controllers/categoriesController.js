@@ -6,7 +6,7 @@ const db = admin.firestore();
 const getAllCategories = async (req, res, next) => {
     try {
         const collection = await db.collection('categories').get();
-        
+
         logger.info('Categories received successfully');
         res.status(200).json(collection.docs.map(doc => {
             return {
@@ -26,6 +26,29 @@ const getCategoryById = async (req, res, next) => {
         if (!doc.exists) {
             logger.info(`Bad Request - category with id "${req.params.id}" does not exist`);
             return res.status(400).json({ message: `The category with id "${req.params.id}" does not exist.` });
+        }
+
+        logger.info('Category received successfully');
+        res.status(200).json({
+            id: doc.id,
+            ...doc.data()
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+const getCategoryByName = async (req, res, next) => {
+    try {
+        const categoriesSnapshot = await db.collection('categories')
+            .where('name', '==', req.query.name)
+            .limit(1)
+            .get();
+
+        const doc = categoriesSnapshot.docs[0];
+        if (!doc || !doc.exists) {
+            logger.info(`Bad Request - category with name "${req.query.name}" does not exist`);
+            return res.status(400).json({ message: `The category with name "${req.query.name}" does not exist.` });
         }
 
         logger.info('Category received successfully');
@@ -115,6 +138,7 @@ const deleteCategory = async (req, res, next) => {
 module.exports = {
     getAllCategories,
     getCategoryById,
+    getCategoryByName,
     createCategory,
     updateCategory,
     deleteCategory

@@ -33,6 +33,7 @@ import { ReportDialog } from "../../components/reportDialog";
 const AdvertPage: React.FC = () => {
     const { advertId } = useParams<{ advertId: string }>();
     const [currentUser, setCurrentUser] = useState<any>(null);
+    const [isAuthorized, setIsAuthorized] = useState(false);
     const [advertData, setAdvertData] = useState<any>(null);
     const [userData, setUserData] = useState<any>(null);
     const [userAdverts, setUserAdverts] = useState<any[]>([]);
@@ -45,13 +46,17 @@ const AdvertPage: React.FC = () => {
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
-            if (user?.email) {
-                const response = await axios.get(
-                    `http://localhost:5000/users/email?email=${user.email}`
-                );
-                setCurrentUser(response.data);
-                console.log(response.data);
-            }
+            if (user) {
+                setIsAuthorized(true);
+                if (user?.email) {
+                    const response = await axios.get(
+                        `http://localhost:5000/users/email?email=${user.email}`
+                    );
+                    setCurrentUser(response.data);
+                    console.log(response.data);
+                }
+            } else {
+                setIsAuthorized(false);
         });
 
         return () => unsubscribe();
@@ -371,20 +376,77 @@ const AdvertPage: React.FC = () => {
                                 }
                                 type={"outlined"}
                                 onClick={() => handleShowPhoneNumber()}
+                        {isAuthorized ? (
+                            <Box
                                 sx={{
-                                    height: "65px",
-                                    width: "436px",
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    justifyContent: "space-between",
+                                    alignItems: "center",
+                                    gap: "24px",
                                 }}
-                            />
-                            <StyledButton
-                                text={"DDX доставка"}
-                                type={"outlined"}
+                            >
+                                <StyledButton
+                                    text={"Написати повідомлення"}
+                                    type={"contained"}
+                                    sx={{
+                                        height: "65px",
+                                        width: "436px",
+                                    }}
+                                />
+                                <StyledButton
+                                    text={
+                                        showPhoneNumber
+                                            ? userData.phone
+                                            : "Показати телефон"
+                                    }
+                                    type={"outlined"}
+                                    onClick={() => handleShowPhoneNumber()}
+                                    sx={{
+                                        height: "65px",
+                                        width: "436px",
+                                    }}
+                                />
+                                <StyledButton
+                                    text={"DDX доставка"}
+                                    type={"outlined"}
+                                    sx={{
+                                        height: "65px",
+                                        width: "436px",
+                                    }}
+                                />
+                            </Box>
+                        ) : (
+                            <Box
                                 sx={{
-                                    height: "65px",
-                                    width: "436px",
+                                    display: "flex",
+                                    flex: "1.5",
+                                    flexDirection: "column",
                                 }}
-                            />
-                        </Box>
+                            >
+                                <Typography
+                                    sx={{
+                                        fontFamily: "Nunito",
+                                        fontSize: "20px",
+                                        textAlign: "left",
+                                    }}
+                                >
+                                    Увійдіть у свій профіль DDX або створіть
+                                    новий, щоб зв’язатися з автором
+                                </Typography>
+                                <Link to={"/registration"}>
+                                    <StyledButton
+                                        sx={{
+                                            borderRadius: "15px",
+                                            height: "48px",
+                                            marginTop: "20px",
+                                        }}
+                                        text={"Увійти або створити профіль"}
+                                        type={"contained"}
+                                    />
+                                </Link>
+                            </Box>
+                        )}
                     </Box>
                 </Box>
                 <Box
