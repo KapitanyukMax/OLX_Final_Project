@@ -57,6 +57,7 @@ const AdvertPage: React.FC = () => {
                 }
             } else {
                 setIsAuthorized(false);
+            }
         });
 
         return () => unsubscribe();
@@ -351,31 +352,6 @@ const AdvertPage: React.FC = () => {
                                     : `${advertData.price} грн.`}
                             </Typography>
                         </Box>
-                        <Box
-                            sx={{
-                                display: "flex",
-                                flexDirection: "column",
-                                justifyContent: "space-between",
-                                alignItems: "center",
-                                gap: "24px",
-                            }}
-                        >
-                            <StyledButton
-                                text={"Написати повідомлення"}
-                                type={"contained"}
-                                sx={{
-                                    height: "65px",
-                                    width: "436px",
-                                }}
-                            />
-                            <StyledButton
-                                text={
-                                    showPhoneNumber
-                                        ? userData.phone
-                                        : "Показати телефон"
-                                }
-                                type={"outlined"}
-                                onClick={() => handleShowPhoneNumber()}
                         {isAuthorized ? (
                             <Box
                                 sx={{
