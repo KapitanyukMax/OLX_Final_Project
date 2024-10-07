@@ -310,11 +310,11 @@ const AdvertPage: React.FC = () => {
                                 {new Date(
                                     advertData.creationDate
                                 ).toLocaleDateString() ===
-                                new Date().toLocaleDateString()
+                                    new Date().toLocaleDateString()
                                     ? "сьогодні"
                                     : new Date(
-                                          advertData.creationDate
-                                      ).toLocaleDateString()}
+                                        advertData.creationDate
+                                    ).toLocaleDateString()}
                             </Typography>
                             <HeartIcon />
                         </Box>
@@ -348,8 +348,8 @@ const AdvertPage: React.FC = () => {
                                 {advertData.currencyId == "USD"
                                     ? `${advertData.price}$`
                                     : advertData.currencyId == "EUR"
-                                    ? `${advertData.price}€`
-                                    : `${advertData.price} грн.`}
+                                        ? `${advertData.price}€`
+                                        : `${advertData.price} грн.`}
                             </Typography>
                         </Box>
                         {isAuthorized ? (
@@ -490,7 +490,7 @@ const AdvertPage: React.FC = () => {
                             <ReportDialog
                                 open={openReportDialog}
                                 advertId={advertData.id}
-                                userId={currentUser.id}
+                                userId={userData.id}
                                 handleClose={handleCloseReportDialog}
                             />
                         </Box>
