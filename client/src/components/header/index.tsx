@@ -67,7 +67,13 @@ const Header: React.FC = () => {
                         display: 'flex',
                         gap: '30px',
                     }}>
-                        <StyledIconButton icon={HeartWhiteIcon} />
+                        <StyledIconButton icon={HeartWhiteIcon} onClick={() => {
+                            if (currentUser) {
+                                window.location.href = `/favorites/${currentUser.uid}`;
+                            } else {
+                                window.location.href = '/registration';
+                            }
+                        }} />
                         <StyledIconButton icon={MessageWhiteIcon} />
                         <StyledIconButton icon={UserProfileWhiteIcon} onClick={() => {
                             if (currentUser) {

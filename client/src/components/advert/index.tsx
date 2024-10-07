@@ -1,11 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import { StyledEngineProvider } from "@mui/material/styles";
-import { Box, Button } from "@mui/material";
+import { Box, Button, Icon, IconButton } from "@mui/material";
 import ImageComponent from "../image";
 import StyledLabel from "../lable";
 import LocationIcon from "../icons/location";
 import CalendarIcon from "../icons/calendarSolid";
 import HeartIcon from "../icons/heart";
+import HeartFilledIcon from "../icons/heartFilled";
+import { Favorite, FavoriteBorder } from "@mui/icons-material";
 import "./styles.css";
 import StyledIconButton from "../iconButton";
 import PenFluentIcon from "../icons/penFluent";
@@ -21,12 +23,23 @@ interface StyledAdvertProps {
     isTOP?: boolean;
     onClick: () => void;
     onHeartClick?: () => void;
+    isFavorite?: boolean;
     price: number;
     onEdit?: () => void;
     onDelete?: () => void;
 };
 
-const StyledAdvert: React.FC<StyledAdvertProps> = ({ key, title, location, date, image, isVIP, isTOP, price, onClick, onHeartClick, onDelete, onEdit }) => {
+const StyledAdvert: React.FC<StyledAdvertProps> = ({ key, title, location, date, image, isVIP, isTOP, price, isFavorite, onClick, onHeartClick, onDelete, onEdit }) => {
+    const [isHeartActive, setIsHeartActive] = useState(false);
+
+    const handleHeartClick = (event: React.MouseEvent) => {
+        event.stopPropagation();
+        setIsHeartActive(prev => !prev);
+        if (onHeartClick) {
+            onHeartClick();
+        }
+    };
+
     return (
         <StyledEngineProvider injectFirst>
             <Box className='advert' onClick={onClick} style={{ cursor: 'pointer' }} key={key}>
@@ -68,12 +81,10 @@ const StyledAdvert: React.FC<StyledAdvertProps> = ({ key, title, location, date,
                             <StyledLabel text={isTOP ? "TOP" : ""} textType="small" type="status" textColor="white" backgroundColor="#049ce4" />
                         </Box>
                     }
-                    <Box className='heart' onClick={
-                        (event) => {
-                            event.stopPropagation();
-                        }
-                    }>
-                        <StyledIconButton icon={HeartIcon} onClick={onHeartClick} />
+                    <Box className='heart' onClick={handleHeartClick} sx={{ wigth: '35px', height: '35px' }}>
+                        <IconButton sx={{ padding: '0px', width: '35px', height: '35px' }}>
+                            {isFavorite ? <Favorite sx={{ width: '35px', height: '35px' }} /> : <FavoriteBorder sx={{ width: '35px', height: '35px' }} />}
+                        </IconButton>
                     </Box>
                 </Box>
                 <Box className='advertText'>

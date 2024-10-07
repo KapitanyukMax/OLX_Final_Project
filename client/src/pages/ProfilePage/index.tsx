@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
-import { auth } from '../../../firebaseConfig';
 import axios from 'axios';
+import { auth } from '../../../firebaseConfig';
 import { User, onAuthStateChanged, updateProfile } from 'firebase/auth';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { StyledEngineProvider, Box } from '@mui/material';
@@ -13,7 +13,6 @@ import StyledLabel from '../../components/lable';
 import StyledIconButton from '../../components/iconButton';
 import IInCircleIcon from '../../components/icons/iInCircle';
 import { Link } from 'react-router-dom';
-import { StyledDropdown } from '../../components/dropdown';
 import SearchIcon from '../../components/icons/search';
 import { StyledAdvert } from '../../components/advert';
 
@@ -43,6 +42,8 @@ const ProfilePage: React.FC = () => {
     const [categories, setCategories] = useState<{ id: string; name: string; picture: string; subcategories: [] }[]>([]);
     const [category, setCategory] = useState<string>('');
 
+    const [favoriteAdvertsIds, setFavoriteAdvertsIds] = useState<string[]>([]);
+
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
             setCurrentUser(user);
@@ -51,6 +52,30 @@ const ProfilePage: React.FC = () => {
 
         return () => unsubscribe();
     }, []);
+
+    const fetchFavorites = async () => {
+        try {
+            if (!userData) return;
+            const response = await axios.get(`http://localhost:5000/favorites/userId?userId=${userData.id}`);
+            const favoriteAdvertIds = response.data.adverts.map((advert: any) => advert.id);
+            setFavoriteAdvertsIds(favoriteAdvertIds);
+        } catch (error) {
+            console.error('Error fetching favorites', error);
+        }
+    };
+
+    const handleHeartIconClick = async (advertId: string) => {
+        if (currentUser === null) {
+            window.location.href = '/registration';
+        }
+        if (favoriteAdvertsIds.includes(advertId)) {
+            await axios.get(`http://localhost:5000/favorites/remove?userId=${userData.id}&advertId=${advertId}`);
+            setFavoriteAdvertsIds(favoriteAdvertsIds.filter(id => id !== advertId));
+        } else {
+            await axios.get(`http://localhost:5000/favorites/add?userId=${userData.id}&advertId=${advertId}`);
+            setFavoriteAdvertsIds([...favoriteAdvertsIds, advertId]);
+        }
+    };
 
     const getAdverts = async (page: number = 1, searchTerm?: string) => {
         if (userData) {
@@ -106,6 +131,7 @@ const ProfilePage: React.FC = () => {
 
     useEffect(() => {
         getAdverts();
+        fetchFavorites();
     }, [userData]);
 
     useEffect(() => {
@@ -428,7 +454,6 @@ const ProfilePage: React.FC = () => {
 
                         <Box sx={{ display: 'flex', flexDirection: 'row', marginTop: '75px', gap: '60px' }}>
                             <StyledInput value={searchTerm ?? 'Заголовок'} iconEnd={SearchIcon} widthType='small' onChange={(e) => { handleSearchChange(e.target.value) }} />
-                            <StyledDropdown values={[]} placeholder='Категорія' />
                             <FormControl fullWidth sx={{ width: '267px' }}>
                                 <InputLabel id='category' sx={{ fontFamily: 'Nunito', fontSize: '18px', fontWeight: '400' }}>Категорія</InputLabel>
                                 <Select labelId='category' label='Категорія' sx={{ height: '50px', borderRadius: '10px', border: '1px solid #000', background: 'white', textAlign: 'left', fontFamily: 'Nunito', fontSize: '18px', fontWeight: '400' }} value={category} onChange={(e) => handleCategoryChange(e.target.value as string)}>
@@ -498,6 +523,7 @@ const ProfilePage: React.FC = () => {
                                                     date={advert.creationDate}
                                                     image={advert.pictures[0]}
                                                     price={advert.price}
+                                                    isFavorite={favoriteAdvertsIds.includes(advert.id)}
                                                     onClick={
                                                         () => {
                                                             window.location.href = `/advert/${advert.id}`;
@@ -508,7 +534,10 @@ const ProfilePage: React.FC = () => {
                                                         () => {
                                                             window.location.href = `/advert-edit/${advert.id}`;
                                                         }
-                                                    } />
+                                                    }
+                                                    onHeartClick={() => {
+                                                        handleHeartIconClick(advert.id);
+                                                    }} />
                                             ))
                                         )}
                                     </Box>
