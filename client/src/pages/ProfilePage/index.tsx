@@ -45,8 +45,6 @@ const ProfilePage: React.FC = () => {
     const [category, setCategory] = useState<string>('');
 
     const [favoriteAdvertsIds, setFavoriteAdvertsIds] = useState<string[]>([]);
-    
-    const host = import.meta.env.VITE_HOST;
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
