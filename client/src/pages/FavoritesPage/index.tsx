@@ -28,8 +28,6 @@ const FavoritesPage: React.FC = () => {
     const [categories, setCategories] = useState<{ id: string; name: string; picture: string; subcategories: [] }[]>([]);
     const [category, setCategory] = useState<string>('');
 
-    const host = import.meta.env.VITE_HOST;
-
     const getAdverts = async (page: number = 1, searchTerm?: string) => {
         let response;
         const limit = 8;
