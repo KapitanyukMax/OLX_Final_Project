@@ -11,6 +11,8 @@ import SearchIcon from "../../components/icons/search";
 import StyledButton from "../../components/button";
 
 const FavoritesPage: React.FC = () => {
+    const host = import.meta.env.VITE_HOST;
+
     const userId = useParams<{ userId: string }>().userId;
 
     const [favoriteAdverts, setFavoriteAdverts] = useState<any[]>([]);
@@ -37,10 +39,10 @@ const FavoritesPage: React.FC = () => {
                 sortValue === 'По ціні(спадання)' ? 'sortBy=price&sortOrder=desc' :
                     sortValue === 'По ціні(зростання)' ? 'sortBy=price&sortOrder=asc' : '';
         if (searchTerm && searchTerm.length > 0) {
-            response = await axios.get(`http://localhost:5000/favorites/userId?userId=${userId}&searchTerm=${searchTerm}&${sortQuery}`);
+            response = await axios.get(`${host}/favorites/userId?userId=${userId}&searchTerm=${searchTerm}&${sortQuery}`);
         }
         else {
-            response = await axios.get(`http://localhost:5000/favorites/userId?userId=${userId}&limit=${limit}&startAfter=${startAfterParam}&${sortQuery}`);
+            response = await axios.get(`${host}/favorites/userId?userId=${userId}&limit=${limit}&startAfter=${startAfterParam}&${sortQuery}`);
         }
 
         if (response) {
@@ -56,7 +58,7 @@ const FavoritesPage: React.FC = () => {
             }
             else {
                 const { adverts: data, totalCount } = response.data;
-                const subcategoriesRef = await axios.get(`http://localhost:5000/subcategories/by-category/${category}`);
+                const subcategoriesRef = await axios.get(`${host}/subcategories/by-category/${category}`);
                 if (subcategoriesRef.data.length > 0) {
                     const subcategories = subcategoriesRef.data.map((subcategory: any) => subcategory.id);
                     const filteredData = data.filter((advert: any) => subcategories.includes(advert.subCategoryId));
@@ -94,7 +96,7 @@ const FavoritesPage: React.FC = () => {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/categories');
+                const response = await axios.get(`${host}/categories`);
 
                 setCategories(response.data);
                 setCategories([{ id: '', name: 'Всі категорії', picture: '', subcategories: [] }, ...response.data]);
@@ -108,7 +110,7 @@ const FavoritesPage: React.FC = () => {
 
     const fetchFavorites = async () => {
         try {
-            const response = await axios.get(`http://localhost:5000/favorites/userId?userId=${userId}`);
+            const response = await axios.get(`${host}/favorites/userId?userId=${userId}`);
             const favoriteAdvertIds = response.data.adverts.map((advert: any) => advert.id);
             setFavoriteAdvertsIds(favoriteAdvertIds);
         } catch (error) {
@@ -138,10 +140,10 @@ const FavoritesPage: React.FC = () => {
 
     const handleHeartIconClick = async (advertId: string) => {
         if (favoriteAdvertsIds.includes(advertId)) {
-            await axios.get(`http://localhost:5000/favorites/remove?userId=${userId}&advertId=${advertId}`);
+            await axios.get(`${host}/favorites/remove?userId=${userId}&advertId=${advertId}`);
             setFavoriteAdvertsIds(favoriteAdvertsIds.filter(id => id !== advertId));
         } else {
-            await axios.get(`http://localhost:5000/favorites/add?userId=${userId}&advertId=${advertId}`);
+            await axios.get(`${host}/favorites/add?userId=${userId}&advertId=${advertId}`);
             setFavoriteAdvertsIds([...favoriteAdvertsIds, advertId]);
         }
     };

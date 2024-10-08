@@ -18,18 +18,26 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import './styles.css';
 
 const AdvertCreatePage: React.FC = () => {
+    const host = import.meta.env.VITE_HOST;
+
     const [currentUser, setCurrentUser] = useState<User | null>(null);
+
     const [openErrorDialog, setOpenErrorDialog] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
-    const [selectedImages, setSelectedImages] = useState<File[]>([]);
-    const [cities, setCities] = useState<string[]>([]);
-    const [category, setCategory] = useState('');
-    const [categories, setCategories] = useState<{ id: string; name: string; picture: string; subcategories: [] }[]>([]);
-    const [subCategories, setSubCategories] = useState<{ id: string, name: string }[]>([]);
-    const [currencies, setCurrencies] = useState<string[]>([]);
-    const fileInputRef = useRef<HTMLInputElement | null>(null);
     const [successMessage, setSuccessMessage] = useState('');
     const [openSuccessDialog, setOpenSuccessDialog] = useState(false);
+
+    const [selectedImages, setSelectedImages] = useState<File[]>([]);
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+    const [cities, setCities] = useState<string[]>([]);
+
+    const [category, setCategory] = useState('');
+
+    const [categories, setCategories] = useState<{ id: string; name: string; picture: string; subcategories: [] }[]>([]);
+    const [subCategories, setSubCategories] = useState<{ id: string, name: string }[]>([]);
+
+    const [currencies, setCurrencies] = useState<string[]>([]);
 
     const storage = getStorage();
 
@@ -41,7 +49,6 @@ const AdvertCreatePage: React.FC = () => {
         image: '',
     });
 
-    const host = import.meta.env.VITE_HOST;
 
     const [formData, setFormData] = useState<{
         userId: string;
@@ -75,7 +82,7 @@ const AdvertCreatePage: React.FC = () => {
         const sizes = [200, 400, 800];
 
         try {
-            const timestamp = Date.now(); // Зберігаємо один і той же timestamp для всіх варіантів розміру
+            const timestamp = Date.now();
             const originalRef = ref(storage, `${path}/original-${timestamp}.jpg`);
             await uploadBytes(originalRef, file);
 
@@ -100,19 +107,17 @@ const AdvertCreatePage: React.FC = () => {
         const path = `images/${formData.userId}`;
 
         const uploadPromises = Array.from(files).map(async (file, i) => {
-            const timestamp = Date.now(); // Generate a unique timestamp for each file
-            const uniquePath = `${path}/image-${i}-${timestamp}`; // Add timestamp to path
+            const timestamp = Date.now();
+            const uniquePath = `${path}/image-${i}-${timestamp}`;
 
             await uploadResizedImages(file, uniquePath);
 
-            // Get the exact URL of the uploaded image
             const downloadURL = await getDownloadURL(ref(storage, `${uniquePath}/original-${timestamp}.jpg`));
             return downloadURL;
         });
 
-        // Wait for all image uploads to complete
         const uploadedImageURLs = await Promise.all(uploadPromises);
-        console.log('Uploaded image URLs:', uploadedImageURLs); // Debugging line
+        console.log('Uploaded image URLs:', uploadedImageURLs);
 
         setFormData((prevFormData) => {
             return {
@@ -123,7 +128,7 @@ const AdvertCreatePage: React.FC = () => {
     };
 
     useEffect(() => {
-        console.log('Updated pictures:', formData.pictures); // Відстежуємо зміни в pictures
+        console.log('Updated pictures:', formData.pictures);
     }, [formData.pictures]);
 
     const handleMultipleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -135,9 +140,8 @@ const AdvertCreatePage: React.FC = () => {
     };
 
     const handleDeleteImage = async (index: number) => {
-        // Step 1: Remove image from Firebase Storage (optional)
         const imageToDelete = formData.pictures[index];
-        const imageRef = ref(storage, imageToDelete); // imageToDelete should be the exact URL or path
+        const imageRef = ref(storage, imageToDelete);
         try {
             await deleteObject(imageRef);
             console.log('Image successfully deleted from Firebase Storage');
@@ -145,7 +149,6 @@ const AdvertCreatePage: React.FC = () => {
             console.error('Error deleting image from Firebase Storage:', error);
         }
 
-        // Step 2: Update state
         setSelectedImages((prevImages) => prevImages.filter((_, i) => i !== index));
         setFormData((prevFormData) => ({
             ...prevFormData,
@@ -188,7 +191,7 @@ const AdvertCreatePage: React.FC = () => {
             formIsValid = false;
         }
 
-        if (formData.pictures.length === 0) { // Перевіряємо pictures, а не selectedImages
+        if (formData.pictures.length === 0) {
             newErrors.image = 'Додайте хоча б одне зображення';
             formIsValid = false;
         }
@@ -217,7 +220,7 @@ const AdvertCreatePage: React.FC = () => {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/categories');
+                const response = await axios.get(`${host}/categories`);
 
                 setCategories(response.data);
             } catch (error) {
@@ -231,7 +234,7 @@ const AdvertCreatePage: React.FC = () => {
     useEffect(() => {
         const fetchCurrency = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/currencies');
+                const response = await axios.get(`${host}/currencies`);
                 const currencies = response.data.map((currency: { abbrEng: string }) => currency.abbrEng);
 
                 setCurrencies(currencies);
@@ -247,7 +250,7 @@ const AdvertCreatePage: React.FC = () => {
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
             console.log(user);
             if (user?.email) {
-                const response = await axios.get(`http://localhost:5000/users/email?email=${user.email}`);
+                const response = await axios.get(`${host}/users/email?email=${user.email}`);
                 setCurrentUser(response.data);
                 setFormData((prevFormData) => ({
                     ...prevFormData,
@@ -261,7 +264,7 @@ const AdvertCreatePage: React.FC = () => {
 
     const fetchCities = async (value: string) => {
         try {
-            const response = await axios.post('http://localhost:5000/cities', {
+            const response = await axios.post(`${host}/cities`, {
                 apiKey: '15d0f1b8de9dc0f5370abcf1906f03cd',
                 modelName: "AddressGeneral",
                 calledMethod: "getSettlements",
@@ -307,14 +310,10 @@ const AdvertCreatePage: React.FC = () => {
     const handleCategory = async (value: string) => {
         setSubCategories([]);
         setCategory(value);
-        const res = await axios.get("http://localhost:5000/subcategories/by-category/" + value);
+        const res = await axios.get(`${host}/subcategories/by-category/` + value);
         if (res.data === undefined) {
             setSubCategories([]);
         } else {
-            // let names: string[] = [];
-            // res.data.forEach((element: { id: string, name: string }) => {
-            //     names.push(element.name);
-            // });
             setSubCategories(res.data);
         }
     }
