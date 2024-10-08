@@ -32,14 +32,16 @@ const HomePage: React.FC = () => {
     const [isSearching, setIsSearching] = useState(false);
     const [searchValue, setSearchValue] = useState('');
 
+    const host = import.meta.env.VITE_HOST;
+
     const getAdverts = async (search?: string, limit?: number) => {
         limit ??= 8;
         let response;
         if (search && search.length > 0) {
-            response = await axios.get(`http://localhost:5000/adverts?limit=${limit}&searchTerm=${search}`);
+            response = await axios.get(`${host}/adverts?limit=${limit}&searchTerm=${search}`);
         }
         else {
-            response = await axios.get(`http://localhost:5000/adverts?limit=${limit}`);
+            response = await axios.get(`${host}/adverts?limit=${limit}`);
         }
         if (response) {
             const data = response.data.adverts;
@@ -50,7 +52,7 @@ const HomePage: React.FC = () => {
 
     const getVipAdverts = async (limit?: number) => {
         limit ??= 4;
-        const response = await axios.get(`http://localhost:5000/adverts/vip?limit=${limit}`);
+        const response = await axios.get(`${host}/adverts/vip?limit=${limit}`);
         if (response) {
             const data = response.data.adverts;
             setVipAdverts(data);
@@ -60,7 +62,7 @@ const HomePage: React.FC = () => {
 
     const getTopAdverts = async (limit?: number) => {
         limit ??= 8;
-        const response = await axios.get(`http://localhost:5000/adverts/top?limit=${limit}`);
+        const response = await axios.get(`${host}/adverts/top?limit=${limit}`);
         if (response) {
             const data = response.data.adverts;
             setTopAdverts(data);

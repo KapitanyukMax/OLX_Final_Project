@@ -32,6 +32,8 @@ const ReportDialog: React.FC<ReportDialogProps> = ({
     const [selectedReport, setSelectedReport] = useState<string | null>(null);
     const [reportDescription, setReportDescription] = useState("");
 
+    const host = import.meta.env.VITE_HOST;
+
     const handleReportSelect = (report: string) => {
         setSelectedReport(report);
     };
@@ -52,7 +54,7 @@ const ReportDialog: React.FC<ReportDialogProps> = ({
     const sendData = async () => {
         try {
             const res = await axios.post(
-                "http://localhost:5000/advertReports/",
+                `${host}/advertReports/`,
                 {
                     advertId: advertId,
                     userId: userId,

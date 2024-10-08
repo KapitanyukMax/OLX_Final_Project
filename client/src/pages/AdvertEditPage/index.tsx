@@ -211,7 +211,7 @@ const AdvertEditPage: React.FC = () => {
         }
 
         try {
-            const response = await axios.put(`http://localhost:5000/adverts`, formData);
+            const response = await axios.put(`${host}/adverts`, formData);
             console.log('Advert updated successfully', response.data);
 
             setSuccessMessage('Оголошення оновлено успішно!');
@@ -228,7 +228,7 @@ const AdvertEditPage: React.FC = () => {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/categories');
+                const response = await axios.get(`${host}/categories`);
 
                 setCategories(response.data);
             } catch (error) {
@@ -242,7 +242,7 @@ const AdvertEditPage: React.FC = () => {
     useEffect(() => {
         const fetchCurrency = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/currencies');
+                const response = await axios.get(`${host}/currencies`);
                 const currencies = response.data.map((currency: { abbrEng: string }) => currency.abbrEng);
 
                 setCurrencies(currencies);
@@ -258,7 +258,7 @@ const AdvertEditPage: React.FC = () => {
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
             console.log(user);
             if (user?.email) {
-                const response = await axios.get(`http://localhost:5000/users/email?email=${user.email}`);
+                const response = await axios.get(`${host}/users/email?email=${user.email}`);
                 setCurrentUser(response.data);
                 setFormData((prevFormData) => ({
                     ...prevFormData,
@@ -274,10 +274,10 @@ const AdvertEditPage: React.FC = () => {
         const fetchAdvert = async () => {
             setLoading(true);
             try {
-                const response = await axios.get(`http://localhost:5000/adverts/id/?id=${advertId}`);
+                const response = await axios.get(`${host}/adverts/id/?id=${advertId}`);
                 if (response.data.subCategoryId) {
-                    const subCategoryResponse = await axios.get(`http://localhost:5000/subcategories/${response.data.subCategoryId}`);
-                    const categoryResponse = await axios.get(`http://localhost:5000/categories/${subCategoryResponse.data.categoryId}`);
+                    const subCategoryResponse = await axios.get(`${host}/subcategories/${response.data.subCategoryId}`);
+                    const categoryResponse = await axios.get(`${host}/categories/${subCategoryResponse.data.categoryId}`);
                     handleCategory(categoryResponse.data.id);
                 }
                 setFormData(response.data);
@@ -297,7 +297,7 @@ const AdvertEditPage: React.FC = () => {
 
     const fetchCities = async (value: string) => {
         try {
-            const response = await axios.post('http://localhost:5000/cities', {
+            const response = await axios.post(`${host}/cities`, {
                 apiKey: '15d0f1b8de9dc0f5370abcf1906f03cd',
                 modelName: "AddressGeneral",
                 calledMethod: "getSettlements",
@@ -343,7 +343,7 @@ const AdvertEditPage: React.FC = () => {
     const handleCategory = async (value: string) => {
         setSubCategories([]);
         setCategory(value);
-        const res = await axios.get("http://localhost:5000/subcategories/by-category/" + value);
+        const res = await axios.get(`${host}/subcategories/by-category/${value}`);
         if (res.data === undefined) {
             setSubCategories([]);
         } else {

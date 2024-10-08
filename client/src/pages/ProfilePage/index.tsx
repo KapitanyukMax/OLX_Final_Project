@@ -43,6 +43,8 @@ const ProfilePage: React.FC = () => {
     const [category, setCategory] = useState<string>('');
 
     const [favoriteAdvertsIds, setFavoriteAdvertsIds] = useState<string[]>([]);
+    
+    const host = import.meta.env.VITE_HOST;
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -56,7 +58,7 @@ const ProfilePage: React.FC = () => {
     const fetchFavorites = async () => {
         try {
             if (!userData) return;
-            const response = await axios.get(`http://localhost:5000/favorites/userId?userId=${userData.id}`);
+            const response = await axios.get(`${host}/favorites/userId?userId=${userData.id}`);
             const favoriteAdvertIds = response.data.adverts.map((advert: any) => advert.id);
             setFavoriteAdvertsIds(favoriteAdvertIds);
         } catch (error) {
@@ -69,10 +71,10 @@ const ProfilePage: React.FC = () => {
             window.location.href = '/registration';
         }
         if (favoriteAdvertsIds.includes(advertId)) {
-            await axios.get(`http://localhost:5000/favorites/remove?userId=${userData.id}&advertId=${advertId}`);
+            await axios.get(`${host}/favorites/remove?userId=${userData.id}&advertId=${advertId}`);
             setFavoriteAdvertsIds(favoriteAdvertsIds.filter(id => id !== advertId));
         } else {
-            await axios.get(`http://localhost:5000/favorites/add?userId=${userData.id}&advertId=${advertId}`);
+            await axios.get(`${host}/favorites/add?userId=${userData.id}&advertId=${advertId}`);
             setFavoriteAdvertsIds([...favoriteAdvertsIds, advertId]);
         }
     };
@@ -90,9 +92,9 @@ const ProfilePage: React.FC = () => {
 
             if (searchTerm && searchTerm.length > 0) {
                 startAfterParam = null;
-                response = await axios.get(`http://localhost:5000/adverts/userId?userId=${userData.id}&searchTerm=${searchTerm}&${sortQuery}`);
+                response = await axios.get(`${host}/adverts/userId?userId=${userData.id}&searchTerm=${searchTerm}&${sortQuery}`);
             } else {
-                response = await axios.get(`http://localhost:5000/adverts/userId?userId=${userData.id}&limit=${limit}&startAfter=${startAfterParam}&${sortQuery}`);
+                response = await axios.get(`${host}/adverts/userId?userId=${userData.id}&limit=${limit}&startAfter=${startAfterParam}&${sortQuery}`);
             }
 
             if (response) {
@@ -108,7 +110,7 @@ const ProfilePage: React.FC = () => {
                 }
                 else {
                     const { adverts: data, totalCount } = response.data;
-                    const subcategoriesRef = await axios.get(`http://localhost:5000/subcategories/by-category/${category}`);
+                    const subcategoriesRef = await axios.get(`${host}/subcategories/by-category/${category}`);
                     if (subcategoriesRef.data.length > 0) {
                         const subcategories = subcategoriesRef.data.map((subcategory: any) => subcategory.id);
                         const filteredData = data.filter((advert: any) => subcategories.includes(advert.subCategoryId));
@@ -146,7 +148,7 @@ const ProfilePage: React.FC = () => {
         const setUser = async () => {
             if (currentUser) {
                 try {
-                    const response = await axios.get(`http://localhost:5000/users/email?email=${currentUser.email}`);
+                    const response = await axios.get(`${host}/users/email?email=${currentUser.email}`);
                     setUserData(response.data);
                     setDisplayName(response.data.name);
                     setPhoneNumber(response.data.phone);
@@ -167,7 +169,7 @@ const ProfilePage: React.FC = () => {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/categories');
+                const response = await axios.get(`${host}/categories`);
 
                 setCategories(response.data);
                 setCategories([{ id: '', name: 'Всі категорії', picture: '', subcategories: [] }, ...response.data]);
@@ -246,7 +248,7 @@ const ProfilePage: React.FC = () => {
                 photoURL: typeof downloadURL === 'string' ? downloadURL : ''
             });
 
-            await axios.put('http://localhost:5000/users', {
+            await axios.put(`${host}/users`, {
                 id: userData.id,
                 name: displayName,
                 phone: phoneNumber,
@@ -286,7 +288,7 @@ const ProfilePage: React.FC = () => {
         if (!adId) return;
 
         try {
-            await axios.delete(`http://localhost:5000/adverts/${adId}`);
+            await axios.delete(`${host}/adverts/${adId}`);
             console.log('Advert deleted successfully');
             window.location.reload();
         } catch (error) {

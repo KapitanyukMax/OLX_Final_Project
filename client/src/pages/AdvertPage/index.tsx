@@ -44,13 +44,15 @@ const AdvertPage: React.FC = () => {
     const [showPhoneNumber, setShowPhoneNumber] = useState(false);
     const [openReportDialog, setOpenReportDialog] = useState(false);
 
+    const host = import.meta.env.VITE_HOST;
+
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
             if (user) {
                 setIsAuthorized(true);
                 if (user?.email) {
                     const response = await axios.get(
-                        `http://localhost:5000/users/email?email=${user.email}`
+                        `${host}/users/email?email=${user.email}`
                     );
                     setCurrentUser(response.data);
                     console.log(response.data);
@@ -67,23 +69,23 @@ const AdvertPage: React.FC = () => {
         const fetchData = async () => {
             try {
                 const advertResponse = await axios.get(
-                    `http://localhost:5000/adverts/id/?id=${advertId}`
+                    `${host}/adverts/id/?id=${advertId}`
                 );
                 setAdvertData(advertResponse.data);
 
                 const userId = advertResponse.data.userId;
                 const userResponse = await axios.get(
-                    `http://localhost:5000/users/${userId}`
+                    `${host}/users/${userId}`
                 );
                 setUserData(userResponse.data);
 
                 const userAdvertsResponse = await axios.get(
-                    `http://localhost:5000/adverts/userId/?userId=${userId}`
+                    `${host}/adverts/userId/?userId=${userId}`
                 );
                 setUserAdverts(userAdvertsResponse.data.adverts);
 
                 const advertsResponse = await axios.get(
-                    `http://localhost:5000/adverts`
+                    `${host}/adverts`
                 );
                 setAdverts(advertsResponse.data.adverts);
 
