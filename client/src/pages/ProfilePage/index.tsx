@@ -17,6 +17,8 @@ import SearchIcon from '../../components/icons/search';
 import { StyledAdvert } from '../../components/advert';
 
 const ProfilePage: React.FC = () => {
+    const host = import.meta.env.VITE_HOST;
+
     const [currentUser, setCurrentUser] = useState<User | null>(null);
     const [userData, setUserData] = useState<any>(null);
 
@@ -372,16 +374,13 @@ const ProfilePage: React.FC = () => {
                                 ) : (
                                     <p>Loading user data...</p>
                                 )}
-                                {/* <StyledInput value='Рівненська область' label="Регіон" widthType='middle' disabled={isEditable} /> */}
                             </Box>
                             <Box sx={{ display: 'flex', flexDirection: 'row', gap: '50px' }}>
-                                {/* <StyledInput value='Ромашко' label="Прізвище" widthType='middle' disabled={isEditable} /> */}
                                 {userData ? (
                                     <StyledInput value={userData?.email || 'Електронна пошта не вказана'} label="Електронна пошта" widthType='middle' disabled={true} />
                                 ) : (
                                     <p>Loading user data...</p>
                                 )}
-                                {/* <StyledInput value='Рівне' label="Назва населеного пункту" widthType='middle' disabled={isEditable} /> */}
                             </Box>
                             {
                                 !isEditable ? (

@@ -19,19 +19,28 @@ import './styles.css';
 import { useParams } from 'react-router-dom';
 
 const AdvertEditPage: React.FC = () => {
+    const host = import.meta.env.VITE_HOST;
+
     const { advertId } = useParams<{ advertId: string }>();
+
     const [currentUser, setCurrentUser] = useState<User | null>(null);
+
     const [openErrorDialog, setOpenErrorDialog] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
+    const [successMessage, setSuccessMessage] = useState('');
+    const [openSuccessDialog, setOpenSuccessDialog] = useState(false);
+
     const [selectedImages, setSelectedImages] = useState<File[]>([]);
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
+
     const [cities, setCities] = useState<string[]>([]);
+
     const [category, setCategory] = useState('');
     const [categories, setCategories] = useState<{ id: string; name: string; picture: string; subcategories: [] }[]>([]);
     const [subCategories, setSubCategories] = useState<{ id: string, name: string }[]>([]);
+
     const [currencies, setCurrencies] = useState<string[]>([]);
-    const fileInputRef = useRef<HTMLInputElement | null>(null);
-    const [successMessage, setSuccessMessage] = useState('');
-    const [openSuccessDialog, setOpenSuccessDialog] = useState(false);
+
     const [loading, setLoading] = useState(true);
 
     const storage = getStorage();
@@ -44,7 +53,6 @@ const AdvertEditPage: React.FC = () => {
         image: '',
     });
 
-    const host = import.meta.env.VITE_HOST;
 
     const [formData, setFormData] = useState<{
         userId: string;

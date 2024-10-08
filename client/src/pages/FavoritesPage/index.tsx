@@ -11,6 +11,8 @@ import SearchIcon from "../../components/icons/search";
 import StyledButton from "../../components/button";
 
 const FavoritesPage: React.FC = () => {
+    const host = import.meta.env.VITE_HOST;
+
     const userId = useParams<{ userId: string }>().userId;
 
     const [favoriteAdverts, setFavoriteAdverts] = useState<any[]>([]);

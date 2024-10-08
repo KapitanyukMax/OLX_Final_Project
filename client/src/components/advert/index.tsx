@@ -1,17 +1,14 @@
 import React, { useState } from "react";
 import { StyledEngineProvider } from "@mui/material/styles";
-import { Box, Button, Icon, IconButton } from "@mui/material";
+import { Box, Button, IconButton } from "@mui/material";
 import ImageComponent from "../image";
 import StyledLabel from "../lable";
 import LocationIcon from "../icons/location";
 import CalendarIcon from "../icons/calendarSolid";
-import HeartIcon from "../icons/heart";
-import HeartFilledIcon from "../icons/heartFilled";
 import { Favorite, FavoriteBorder } from "@mui/icons-material";
-import "./styles.css";
-import StyledIconButton from "../iconButton";
 import PenFluentIcon from "../icons/penFluent";
 import DeleteIcon from "@mui/icons-material/Delete";
+import "./styles.css";
 
 interface StyledAdvertProps {
     key?: string;
