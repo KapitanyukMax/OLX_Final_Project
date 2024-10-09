@@ -45,14 +45,14 @@ const Header: React.FC = () => {
                     justifyContent: 'space-between',
                     alignItems: 'center',
                 }}>
-                    <Link href="/components-preview" >
+                    <Link href="/" >
                         <StyledIconButton icon={DDXLogoIcon} />
                     </Link>
                     <Box sx={{
                         display: 'flex',
                         gap: '40px',
                     }}>
-                        <Link href="/components-preview" sx={{
+                        <Link href="/" sx={{
                             color: 'white',
                             fontSize: '20px',
                             fontWeight: '400',
@@ -67,7 +67,13 @@ const Header: React.FC = () => {
                         display: 'flex',
                         gap: '30px',
                     }}>
-                        <StyledIconButton icon={HeartWhiteIcon} />
+                        <StyledIconButton icon={HeartWhiteIcon} onClick={() => {
+                            if (currentUser) {
+                                window.location.href = `/favorites/${currentUser.uid}`;
+                            } else {
+                                window.location.href = '/registration';
+                            }
+                        }} />
                         <StyledIconButton icon={MessageWhiteIcon} />
                         <StyledIconButton icon={UserProfileWhiteIcon} onClick={() => {
                             if (currentUser) {

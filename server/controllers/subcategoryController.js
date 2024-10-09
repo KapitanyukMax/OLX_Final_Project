@@ -1,7 +1,6 @@
 const admin = require('../database');
 const db = admin.firestore();
 
-
 const getAllSubcategories = async(req, res, next)=>{
     try{
         const snapshot = await db.collection('subcategories').get();
@@ -96,6 +95,29 @@ const getSubCategoryById= async(req, res,next)=>{
     }
 }
 
+const getSubcategoryByName = async (req, res, next) => {
+    try {
+        const subcategoriesSnapshot = await db.collection('subcategories')
+            .where('name', '==', req.query.name)
+            .limit(1)
+            .get();
+
+        const doc = subcategoriesSnapshot.docs[0];
+        if (!doc || !doc.exists) {
+            console.log(`Bad Request - subcategory with name "${req.query.name}" does not exist`);
+            return res.status(400).json({ message: `The subcategory with name "${req.query.name}" does not exist.` });
+        }
+
+        console.log('Subategory received successfully');
+        res.status(200).json({
+            id: doc.id,
+            ...doc.data()
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
 const getSubcategoriesByCategoryId = async (req, res) => {
     try {
         const { categoryId } = req.params;
@@ -124,5 +146,6 @@ module.exports = {
     updateSubCategory,
     deleteSubCategory,
     getSubCategoryById,
+    getSubcategoryByName,
     getSubcategoriesByCategoryId
 }

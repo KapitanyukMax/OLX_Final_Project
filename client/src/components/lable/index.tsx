@@ -1,7 +1,7 @@
 import React from 'react';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
-import { SvgIconProps } from '@mui/material';
+import { SvgIconProps, SxProps } from '@mui/material';
 import { StyledEngineProvider } from '@mui/material/styles';
 import './style.css';
 
@@ -15,6 +15,7 @@ interface StyledLabelProps {
   onClick?: () => void;
   fontWeight?: string;
   textAlign?: 'left' | 'center' | 'right';
+  sx?:SxProps;
 }
 
 const StyledLabel: React.FC<StyledLabelProps> = ({
@@ -27,6 +28,7 @@ const StyledLabel: React.FC<StyledLabelProps> = ({
   onClick,
   fontWeight,
   textAlign,
+  sx,
 }) => {
   const getClassName = () => {
     switch (type) {
@@ -64,19 +66,19 @@ const StyledLabel: React.FC<StyledLabelProps> = ({
     <StyledEngineProvider injectFirst>
       <Box
         className={getClassName()}
-        sx={{ backgroundColor }}
+        sx={{ backgroundColor, ...sx }}
         onClick={onClick}
         style={{ cursor: onClick ? 'pointer' : 'default' }}
       >
         {Icon && (
-          <Box className="icon-container">
+          <Box className="icon-container" sx={{...sx}}>
             <Icon />
           </Box>
         )}
         <Typography
           className={getTextStyle()}
           color={textColor}
-          sx={{ fontWeight: fontWeight, textAlign: textAlign }}
+          sx={{ fontWeight: fontWeight, textAlign: textAlign, ...sx }}
         >
           {text}
         </Typography>

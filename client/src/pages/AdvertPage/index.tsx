@@ -10,7 +10,6 @@ import {
     Typography,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { Header } from "../../components/header";
 import { StyledInput } from "../../components/input";
 import StyledButton from "../../components/button";
 import ImageComponent from "../../components/image";
@@ -25,15 +24,15 @@ import CarFillIcon from "../../components/icons/carFill";
 import LocationIcon from "../../components/icons/location";
 import TimeFillIcon from "../../components/icons/timeFill";
 import { StyledAdvert } from "../../components/advert";
-import StyledFooter from "../../components/footer";
-import { onAuthStateChanged, User } from "firebase/auth";
+import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../../../firebaseConfig";
 import axios from "axios";
 import { Link, useParams } from "react-router-dom";
+import { ReportDialog } from "../../components/reportDialog";
 
 const AdvertPage: React.FC = () => {
     const { advertId } = useParams<{ advertId: string }>();
-    const [currentUser, setCurrentUser] = useState<User | null>(null);
+    const [currentUser, setCurrentUser] = useState<any>(null);
     const [isAuthorized, setIsAuthorized] = useState(false);
     const [advertData, setAdvertData] = useState<any>(null);
     const [userData, setUserData] = useState<any>(null);
@@ -43,16 +42,23 @@ const AdvertPage: React.FC = () => {
     const [selectedImage, setSelectedImage] = useState<string>("");
     const [isLoading, setIsLoading] = useState(true);
     const [showPhoneNumber, setShowPhoneNumber] = useState(false);
+    const [openReportDialog, setOpenReportDialog] = useState(false);
     const [favoriteAdvertsIds, setFavoriteAdvertsIds] = useState<string[]>([]);
+
 
     const host = import.meta.env.VITE_HOST;
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
             if (user) {
-                setCurrentUser(user);
                 setIsAuthorized(true);
-                console.log(user);
+                if (user?.email) {
+                    const response = await axios.get(
+                        `${host}/users/email?email=${user.email}`
+                    );
+                    setCurrentUser(response.data);
+                    console.log(response.data);
+                }
             } else {
                 setIsAuthorized(false);
             }
@@ -154,6 +160,14 @@ const AdvertPage: React.FC = () => {
         setShowPhoneNumber(true);
     };
 
+    const handleOpenReportDialog = () => {
+        setOpenReportDialog(true);
+    };
+
+    const handleCloseReportDialog = () => {
+        setOpenReportDialog(false);
+    };
+
     if (isLoading) {
         return (
             <Box
@@ -171,7 +185,6 @@ const AdvertPage: React.FC = () => {
 
     return (
         <StyledEngineProvider injectFirst>
-            <Header />
             <Box
                 sx={{
                     width: "1360px",
@@ -339,11 +352,11 @@ const AdvertPage: React.FC = () => {
                                 {new Date(
                                     advertData.creationDate
                                 ).toLocaleDateString() ===
-                                new Date().toLocaleDateString()
+                                    new Date().toLocaleDateString()
                                     ? "сьогодні"
                                     : new Date(
-                                          advertData.creationDate
-                                      ).toLocaleDateString()}
+                                        advertData.creationDate
+                                    ).toLocaleDateString()}
                             </Typography>
                             <IconButton
                                 onClick={() =>
@@ -395,8 +408,8 @@ const AdvertPage: React.FC = () => {
                                 {advertData.currencyId == "USD"
                                     ? `${advertData.price}$`
                                     : advertData.currencyId == "EUR"
-                                    ? `${advertData.price}€`
-                                    : `${advertData.price} грн.`}
+                                        ? `${advertData.price}€`
+                                        : `${advertData.price} грн.`}
                             </Typography>
                         </Box>
                         {isAuthorized ? (
@@ -519,16 +532,27 @@ const AdvertPage: React.FC = () => {
                             >
                                 {<TopFluentIcon />}Підняти оголошення
                             </Typography>
-                            <Typography
+                            <Button
+                                onClick={handleOpenReportDialog}
                                 sx={{
+                                    textTransform: "none",
                                     fontFamily: "Nunito",
                                     fontSize: "18px",
                                     fontWeight: "600",
                                     color: "#E23030",
                                 }}
+                                style={{
+                                    backgroundColor: "transparent",
+                                }}
                             >
                                 Поскаржитися
-                            </Typography>
+                            </Button>
+                            <ReportDialog
+                                open={openReportDialog}
+                                advertId={advertData.id}
+                                userId={userData.id}
+                                handleClose={handleCloseReportDialog}
+                            />
                         </Box>
                         <Box
                             sx={{
@@ -825,7 +849,15 @@ const AdvertPage: React.FC = () => {
                                     fontWeight: "600",
                                 }}
                             >
-                                Переглянути профіль
+                                <Link
+                                    to={`/user/${userData.id}`}
+                                    style={{
+                                        textDecoration: "none",
+                                        color: "#000",
+                                    }}
+                                >
+                                    Переглянути профіль
+                                </Link>
                             </Typography>
                         </Box>
                     </Box>
@@ -919,7 +951,6 @@ const AdvertPage: React.FC = () => {
                     ))}
                 </Box>
             </Box>
-            <StyledFooter />
         </StyledEngineProvider>
     );
 };

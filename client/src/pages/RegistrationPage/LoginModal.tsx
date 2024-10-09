@@ -168,9 +168,6 @@ export const LoginModal: React.FC<LoginModalProps> = ({ onSwitchToRegister, onSw
             console.log('Google login successful', user);
 
             const userData = {
-                // googleId:user.uid,
-                // name: user.displayName,
-                // email: user.email,
                     name:user.displayName,
                     email: user.email ?? null,
                     phone: user.phoneNumber ?? null,

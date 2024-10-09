@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { auth } from '../../../firebaseConfig';
+import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
 import axios from 'axios';
+import { auth } from '../../../firebaseConfig';
 import { User, onAuthStateChanged, updateProfile } from 'firebase/auth';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { Header } from '../../components/header';
 import { StyledEngineProvider, Box } from '@mui/material';
-import StyledFooter from '../../components/footer';
 import StyledButton from '../../components/button';
 import PenFluentIcon from '../../components/icons/penFluent';
 import ImageComponent from '../../components/image';
@@ -14,23 +13,38 @@ import StyledLabel from '../../components/lable';
 import StyledIconButton from '../../components/iconButton';
 import IInCircleIcon from '../../components/icons/iInCircle';
 import { Link } from 'react-router-dom';
-import { StyledDropdown } from '../../components/dropdown';
 import SearchIcon from '../../components/icons/search';
 import { StyledAdvert } from '../../components/advert';
 
 const ProfilePage: React.FC = () => {
+    const host = import.meta.env.VITE_HOST;
+
     const [currentUser, setCurrentUser] = useState<User | null>(null);
     const [userData, setUserData] = useState<any>(null);
+
     const [isEditable, setIsEditable] = useState(true);
+
     const [adverts, setAdverts] = useState<any[]>([]);
     const [searchTerm, setSearchTerm] = useState<string | null>(null);
+
+    const [open, setOpen] = useState(false);
+    const [selectedAd, setSelectedAd] = useState<string | null>(null);
 
     const [displayName, setDisplayName] = useState<string>('');
     const [phoneNumber, setPhoneNumber] = useState<string>('');
     const [image, setImage] = useState<string | File>('');
+    const [prevImage, setPrevImage] = useState<string>('');
 
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [totalPages, setTotalPages] = useState<number>(1);
+
+    const [sortValue, setSortValue] = useState<string>('По даті(спадання)');
+    const sortValues = ['По даті(спадання)', 'По даті(зростання)', 'По ціні(спадання)', 'По ціні(зростання)'];
+
+    const [categories, setCategories] = useState<{ id: string; name: string; picture: string; subcategories: [] }[]>([]);
+    const [category, setCategory] = useState<string>('');
+
+    const [favoriteAdvertsIds, setFavoriteAdvertsIds] = useState<string[]>([]);
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -41,31 +55,74 @@ const ProfilePage: React.FC = () => {
         return () => unsubscribe();
     }, []);
 
+    const fetchFavorites = async () => {
+        try {
+            if (!userData) return;
+            const response = await axios.get(`${host}/favorites/userId?userId=${userData.id}`);
+            const favoriteAdvertIds = response.data.adverts.map((advert: any) => advert.id);
+            setFavoriteAdvertsIds(favoriteAdvertIds);
+        } catch (error) {
+            console.error('Error fetching favorites', error);
+        }
+    };
+
+    const handleHeartIconClick = async (advertId: string) => {
+        if (currentUser === null) {
+            window.location.href = '/registration';
+        }
+        if (favoriteAdvertsIds.includes(advertId)) {
+            await axios.get(`${host}/favorites/remove?userId=${userData.id}&advertId=${advertId}`);
+            setFavoriteAdvertsIds(favoriteAdvertsIds.filter(id => id !== advertId));
+        } else {
+            await axios.get(`${host}/favorites/add?userId=${userData.id}&advertId=${advertId}`);
+            setFavoriteAdvertsIds([...favoriteAdvertsIds, advertId]);
+        }
+    };
+
     const getAdverts = async (page: number = 1, searchTerm?: string) => {
         if (userData) {
             let response;
-            const limit = 2; // Кількість оголошень на сторінці
+            const limit = 8;
             let startAfterParam = page > 1 ? adverts[adverts.length - 1].id : null;
 
-            // Якщо є пошуковий термін, скидаємо пагінацію і шукаємо по всіх оголошеннях
+            const sortQuery = sortValue === 'По даті(спадання)' ? 'sortBy=creationDate&sortOrder=desc' :
+                sortValue === 'По даті(зростання)' ? 'sortBy=creationDate&sortOrder=asc' :
+                    sortValue === 'По ціні(спадання)' ? 'sortBy=price&sortOrder=desc' :
+                        sortValue === 'По ціні(зростання)' ? 'sortBy=price&sortOrder=asc' : '';
+
             if (searchTerm && searchTerm.length > 0) {
-                startAfterParam = null; // Ігноруємо пагінацію
-                response = await axios.get(`http://localhost:5000/adverts/userId?userId=${userData.id}&searchTerm=${searchTerm}`);
+                startAfterParam = null;
+                response = await axios.get(`${host}/adverts/userId?userId=${userData.id}&searchTerm=${searchTerm}&${sortQuery}`);
             } else {
-                // Якщо пошуковий термін відсутній, виконуємо запит з пагінацією
-                response = await axios.get(`http://localhost:5000/adverts/userId?userId=${userData.id}&limit=${limit}&startAfter=${startAfterParam}`);
+                response = await axios.get(`${host}/adverts/userId?userId=${userData.id}&limit=${limit}&startAfter=${startAfterParam}&${sortQuery}`);
             }
 
             if (response) {
-                const { adverts: data, totalCount } = response.data;
-                setAdverts(data);
+                if (category === '' || category === 'Всі категорії') {
+                    const { adverts: data, totalCount } = response.data;
+                    setAdverts(data);
 
-                // Оновлюємо кількість сторінок тільки для звичайних запитів (без пошуку)
-                if (!searchTerm || searchTerm.length === 0) {
-                    setTotalPages(Math.ceil(totalCount / limit));
+                    if (!searchTerm || searchTerm.length === 0) {
+                        setTotalPages(Math.ceil(totalCount / limit));
+                    }
+
+                    console.log(data);
                 }
+                else {
+                    const { adverts: data, totalCount } = response.data;
+                    const subcategoriesRef = await axios.get(`${host}/subcategories/by-category/${category}`);
+                    if (subcategoriesRef.data.length > 0) {
+                        const subcategories = subcategoriesRef.data.map((subcategory: any) => subcategory.id);
+                        const filteredData = data.filter((advert: any) => subcategories.includes(advert.subCategoryId));
+                        setAdverts(filteredData);
+                    }
 
-                console.log(data);
+                    if (!searchTerm || searchTerm.length === 0) {
+                        setTotalPages(Math.ceil(totalCount / limit));
+                    }
+
+                    console.log(data);
+                }
             } else {
                 return;
             }
@@ -76,6 +133,7 @@ const ProfilePage: React.FC = () => {
 
     useEffect(() => {
         getAdverts();
+        fetchFavorites();
     }, [userData]);
 
     useEffect(() => {
@@ -85,6 +143,47 @@ const ProfilePage: React.FC = () => {
     useEffect(() => {
         getAdverts(currentPage, searchTerm || '');
     }, [searchTerm]);
+
+    useEffect(() => {
+        const setUser = async () => {
+            if (currentUser) {
+                try {
+                    const response = await axios.get(`${host}/users/email?email=${currentUser.email}`);
+                    setUserData(response.data);
+                    setDisplayName(response.data.name);
+                    setPhoneNumber(response.data.phone);
+                    setImage(response.data.picture);
+                } catch (error) {
+                    console.error('Error getting user data:', error);
+                }
+            }
+        }
+
+        setUser();
+    }, [currentUser]);
+
+    useEffect(() => {
+        getAdverts(currentPage, searchTerm || '');
+    }, [sortValue]);
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const response = await axios.get(`${host}/categories`);
+
+                setCategories(response.data);
+                setCategories([{ id: '', name: 'Всі категорії', picture: '', subcategories: [] }, ...response.data]);
+            } catch (error) {
+                console.error('Error fetching categories', error);
+            }
+        };
+
+        fetchCategories();
+    }, []);
+
+    useEffect(() => {
+        getAdverts(currentPage, searchTerm || '');
+    }, [category]);
 
     const handlePageChange = (pageNumber: number) => {
         setCurrentPage(pageNumber);
@@ -105,24 +204,6 @@ const ProfilePage: React.FC = () => {
         return buttons;
     };
 
-    useEffect(() => {
-        const setUser = async () => {
-            if (currentUser) {
-                try {
-                    const response = await axios.get(`http://localhost:5000/users/email?email=${currentUser.email}`);
-                    setUserData(response.data);
-                    setDisplayName(response.data.name);
-                    setPhoneNumber(response.data.phone);
-                    setImage(response.data.picture);
-                } catch (error) {
-                    console.error('Error getting user data:', error);
-                }
-            }
-        }
-
-        setUser();
-    }, [currentUser]);
-
     const handleEditClick = () => {
         setIsEditable((prevState) => !prevState);
     };
@@ -142,6 +223,7 @@ const ProfilePage: React.FC = () => {
     const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files && event.target.files[0]) {
             setImage(event.target.files[0]);
+            setPrevImage(URL.createObjectURL(event.target.files[0]));
         }
     };
 
@@ -150,13 +232,10 @@ const ProfilePage: React.FC = () => {
 
         if (displayName.length < 0 || phoneNumber.length < 0) return;
 
-
         try {
-            let downloadURL = image; // Keep the current image URL by default.
+            let downloadURL = image;
 
-            // Check if a new file has been selected (by checking if `image` is a File object).
             if (typeof image !== 'string') {
-                // Upload the image to Firebase Storage if a new file is selected.
                 const storage = getStorage();
                 const storageRef = ref(storage, `profileImages/${currentUser.uid}`);
 
@@ -169,7 +248,7 @@ const ProfilePage: React.FC = () => {
                 photoURL: typeof downloadURL === 'string' ? downloadURL : ''
             });
 
-            await axios.put('http://localhost:5000/users', {
+            await axios.put(`${host}/users`, {
                 id: userData.id,
                 name: displayName,
                 phone: phoneNumber,
@@ -178,6 +257,7 @@ const ProfilePage: React.FC = () => {
 
             console.log('User profile updated successfully');
             setIsEditable(true);
+            window.location.reload();
         } catch (err) {
             console.error('Error getting user data:', err);
         }
@@ -192,15 +272,53 @@ const ProfilePage: React.FC = () => {
 
         try {
             await auth.signOut();
+            window.location.href = '/registration';
             console.log('User signed out successfully');
         } catch (error) {
             console.error('Error signing out:', error);
         }
     };
 
+    const handleDeleteClick = (adId: string) => {
+        setSelectedAd(adId);
+        setOpen(true);
+    };
+
+    const deleteAdvert = async (adId: string | null) => {
+        if (!adId) return;
+
+        try {
+            await axios.delete(`${host}/adverts/${adId}`);
+            console.log('Advert deleted successfully');
+            window.location.reload();
+        } catch (error) {
+            console.error('Error deleting advert:', error);
+        }
+    };
+
+    const handleConfirmDelete = () => {
+        if (selectedAd) {
+            deleteAdvert(selectedAd);
+            setOpen(false);
+            setSelectedAd(null);
+        }
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+        setSelectedAd(null);
+    };
+
+    const handleSortChange = (value: string) => {
+        setSortValue(value);
+    };
+
+    const handleCategoryChange = (value: string) => {
+        setCategory(value);
+    }
+
     return (
         <StyledEngineProvider injectFirst>
-            <Header />
             <Box sx={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -218,18 +336,18 @@ const ProfilePage: React.FC = () => {
                         <StyledButton text='Редагувати профіль' type='contained' secondaryColor='white' icon={PenFluentIcon} onClick={handleEditClick} />
                         <StyledButton text='Вийти' type='contained' secondaryColor='white' primaryColor='red' onClick={() => {
                             handleLogout();
-                            window.location.href = '/registration';
                         }} />
 
                     </Box>
                     <Box sx={{ display: 'flex', flexDirection: 'row', gap: '50px' }}>
                         {!isEditable ? (
                             <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                                <ImageComponent src={typeof prevImage === 'string' ? prevImage : 'https://via.placeholder.com/204'} borderRadius='204px' alt='user' width='204px' height='204px' />
                                 <StyledButton text="Вибрати фото" type="outlined" onClick={() => document.getElementById('fileInput')?.click()} />
                                 <input
                                     id="fileInput"
                                     type="file"
-                                    style={{ display: 'none' }} // Приховуємо цей елемент
+                                    style={{ display: 'none' }}
                                     onChange={(e) => handleImageChange(e)}
                                     accept="image/*"
                                 />
@@ -254,16 +372,13 @@ const ProfilePage: React.FC = () => {
                                 ) : (
                                     <p>Loading user data...</p>
                                 )}
-                                {/* <StyledInput value='Рівненська область' label="Регіон" widthType='middle' disabled={isEditable} /> */}
                             </Box>
                             <Box sx={{ display: 'flex', flexDirection: 'row', gap: '50px' }}>
-                                {/* <StyledInput value='Ромашко' label="Прізвище" widthType='middle' disabled={isEditable} /> */}
                                 {userData ? (
-                                    <StyledInput value={userData?.email || 'Електронна пошта не вказана'} label="Електронна пошта" widthType='middle' disabled={isEditable} />
+                                    <StyledInput value={userData?.email || 'Електронна пошта не вказана'} label="Електронна пошта" widthType='middle' disabled={true} />
                                 ) : (
                                     <p>Loading user data...</p>
                                 )}
-                                {/* <StyledInput value='Рівне' label="Назва населеного пункту" widthType='middle' disabled={isEditable} /> */}
                             </Box>
                             {
                                 !isEditable ? (
@@ -310,7 +425,6 @@ const ProfilePage: React.FC = () => {
                         <StyledButton text='Платежі та рахунок DDX' type='outlined' />
                         <StyledButton text='Робота на DDX' type='outlined' />
                         <StyledButton text='DDX доставка' type='outlined' />
-                        <StyledButton text='Налаштуваня' type='outlined' />
                     </Box>
                 </Box>
 
@@ -338,10 +452,45 @@ const ProfilePage: React.FC = () => {
                         </Box>
 
                         <Box sx={{ display: 'flex', flexDirection: 'row', marginTop: '75px', gap: '60px' }}>
-                            <StyledDropdown values={[]} placeholder='Додати фільтр' type='small' />
-                            <StyledInput value={searchTerm ?? 'Заголовок, ID'} iconEnd={SearchIcon} widthType='small' onChange={(e) => { handleSearchChange(e.target.value) }} />
-                            <StyledDropdown values={[]} placeholder='Категорія' />
-                            <StyledDropdown values={[]} placeholder='Сортувати' />
+                            <StyledInput value={searchTerm ?? 'Заголовок'} iconEnd={SearchIcon} widthType='small' onChange={(e) => { handleSearchChange(e.target.value) }} />
+                            <FormControl fullWidth sx={{ width: '267px' }}>
+                                <InputLabel id='category' sx={{ fontFamily: 'Nunito', fontSize: '18px', fontWeight: '400' }}>Категорія</InputLabel>
+                                <Select labelId='category' label='Категорія' sx={{ height: '50px', borderRadius: '10px', border: '1px solid #000', background: 'white', textAlign: 'left', fontFamily: 'Nunito', fontSize: '18px', fontWeight: '400' }} value={category} onChange={(e) => handleCategoryChange(e.target.value as string)}>
+                                    {categories.map((item, index) => (
+                                        <MenuItem
+                                            key={index}
+                                            value={item.id}
+                                            sx={{
+                                                fontFamily: "Nunito",
+                                                fontSize: "18px",
+                                                fontWeight: '400',
+                                                color: '#737070'
+                                            }}
+                                        >
+                                            {item.name}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                            <FormControl fullWidth sx={{ width: '267px' }}>
+                                <InputLabel id='sortValue'>Сортувати</InputLabel>
+                                <Select labelId='sortValue' label='Сортувати' sx={{ height: '50px', borderRadius: '10px', border: '1px solid #000', background: 'white', textAlign: 'left', fontFamily: 'Nunito', fontSize: '18px' }} value={sortValue} onChange={(e) => handleSortChange(e.target.value as string)}>
+                                    {sortValues.map((item, index) => (
+                                        <MenuItem
+                                            key={index}
+                                            value={item}
+                                            sx={{
+                                                fontFamily: "Nunito",
+                                                fontSize: "18px",
+                                                fontWeight: '400',
+                                                color: '#737070'
+                                            }}
+                                        >
+                                            {item}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
                         </Box>
 
                         <Box sx={{ display: 'flex', flexDirection: 'row', marginTop: '100px', width: '100%', marginBottom: '40px' }}>
@@ -361,21 +510,37 @@ const ProfilePage: React.FC = () => {
                                     width: '100%',
                                     flexWrap: 'wrap'
                                 }}>
-                                    <Box sx={{ display: 'flex', flexDirection: 'row', gap: "24px", width: '100%', marginBottom: '40px' }}>
+                                    <Box sx={{ display: 'flex', flexDirection: 'row', gap: "24px", flexWrap: "wrap", width: '100%', marginBottom: '40px' }}>
                                         {adverts.length === 0 ? (
                                             <p>No adverts available.</p>
                                         ) : (
                                             adverts.map((advert) => (
-                                                <StyledAdvert key={advert.id} title={advert.name} location={advert.location} date={advert.creationDate} image={advert.pictures[0]} price={advert.price} onClick={
-                                                    () => {
-                                                        window.location.href = `/advert/${advert.id}`;
+                                                <StyledAdvert
+                                                    key={advert.id}
+                                                    title={advert.name}
+                                                    location={advert.location}
+                                                    date={advert.creationDate}
+                                                    image={advert.pictures[0]}
+                                                    price={advert.price}
+                                                    isFavorite={favoriteAdvertsIds.includes(advert.id)}
+                                                    onClick={
+                                                        () => {
+                                                            window.location.href = `/advert/${advert.id}`;
+                                                        }
                                                     }
-                                                } />
+                                                    onDelete={() => handleDeleteClick(advert.id)}
+                                                    onEdit={
+                                                        () => {
+                                                            window.location.href = `/advert-edit/${advert.id}`;
+                                                        }
+                                                    }
+                                                    onHeartClick={() => {
+                                                        handleHeartIconClick(advert.id);
+                                                    }} />
                                             ))
                                         )}
                                     </Box>
 
-                                    {/* Pagination Buttons */}
                                     <Box sx={{ display: 'flex', flexDirection: "row", justifyContent: 'center', marginTop: '20px', gap: "5px" }}>
                                         {renderPaginationButtons()}
                                     </Box>
@@ -385,7 +550,27 @@ const ProfilePage: React.FC = () => {
                     </Box>
                 </Box>
             </Box>
-            <StyledFooter />
+            <Dialog
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="confirm-delete-title"
+                aria-describedby="confirm-delete-description"
+            >
+                <DialogTitle id="confirm-delete-title">Підтвердження видалення</DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="confirm-delete-description">
+                        Ви дійсно хочете видалити це оголошення? Цю дію не можна буде відмінити.
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleClose} color="primary">
+                        Скасувати
+                    </Button>
+                    <Button onClick={handleConfirmDelete} color="secondary" autoFocus>
+                        Видалити
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </StyledEngineProvider >
     );
 };
