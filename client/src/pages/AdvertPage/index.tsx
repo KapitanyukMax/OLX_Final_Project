@@ -1,5 +1,7 @@
 import {
     Box,
+    Button,
+    CircularProgress,
     Dialog,
     IconButton,
     Paper,
@@ -14,10 +16,9 @@ import StyledButton from "../../components/button";
 import ImageComponent from "../../components/image";
 import StyledLabel from "../../components/lable";
 import "./styles.css";
-import HeartIcon from "../../components/icons/heart";
 import Carousel from "react-material-ui-carousel";
 import SearchIcon from "../../components/icons/search";
-import { Close } from "@mui/icons-material";
+import { Close, Favorite, FavoriteBorder } from "@mui/icons-material";
 import VipCrownIcon from "../../components/icons/vipCrown";
 import TopFluentIcon from "../../components/icons/topFluent";
 import CarFillIcon from "../../components/icons/carFill";
@@ -42,6 +43,9 @@ const AdvertPage: React.FC = () => {
     const [selectedImage, setSelectedImage] = useState<string>("");
     const [isLoading, setIsLoading] = useState(true);
     const [showPhoneNumber, setShowPhoneNumber] = useState(false);
+    const [favoriteAdvertsIds, setFavoriteAdvertsIds] = useState<string[]>([]);
+
+    const host = import.meta.env.VITE_HOST;
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -61,25 +65,27 @@ const AdvertPage: React.FC = () => {
         const fetchData = async () => {
             try {
                 const advertResponse = await axios.get(
-                    `http://localhost:5000/adverts/id/?id=${advertId}`
+                    `${host}/adverts/id/?id=${advertId}`
                 );
                 setAdvertData(advertResponse.data);
 
                 const userId = advertResponse.data.userId;
-                const userResponse = await axios.get(
-                    `http://localhost:5000/users/${userId}`
-                );
+                const userResponse = await axios.get(`${host}/users/${userId}`);
                 setUserData(userResponse.data);
 
                 const userAdvertsResponse = await axios.get(
-                    `http://localhost:5000/adverts/userId/?userId=${userId}`
+                    `${host}/adverts/userId/?userId=${userId}`
                 );
                 setUserAdverts(userAdvertsResponse.data.adverts);
 
                 const advertsResponse = await axios.get(
-                    `http://localhost:5000/adverts`
+                    `${host}/adverts?limit=8`
                 );
                 setAdverts(advertsResponse.data.adverts);
+
+                if (userResponse.data) {
+                    await fetchFavorites();
+                }
 
                 console.log(advertResponse.data);
                 console.log(userResponse.data);
@@ -94,6 +100,41 @@ const AdvertPage: React.FC = () => {
 
         fetchData();
     }, [advertId]);
+
+    const fetchFavorites = async () => {
+        try {
+            if (!userData) return;
+            const response = await axios.get(
+                `${host}/favorites/userId?userId=${userData.id}`
+            );
+            const favoriteAdvertIds = response.data.adverts.map(
+                (advert: any) => advert.id
+            );
+            setFavoriteAdvertsIds(favoriteAdvertIds);
+            console.log(`favorite: \n${favoriteAdvertIds}`);
+        } catch (error) {
+            console.error("Error fetching favorites", error);
+        }
+    };
+
+    const handleHeartIconClick = async (advertId: string) => {
+        if (!isAuthorized) {
+            window.location.href = "/registration";
+        }
+        if (favoriteAdvertsIds.includes(advertId)) {
+            await axios.get(
+                `${host}/favorites/remove?userId=${userData.id}&advertId=${advertId}`
+            );
+            setFavoriteAdvertsIds(
+                favoriteAdvertsIds.filter((id) => id !== advertId)
+            );
+        } else {
+            await axios.get(
+                `${host}/favorites/add?userId=${userData.id}&advertId=${advertId}`
+            );
+            setFavoriteAdvertsIds([...favoriteAdvertsIds, advertId]);
+        }
+    };
 
     const handleClickImageOpen = (image: string) => {
         setSelectedImage(image);
@@ -114,7 +155,18 @@ const AdvertPage: React.FC = () => {
     };
 
     if (isLoading) {
-        return <Box>Завантаження...</Box>;
+        return (
+            <Box
+                sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    minHeight: "17.8vh",
+                }}
+            >
+                <CircularProgress/>
+            </Box>
+        );
     }
 
     return (
@@ -273,6 +325,7 @@ const AdvertPage: React.FC = () => {
                                 display: "flex",
                                 width: "100%",
                                 justifyContent: "space-between",
+                                alignItems: "center",
                             }}
                         >
                             <Typography
@@ -292,7 +345,25 @@ const AdvertPage: React.FC = () => {
                                           advertData.creationDate
                                       ).toLocaleDateString()}
                             </Typography>
-                            <HeartIcon />
+                            <IconButton
+                                onClick={() =>
+                                    handleHeartIconClick(advertData.id)
+                                }
+                            >
+                                {favoriteAdvertsIds.includes(advertData.id) ? (
+                                    <Favorite
+                                        sx={{
+                                            width: "35px",
+                                            height: "35px",
+                                            color: "#ff0054",
+                                        }}
+                                    />
+                                ) : (
+                                    <FavoriteBorder
+                                        sx={{ width: "35px", height: "35px" }}
+                                    />
+                                )}
+                            </IconButton>
                         </Box>
                         <Box
                             sx={{
@@ -789,8 +860,14 @@ const AdvertPage: React.FC = () => {
                                 location={advert.location}
                                 date={advert.creationDate}
                                 image={advert.pictures[0]}
+                                isFavorite={favoriteAdvertsIds.includes(
+                                    advert.id
+                                )}
                                 onClick={() => {
                                     handleAdvertClick(advert.id);
+                                }}
+                                onHeartClick={() => {
+                                    handleHeartIconClick(advert.id);
                                 }}
                                 price={advert.price}
                             />
@@ -830,8 +907,12 @@ const AdvertPage: React.FC = () => {
                             location={advert.location}
                             date={advert.creationDate}
                             image={advert.pictures[0]}
+                            isFavorite={favoriteAdvertsIds.includes(advert.id)}
                             onClick={() => {
                                 handleAdvertClick(advert.id);
+                            }}
+                            onHeartClick={() => {
+                                handleHeartIconClick(advert.id);
                             }}
                             price={advert.price}
                         />
