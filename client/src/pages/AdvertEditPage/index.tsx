@@ -376,7 +376,7 @@ const AdvertEditPage: React.FC = () => {
                     <Box sx={{
                         margin: '60px',
                     }}>
-                        <StyledLabel text="Створити оголошення" type='head' textType='head' textColor='var(--blue)' />
+                        <StyledLabel text="Редагувати оголошення" type='head' textType='head' textColor='var(--blue)' />
                     </Box>
                     <Box sx={{
                         width: '100%',

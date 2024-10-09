@@ -63,7 +63,7 @@ const getCategoryByName = async (req, res, next) => {
 
 const createCategory = async (req, res, next) => {
     try {
-        const { name, picture } = req.body;
+        const { name, picture, subcategories } = req.body;
         if (!name) {
             logger.info('Bad Request - category name is required');
             return res.status(400).json({ message: 'Category name is required.' });
@@ -73,7 +73,7 @@ const createCategory = async (req, res, next) => {
             return res.status(400).json({ message: 'Category picture url is required.' });
         }
 
-        const docRef = await db.collection('categories').add({ name, picture });
+        const docRef = await db.collection('categories').add({ name, picture, subcategories });
         const doc = await docRef.get();
 
         logger.info('Category created successfully');
@@ -88,7 +88,7 @@ const createCategory = async (req, res, next) => {
 
 const updateCategory = async (req, res, next) => {
     try {
-        let { id, name, picture } = req.body;
+        let { id, name, picture, subcategories } = req.body;
         if (!id) {
             logger.info('Bad Request - category id is required');
             return res.status(400).json({ message: 'Category id is required.' });
@@ -104,7 +104,16 @@ const updateCategory = async (req, res, next) => {
         name ??= doc.data().name;
         picture ??= doc.data().picture;
 
-        await docRef.update({ name, picture });
+        let existingSubcategories = doc.data().subcategories || [];
+        if (Array.isArray(subcategories)) {
+            // Merge existing and new subcategories
+            existingSubcategories = [...new Set([...existingSubcategories, ...subcategories])]; // Prevent duplicates
+        } else if (subcategories) {
+            // If subcategories is not an array, just add it
+            existingSubcategories.push(subcategories);
+        }
+
+        await docRef.update({ name, picture, subcategories: existingSubcategories });
         doc = await docRef.get();
 
         logger.info('Category updated successfully');
