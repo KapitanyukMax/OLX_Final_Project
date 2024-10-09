@@ -16,7 +16,7 @@ import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 
 interface LoginModalProps {
     onSwitchToRegister: () => void;
-    onSwitchToForgotPassword: () => void; 
+    onSwitchToForgotPassword: () => void;
 }
 
 export const LoginModal: React.FC<LoginModalProps> = ({ onSwitchToRegister, onSwitchToForgotPassword }) => {
@@ -77,7 +77,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ onSwitchToRegister, onSw
             await signOut(auth);
             await signInWithEmailAndPassword(auth, email, password);
             console.log('User logged in successfully');
-            
+
             if (rememberMe) {
                 localStorage.setItem('email', email);
                 localStorage.setItem('password', password);
@@ -99,12 +99,12 @@ export const LoginModal: React.FC<LoginModalProps> = ({ onSwitchToRegister, onSw
     //         setError('Неправильний формат електронної пошти');
     //         return;
     //     }
-    
+
     //     if (!password) {
     //         setError('Будь ласка, введіть пароль');
     //         return;
     //     }
-    
+
     //     try {
     //         // Запит на сервер для аутентифікації
     //         const response = await fetch(`${host}/api/login`, {
@@ -117,33 +117,33 @@ export const LoginModal: React.FC<LoginModalProps> = ({ onSwitchToRegister, onSw
     //                 password: password,
     //             }),
     //         });
-    
+
     //         const data = await response.json();
-    
+
     //         if (!response.ok) {
     //             // Якщо сервер повернув помилку, відобразити її
     //             setError(data.message || 'Помилка входу');
     //             return;
     //         }
-    
+
     //         console.log('User logged in successfully', data);
-    
+
     //         // Збереження токена в localStorage або sessionStorage
     //         if (rememberMe) {
     //             localStorage.setItem('token', data.token);
     //         } else {
     //             sessionStorage.setItem('token', data.token);
     //         }
-    
+
     //         // Навігація до потрібної сторінки
     //         navigate('/components-preview');
-    
+
     //     } catch (error) {
     //         console.error('Error logging in:', error);
     //         setError('Помилка входу: ' + (error || 'Невідома помилка'));
     //     }
     // };
-    
+
     // const handleLogin = async (email: string, password: string) => {
     //     try {
     //       const userCredential = await signInWithEmailAndPassword(auth, email, password);
@@ -158,39 +158,39 @@ export const LoginModal: React.FC<LoginModalProps> = ({ onSwitchToRegister, onSw
         console.log('Apple login clicked');
     };
 
-    const handleGoogleLogin = async() => {
+    const handleGoogleLogin = async () => {
         const provider = new GoogleAuthProvider();
 
-        try{
+        try {
             const result = await signInWithPopup(auth, provider);
             const user = result.user;
 
             console.log('Google login successful', user);
 
             const userData = {
-                    name:user.displayName,
-                    email: user.email ?? null,
-                    phone: user.phoneNumber ?? null,
-                    currencyId: '',
-                    isAdmin: false,
-                    password,
-                    picture: '',
-                    rating: 0,
-                    verifyCode: '',
-                    resetCodeExpiry:'',
+                name: user.displayName,
+                email: user.email ?? null,
+                phone: user.phoneNumber ?? null,
+                currencyId: '',
+                isAdmin: false,
+                password,
+                picture: '',
+                rating: 0,
+                verifyCode: '',
+                resetCodeExpiry: '',
             };
 
-            await fetch(`${host}/users`,{
-                method:'POST',
-                headers:{
-                    'Content-Type':'application/json',
+            await fetch(`${host}/users`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(userData),
             });
 
             navigate('/components-preview');
         }
-        catch(error){
+        catch (error) {
             console.error('Google login error:', error);
             setError('Помилка входу через Google: ' + (error || 'Невідома помилка'));
         }
@@ -226,24 +226,24 @@ export const LoginModal: React.FC<LoginModalProps> = ({ onSwitchToRegister, onSw
             </Box>
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '100%', gap: '42px' }}>
                 <StyledEngineProvider injectFirst>
-                    <Button 
-                        onClick={handleLogin} 
-                        sx={{ 
-                            width: '456px', 
-                            height: '48px', 
-                            backgroundColor: 'var(--blue)', 
-                            color: 'white', 
-                            borderRadius: '15px', 
-                            fontFamily: 'Nunito', 
+                    <Button
+                        onClick={handleLogin}
+                        sx={{
+                            width: '456px',
+                            height: '48px',
+                            backgroundColor: 'var(--blue)',
+                            color: 'white',
+                            borderRadius: '15px',
+                            fontFamily: 'Nunito',
                             gap: '8px',
                             '&:hover': {
                                 backgroundColor: 'var(--green)',
-                                color:'black'
+                                color: 'black'
                             },
                         }}>
                         Увійти
                     </Button>
-                    <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', width: '100%',}}>
+                    <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', width: '100%', }}>
                         <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', width: '100%', gap: '4px' }}>
                             <StyledLabel text="Немає акаунту?" type='with-icon' textType='small' />
                             <StyledLabel text="Зареєструватись" type='with-icon' textType='small-bold' onClick={onSwitchToRegister} />

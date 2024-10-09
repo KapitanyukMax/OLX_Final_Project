@@ -272,6 +272,8 @@ const ProfilePage: React.FC = () => {
 
         try {
             await auth.signOut();
+            localStorage.removeItem('email');
+            localStorage.removeItem('password');
             window.location.href = '/registration';
             console.log('User signed out successfully');
         } catch (error) {

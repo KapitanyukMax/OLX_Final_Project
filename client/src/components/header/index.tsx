@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { auth } from '../../../firebaseConfig';
 import { User, onAuthStateChanged } from 'firebase/auth';
 import { StyledEngineProvider } from '@mui/material/styles'
-import { Box, Link } from "@mui/material";
+import { Box, IconButton, Link } from "@mui/material";
 import { Typography } from '@mui/material';
 import StyledIconButton from '../iconButton';
 import HeartWhiteIcon from '../icons/heartWhite';
@@ -12,9 +13,13 @@ import StyledButton from '../button';
 import PlusIcon from '../icons/plus';
 import { StyledHeaderDropdown } from '../dropdown';
 import DDXLogoIcon from '../icons/ddxLogo';
-
+import { AdminPanelSettingsOutlined } from '@mui/icons-material';
 const Header: React.FC = () => {
+    const host = import.meta.env.VITE_HOST;
+
     const [currentUser, setCurrentUser] = useState<User | null>(null);
+    const [userData, setUserData] = useState<any>(null);
+    const [isAdmin, setIsAdmin] = useState<boolean>(true);
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -24,6 +29,26 @@ const Header: React.FC = () => {
 
         return () => unsubscribe();
     }, []);
+
+    const setUser = async () => {
+        if (currentUser) {
+            try {
+                const response = await axios.get(`${host}/users/email?email=${currentUser.email}`);
+                setUserData(response.data);
+            } catch (error) {
+                console.error('Error getting user data:', error);
+            }
+        }
+    }
+
+    useEffect(() => {
+        setUser();
+    }, [currentUser]);
+
+    useEffect(() => {
+        setIsAdmin(userData?.isAdmin);
+        console.log("Admin " + isAdmin);
+    }, [userData]);
 
     return (
         <StyledEngineProvider injectFirst>
@@ -69,7 +94,7 @@ const Header: React.FC = () => {
                     }}>
                         <StyledIconButton icon={HeartWhiteIcon} onClick={() => {
                             if (currentUser) {
-                                window.location.href = `/favorites/${currentUser.uid}`;
+                                window.location.href = `/favorites/${userData?.id}`;
                             } else {
                                 window.location.href = '/registration';
                             }
@@ -82,6 +107,10 @@ const Header: React.FC = () => {
                                 window.location.href = '/registration';
                             }
                         }} />
+                        {
+                            isAdmin &&
+                            <IconButton sx={{ padding: '0px' }} onClick={() => { window.location.href = '/admin-panel' }}><AdminPanelSettingsOutlined sx={{ color: 'white', width: '35px', height: '35px' }} /></IconButton>
+                        }
                     </Box>
                     <StyledButton text='Додати оголошення' type='contained' icon={PlusIcon} primaryColor='var(--green)' secondaryColor='white' hoverBackColor='var(--light-blue)' className='button-fit'
                         onClick={() => {

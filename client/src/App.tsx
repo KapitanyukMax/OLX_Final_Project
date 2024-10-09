@@ -7,9 +7,14 @@ import { AdvertPage } from './pages/AdvertPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { HomePage } from './pages/HomePage';
 import { Layout } from './Layout';
-import './App.css';
 import { UserProfilePage } from './pages/UserProfilePage';
 import { FavoritesPage } from './pages/FavoritesPage';
+import { AdminPage } from './pages/AdminPage';
+import { CategoryEditPage } from './pages/AdminPage/categoryEdit';
+import { CategoryCreatePage } from './pages/AdminPage/categoryCreate';
+import { SubCategoryCreatePage } from './pages/AdminPage/subCategoryCreate';
+import './App.css';
+import { SubCategoryEditPage } from './pages/AdminPage/subCategoryEdit';
 
 function App() {
     return (
@@ -23,8 +28,13 @@ function App() {
                         <Route path="profile-page" element={<ProfilePage />} />
                         <Route path="advert-create" element={<AdvertCreatePage />} />
                         <Route path="advert-edit/:advertId" element={<AdvertEditPage />} />
+                        <Route path="category-edit/:categoryId" element={<CategoryEditPage />} />
+                        <Route path="category-create" element={<CategoryCreatePage />} />
+                        <Route path="subcategory-edit/:subcategoryId" element={<SubCategoryEditPage />} />
+                        <Route path="subcategory-create/:categoryId" element={<SubCategoryCreatePage />} />
                         <Route path="user/:userId" element={<UserProfilePage />} />
                         <Route path="favorites/:userId" element={<FavoritesPage />} />
+                        <Route path="admin-panel" element={<AdminPage />} />
                     </Route>
 
                     <Route path="/components-preview" element={<ComponentsPreview />} />
