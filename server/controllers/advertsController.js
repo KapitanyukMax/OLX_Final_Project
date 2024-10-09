@@ -6,7 +6,7 @@ const db = admin.firestore();
 
 const getAllAdverts = async (req, res, next) => {
     try {
-        const { limit = 10, startAfter, searchTerm, city, sortBy = 'creationDate', sortOrder = 'desc', priceLow, priceHigh, state } = req.query;
+        const { limit = 10, startAfter, searchTerm, city, sortBy = 'creationDate', sortOrder = 'desc', priceLow, priceHigh, state, currency } = req.query;
         let query = db.collection('adverts').orderBy(sortBy, sortOrder).limit(parseInt(limit));
 
         if (priceLow) {
@@ -23,6 +23,10 @@ const getAllAdverts = async (req, res, next) => {
 
         if (state && state == 'Вживане') {
             query = query.where('status', '==', 'Вживане');
+        }
+
+        if (currency) {
+            query = query.where('currencyId', '==', currency);
         }
 
         if (startAfter) {
@@ -88,12 +92,11 @@ const getAdvertById = async (req, res, next) => {
 
 const getAdvertsByCategoryId = async (req, res, next) => {
     try {
-        const { limit = 10, startAfter, searchTerm, categoryId, city, sortBy = 'creationDate', sortOrder = 'desc', priceLow, priceHigh, state } = req.query;
+        const { limit = 10, startAfter, searchTerm, categoryId, city, sortBy = 'creationDate', sortOrder = 'desc', priceLow, priceHigh, state, currency } = req.query;
 
         // Fetch subcategories by categoryId
         const subCategoriesSnapshot = await db.collection('subcategories')
             .where('categoryId', '==', categoryId)
-            // .orderBy(sortBy, sortOrder)
             .get();
 
         if (subCategoriesSnapshot.empty) {
@@ -128,6 +131,10 @@ const getAdvertsByCategoryId = async (req, res, next) => {
 
             if (state && state == 'Вживане') {
                 query = query.where('status', '==', 'Вживане');
+            }
+
+            if (currency) {
+                query = query.where('currencyId', '==', currency);
             }
 
             if (startAfter) {
@@ -185,7 +192,7 @@ const getAdvertsByCategoryId = async (req, res, next) => {
 
 const getAdvertsByUserId = async (req, res, next) => {
     try {
-        const { limit = 10, startAfter, searchTerm, userId, city, sortBy = 'creationDate', sortOrder = 'desc', priceLow, priceHigh, state } = req.query;
+        const { limit = 10, startAfter, searchTerm, userId, city, sortBy = 'creationDate', sortOrder = 'desc', priceLow, priceHigh, state, currency } = req.query;
         logger.info(userId);
         let query = db.collection('adverts')
             .where('userId', '==', userId)
@@ -205,6 +212,10 @@ const getAdvertsByUserId = async (req, res, next) => {
 
         if (state && state == 'Вживане') {
             query = query.where('status', '==', 'Вживане');
+        }
+
+        if (currency) {
+            query = query.where('currencyId', '==', currency);
         }
 
         if (startAfter) {
@@ -257,7 +268,7 @@ const getAdvertsByUserId = async (req, res, next) => {
 
 const getAdvertsBySubcategoryId = async (req, res, next) => {
     try {
-        const { limit = 10, startAfter, searchTerm, subcategoryId, city, sortBy = 'creationDate', sortOrder = 'desc', priceLow, priceHigh, state } = req.query;
+        const { limit = 10, startAfter, searchTerm, subcategoryId, city, sortBy = 'creationDate', sortOrder = 'desc', priceLow, priceHigh, state, currency } = req.query;
 
         // Query for paginated adverts
         let query = db.collection('adverts')
@@ -278,6 +289,10 @@ const getAdvertsBySubcategoryId = async (req, res, next) => {
 
         if (state && state == 'Вживане') {
             query = query.where('status', '==', 'Вживане');
+        }
+
+        if (currency) {
+            query = query.where('currencyId', '==', currency);
         }
 
         if (startAfter) {
@@ -425,7 +440,7 @@ const deleteAdvert = async (req, res, next) => {
 
 const getAdvertsByTOP = async (req, res, next) => {
     try {
-        const { limit = 10, startAfter, searchTerm, city, priceLow, priceHigh, state } = req.query;
+        const { limit = 10, startAfter, searchTerm, city, priceLow, priceHigh, state, currency } = req.query;
         let query = db.collection('adverts')
             .orderBy('viewsCount', 'desc')
             .limit(parseInt(limit));
@@ -443,6 +458,10 @@ const getAdvertsByTOP = async (req, res, next) => {
 
         if (state && state == 'Вживане') {
             query = query.where('status', '==', 'Вживане');
+        }
+
+        if (currency) {
+            query = query.where('currencyId', '==', currency);
         }
 
         if (startAfter) {
@@ -488,7 +507,7 @@ const getAdvertsByTOP = async (req, res, next) => {
 
 const getAdvertsByVIP = async (req, res, next) => {
     try {
-        const { limit = 10, startAfter, searchTerm, city, priceLow, priceHigh, state } = req.query;
+        const { limit = 10, startAfter, searchTerm, city, priceLow, priceHigh, state, currency } = req.query;
         let query = db.collection('adverts')
             .where('vipUntil', '!=', null)
             .orderBy('vipUntil', 'desc')
@@ -507,6 +526,10 @@ const getAdvertsByVIP = async (req, res, next) => {
 
         if (state && state == 'Вживане') {
             query = query.where('status', '==', 'Вживане');
+        }
+
+        if (currency) {
+            query = query.where('currencyId', '==', currency);
         }
 
         if (startAfter) {
