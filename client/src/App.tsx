@@ -15,8 +15,47 @@ import { CategoryCreatePage } from './pages/AdminPage/categoryCreate';
 import { SubCategoryCreatePage } from './pages/AdminPage/subCategoryCreate';
 import './App.css';
 import { SubCategoryEditPage } from './pages/AdminPage/subCategoryEdit';
+import { useEffect, useState } from 'react';
+import { onAuthStateChanged, User } from 'firebase/auth';
+import { auth } from '../firebaseConfig';
+import axios from 'axios';
 
 function App() {
+    const host = import.meta.env.VITE_HOST;
+
+    const [currentUser, setCurrentUser] = useState<User | null>(null);
+    const [userData, setUserData] = useState<any>(null);
+    const [isAdmin, setIsAdmin] = useState<boolean>(true);
+
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            setCurrentUser(user);
+            console.log(user);
+        });
+
+        return () => unsubscribe();
+    }, []);
+
+    const setUser = async () => {
+        if (currentUser) {
+            try {
+                const response = await axios.get(`${host}/users/email?email=${currentUser.email}`);
+                setUserData(response.data);
+            } catch (error) {
+                console.error('Error getting user data:', error);
+            }
+        }
+    }
+
+    useEffect(() => {
+        setUser();
+    }, [currentUser]);
+
+    useEffect(() => {
+        setIsAdmin(userData?.isAdmin);
+        console.log("Admin " + isAdmin);
+    }, [userData]);
+
     return (
         <>
             <Router>
@@ -28,14 +67,22 @@ function App() {
                         <Route path="profile-page" element={<ProfilePage />} />
                         <Route path="advert-create" element={<AdvertCreatePage />} />
                         <Route path="advert-edit/:advertId" element={<AdvertEditPage />} />
-                        <Route path="category-edit/:categoryId" element={<CategoryEditPage />} />
-                        <Route path="category-create" element={<CategoryCreatePage />} />
-                        <Route path="subcategory-edit/:subcategoryId" element={<SubCategoryEditPage />} />
-                        <Route path="subcategory-create/:categoryId" element={<SubCategoryCreatePage />} />
                         <Route path="user/:userId" element={<UserProfilePage />} />
                         <Route path="favorites/:userId" element={<FavoritesPage />} />
-                        <Route path="admin-panel" element={<AdminPage />} />
                     </Route>
+
+                    {
+                        isAdmin && (
+                            <Route path="/" element={<Layout />}>
+                                <Route path="admin-panel" element={<AdminPage />} />
+                                <Route path="subcategory-create/:categoryId" element={<SubCategoryCreatePage />} />
+                                <Route path="subcategory-edit/:subcategoryId" element={<SubCategoryEditPage />} />
+                                <Route path="category-edit/:categoryId" element={<CategoryEditPage />} />
+                                <Route path="category-create" element={<CategoryCreatePage />} />
+                                <Route path="admin-panel" element={<AdminPage />} />
+                            </Route>
+                        )
+                    }
 
                     <Route path="/components-preview" element={<ComponentsPreview />} />
                     <Route path="/registration" element={<AuthModal />} />
