@@ -68,6 +68,10 @@ const AdvertPage: React.FC = () => {
     }, []);
 
     useEffect(() => {
+        fetchFavorites();
+    }, [userData]);
+
+    useEffect(() => {
         const fetchData = async () => {
             try {
                 const advertResponse = await axios.get(
@@ -88,10 +92,6 @@ const AdvertPage: React.FC = () => {
                     `${host}/adverts?limit=8`
                 );
                 setAdverts(advertsResponse.data.adverts);
-
-                if (userResponse.data) {
-                    await fetchFavorites();
-                }
 
                 console.log(advertResponse.data);
                 console.log(userResponse.data);
@@ -178,7 +178,7 @@ const AdvertPage: React.FC = () => {
                     minHeight: "17.8vh",
                 }}
             >
-                <CircularProgress/>
+                <CircularProgress />
             </Box>
         );
     }
