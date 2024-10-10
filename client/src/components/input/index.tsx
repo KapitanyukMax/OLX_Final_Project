@@ -5,6 +5,7 @@ import './styles.css';
 
 interface StyledInputProps {
     value: string;
+    placeholder?: string;
     widthType?: 'small' | 'middle' | 'big' | 'large';
     width?: string;
     label?: string;
@@ -23,6 +24,7 @@ interface StyledInputProps {
 const StyledInput: React.FC<StyledInputProps> = ({
     label,
     value,
+    placeholder,
     sx,
     required,
     widthType,
@@ -76,7 +78,8 @@ const StyledInput: React.FC<StyledInputProps> = ({
                 }
                 <Input
                     id='input'
-                    placeholder={currentValue}
+                    placeholder={placeholder}
+                    value={currentValue}
                     type={type}
                     sx={sx}
                     disabled={disabled}
