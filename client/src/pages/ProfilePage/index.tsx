@@ -454,7 +454,7 @@ const ProfilePage: React.FC = () => {
                         </Box>
 
                         <Box sx={{ display: 'flex', flexDirection: 'row', marginTop: '75px', gap: '60px' }}>
-                            <StyledInput value={searchTerm ?? 'Заголовок'} iconEnd={SearchIcon} widthType='small' onChange={(e) => { handleSearchChange(e.target.value) }} />
+                            <StyledInput placeholder='Заголовок' value={searchTerm || ''} iconEnd={SearchIcon} widthType='small' onChange={(e) => { handleSearchChange(e.target.value) }} />
                             <FormControl fullWidth sx={{ width: '267px' }}>
                                 <InputLabel id='category' sx={{ fontFamily: 'Nunito', fontSize: '18px', fontWeight: '400' }}>Категорія</InputLabel>
                                 <Select labelId='category' label='Категорія' sx={{ height: '50px', borderRadius: '10px', border: '1px solid #000', background: 'white', textAlign: 'left', fontFamily: 'Nunito', fontSize: '18px', fontWeight: '400' }} value={category} onChange={(e) => handleCategoryChange(e.target.value as string)}>

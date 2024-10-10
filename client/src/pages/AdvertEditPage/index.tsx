@@ -391,7 +391,7 @@ const AdvertEditPage: React.FC = () => {
                     }}>
                         <Box>
                             <StyledLabel text="Заголовок" type='head' textType='head' textColor='black' />
-                            <StyledInput value={formData.name} label='Вкажіть назву' required widthType='large' maxLength={80} onChange={(e) => handleNameChange(e.target.value)} />
+                            <StyledInput placeholder="Вкажіть назву" value={formData.name} label='Вкажіть назву' required widthType='large' maxLength={80} onChange={(e) => handleNameChange(e.target.value)} />
                             {errors.name && <div className="error-message">{errors.name}</div>}
                         </Box>
                         <Box sx={{
@@ -524,7 +524,7 @@ const AdvertEditPage: React.FC = () => {
                             gap: '36px',
                             alignItems: 'end',
                         }}>
-                            <StyledInput label='Вкажіть ціну' value={formData.price.toString()} widthType='middle' onChange={(e) => handlePriceChange(e.target.value)} />
+                            <StyledInput label='Вкажіть ціну' placeholder="1080" value={formData.price == 0 ? '' : formData.price.toString()} widthType='middle' onChange={(e) => handlePriceChange(e.target.value)} />
                             <FormControl fullWidth sx={{ width: '300px' }}>
                                 <InputLabel id='currency'>Валюта</InputLabel>
                                 <Select labelId='currency' label='Валюта' sx={{ borderRadius: '10px', border: '1px solid #000' }} value={formData.currencyId} onChange={(e) => handleCurrencyChange(e.target.value as string)}>
@@ -632,7 +632,7 @@ const AdvertEditPage: React.FC = () => {
                         marginBottom: '120px',
                     }}>
                         <StyledLabel text="Опис оголошення" type='head' textType='head' textColor='black' />
-                        <StyledTextArea label='Введіть опис' required value={formData.description} maxLength={9000} minRows={18} onChange={(e) => handleDescriptionChange(e.target.value)} />
+                        <StyledTextArea label='Введіть опис' required placeholder="Будь ласка, додайте опис оголошення" value={formData.description} maxLength={9000} minRows={18} onChange={(e) => handleDescriptionChange(e.target.value)} />
                         {errors.description && <div className="error-message">{errors.description}</div>}
                         <StyledButton text='Оновити оголошення' type='contained' primaryColor='var(--light-blue)' secondaryColor='white' hoverBackColor='var(--green)' onClick={handleSubmit} />
                         <StyledButton text='Скасувати' type='contained' primaryColor='red' secondaryColor='white' hoverBackColor='var(--green)' onClick={

@@ -29,7 +29,7 @@ const getAllAdverts = async (req, res, next) => {
             query = query.where('currencyId', '==', currency);
         }
 
-        if (subcategoryIds) {
+        if (subcategoryIds.length > 0) {
             query = query.where('subCategoryId', 'in', subcategoryIds);
         }
 
@@ -468,7 +468,7 @@ const getAdvertsByTOP = async (req, res, next) => {
             query = query.where('currencyId', '==', currency);
         }
 
-        if (subcategoryIds) {
+        if (subcategoryIds.length > 0) {
             query = query.where('subCategoryId', 'in', subcategoryIds);
         }
 
@@ -540,7 +540,7 @@ const getAdvertsByVIP = async (req, res, next) => {
             query = query.where('currencyId', '==', currency);
         }
 
-        if (subcategoryIds) {
+        if (subcategoryIds.length > 0) {
             query = query.where('subCategoryId', 'in', subcategoryIds);
         }
 
