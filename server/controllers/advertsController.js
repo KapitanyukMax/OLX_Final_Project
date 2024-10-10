@@ -96,7 +96,7 @@ const getAdvertById = async (req, res, next) => {
 
 const getAdvertsByCategoryId = async (req, res, next) => {
     try {
-        const { limit = 10, startAfter, searchTerm, categoryId, city, sortBy = 'creationDate', sortOrder = 'desc', priceLow, priceHigh, state, currency } = req.query;
+        const { limit = 10, startAfter, searchTerm, categoryId, city, sortBy = 'creationDate', sortOrder = 'desc', priceLow, priceHigh, state, currency, isVip, isTop } = req.query;
 
         // Fetch subcategories by categoryId
         const subCategoriesSnapshot = await db.collection('subcategories')
@@ -139,6 +139,15 @@ const getAdvertsByCategoryId = async (req, res, next) => {
 
             if (currency) {
                 query = query.where('currencyId', '==', currency);
+            }
+
+            if (isTop && isTop == 'true') {
+                query = query.orderBy('viewsCount', 'desc');
+
+            }
+
+            if (isVip && isVip == 'true') {
+                query = query.where('vipUntil', '>', formatDate.formatDate(new Date()));
             }
 
             if (startAfter) {
