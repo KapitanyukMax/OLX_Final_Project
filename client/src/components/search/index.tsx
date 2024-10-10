@@ -33,15 +33,12 @@ const Search: React.FC<SearchProps> = ({ value, onSearch, onSearchTermChange }) 
                 alignItems: 'flex-start',
                 textAlign: 'left'
             }}>
-                <Input value={searchTerm} placeholder={'Що шукаємо?'} className='basic-input'
+                <StyledInput value={searchTerm} placeholder='Що шукаємо'
+                iconEnd={StyledSearchIcon} width='100%'
                     onChange={e => {
                         setSearchTerm(e.target.value);
                         onSearchTermChange?.(e.target.value);
-                    }}
-                    endAdornment={(
-                    <InputAdornment position='end'>
-                        <StyledSearchIcon />
-                    </InputAdornment>)} />
+                    }} />
             </Box>
             <StyledInput value='Вся Україна' iconEnd={StyledSearchIcon} width="254px" />
             <StyledInput value='Місто/село' iconEnd={StyledSearchIcon} width="254px" />
