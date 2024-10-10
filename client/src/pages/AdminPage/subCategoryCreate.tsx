@@ -65,9 +65,11 @@ const SubCategoryCreatePage: React.FC = () => {
                 const categoryRef = await axios.get(`${host}/categories/${categoryId}`);
                 const category = categoryRef.data;
 
+                const subcategories = category.subcategories ? [...category.subcategories, response.data.id] : [response.data.id];
+
                 // Додавання підкатегорії до категорії
                 console.log(response.data.id);
-                await axios.put(`${host}/categories`, { ...category, subcategories: [...category.subcategories, response.data.id] });
+                await axios.put(`${host}/categories`, { ...category, subcategories: subcategories });
 
                 setSuccessMessage('Підкатегорію створено успішно!');
                 setOpenSuccessDialog(true);

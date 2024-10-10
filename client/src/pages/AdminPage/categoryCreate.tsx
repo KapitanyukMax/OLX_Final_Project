@@ -21,6 +21,8 @@ const CategoryCreatePage: React.FC = () => {
     const [successMessage, setSuccessMessage] = useState('');
     const [openSuccessDialog, setOpenSuccessDialog] = useState(false);
 
+    const [subCategoryName, setSubCategoryName] = useState<string>('');
+
     const [imageURL, setImageURL] = useState<string | null>(null);
     const [imagePath, setImagePath] = useState<string | null>(null);  // Track image path in Firebase storage
     const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -35,11 +37,9 @@ const CategoryCreatePage: React.FC = () => {
     const [formData, setFormData] = useState<{
         name: string,
         picture: string,
-        subcategories: string[]
     }>({
         name: '',
         picture: '',
-        subcategories: []
     });
 
     const handleSubmit = async () => {
@@ -68,9 +68,31 @@ const CategoryCreatePage: React.FC = () => {
         }
 
         try {
-            console.log('Creating category:', formData);
-            const response = await axios.post(`${host}/categories`, { ...formData, subcategories: [] });
-            console.log('Category created successfully', response.data);
+            // console.log('Creating category:', formData);
+            // const response = await axios.post(`${host}/categories`, { ...formData, subcategories: null });
+            // console.log('Category created successfully', response.data);
+
+            const categoryResponse = await axios.post(`${host}/categories`, { ...formData, subcategories: [] });
+            const createdCategory = categoryResponse.data;
+
+            console.log('Created category:', createdCategory);
+
+            // 2. Створити підкатегорію
+            const subcategoryResponse = await axios.post(`${host}/subcategories`, {
+                name: subCategoryName,  // Можна зробити динамічним полем для користувача
+                picture: '',
+                categoryId: createdCategory.id
+            });
+            const createdSubcategory = subcategoryResponse.data;
+
+            // 3. Оновити категорію з ID підкатегорії
+            console.log(createdCategory.id, createdSubcategory.id);
+            const res = await axios.put(`${host}/categories`, {
+                id: createdCategory.id,
+                subcategories: createdSubcategory.id  // Оновити поле підкатегорій
+            });
+
+            console.log('Created category:', res);
 
             setSuccessMessage('Категорію створено успішно!');
             setOpenSuccessDialog(true);
@@ -97,7 +119,7 @@ const CategoryCreatePage: React.FC = () => {
                 ...prevFormData,
                 picture: newImageUrl,
             }));
-            setImagePath(storageRef.fullPath);  // Save the image path for later deletion
+            setImagePath(storageRef.fullPath);
             console.log("Image uploaded successfully:", newImageUrl);
         } catch (error) {
             console.error("Error uploading image:", error);
@@ -144,6 +166,10 @@ const CategoryCreatePage: React.FC = () => {
     const handleNameChange = (value: string) => {
         setFormData({ ...formData, name: value });
     };
+
+    const handleSubCategoryNameChange = (value: string) => {
+        setSubCategoryName(value);
+    }
 
     return (
         <StyledEngineProvider injectFirst>
@@ -204,6 +230,11 @@ const CategoryCreatePage: React.FC = () => {
                                 hoverBackColor="var(--green)"
                                 onClick={() => fileInputRef.current?.click()}
                             />
+                        </Box>
+                        <Box>
+                            <StyledLabel text="Заголовок підкатегорії" type='head' textType='head' textColor='black' />
+                            <StyledInput value={subCategoryName} label='Вкажіть назву' required widthType='large' maxLength={80} onChange={(e) => handleSubCategoryNameChange(e.target.value)} />
+                            {errors.name && <div className="error-message">{errors.name}</div>}
                         </Box>
                         <Box sx={{
                             width: '100%',

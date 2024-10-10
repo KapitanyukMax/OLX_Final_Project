@@ -104,16 +104,7 @@ const updateCategory = async (req, res, next) => {
         name ??= doc.data().name;
         picture ??= doc.data().picture;
 
-        let existingSubcategories = doc.data().subcategories || [];
-        if (Array.isArray(subcategories)) {
-            // Merge existing and new subcategories
-            existingSubcategories = [...new Set([...existingSubcategories, ...subcategories])]; // Prevent duplicates
-        } else if (subcategories) {
-            // If subcategories is not an array, just add it
-            existingSubcategories.push(subcategories);
-        }
-
-        await docRef.update({ name, picture, subcategories: existingSubcategories });
+        await docRef.update({ name, picture, subcategories: Array.isArray(subcategories) ? subcategories : Array.of(subcategories) });
         doc = await docRef.get();
 
         logger.info('Category updated successfully');

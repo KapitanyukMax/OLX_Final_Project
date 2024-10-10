@@ -268,7 +268,7 @@ const CategoryEditPage: React.FC = () => {
                 <DialogActions>
                     <Button onClick={() => {
                         setOpenSuccessDialog(false);
-                        window.location.href = '/ admin-panel';
+                        window.location.href = '/admin-panel';
                     }} color="primary">
                         OK
                     </Button>
