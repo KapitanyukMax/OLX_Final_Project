@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Box, Input, InputLabel, InputAdornment, IconButton, SvgIconProps } from '@mui/material';
 import { StyledEngineProvider } from '@mui/material/styles';
 import './styles.css';
@@ -15,10 +15,11 @@ interface StyledInputProps {
     type?: 'password' | 'text';
     disabled?: boolean;
     onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
-    iconStart?: React.ElementType<SvgIconProps>;
-    iconEnd?: React.ElementType<SvgIconProps>;
+    iconStart?: React.ElementType;
+    iconEnd?: React.ElementType;
     iconStartClick?: () => void;
     iconEndClick?: () => void;
+    onKeyDown?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
 const StyledInput: React.FC<StyledInputProps> = ({
@@ -36,17 +37,9 @@ const StyledInput: React.FC<StyledInputProps> = ({
     iconEndClick,
     iconStartClick,
     type = 'text', // За замовчуванням 'text'
-    onChange
+    onChange,
+    onKeyDown
 }) => {
-    const [currentValue, setCurrentValue] = useState(value);
-
-    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setCurrentValue(event.target.value);
-        if (onChange) {
-            onChange(event);
-        }
-    };
-
     const getInputWidth = () => {
         switch (widthType) {
             case 'small':
@@ -84,8 +77,9 @@ const StyledInput: React.FC<StyledInputProps> = ({
                     sx={sx}
                     disabled={disabled}
                     className='basic-input'
-                    onChange={handleChange}
+                    onChange={onChange} // Використовуй onChange прямо
                     required={required}
+                    onKeyDown={onKeyDown}
                     startAdornment={IconStart ? (
                         <InputAdornment position="start">
                             {iconStartClick ? (
@@ -111,7 +105,7 @@ const StyledInput: React.FC<StyledInputProps> = ({
                 />
                 {maxLength && (
                     <label className='label symbols'>
-                        {`${currentValue.length}/${maxLength} символів`}
+                        {`${value.length}/${maxLength} символів`} // Використовуй value для підрахунку символів
                     </label>
                 )}
             </Box>

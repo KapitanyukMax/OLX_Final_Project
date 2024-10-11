@@ -10,4 +10,7 @@ router.route('/:id')
     .get(messageController.getMessageById)
     .delete(messageController.deleteMessage);
 
+router.route('/chat/:chatId')
+    .get(messageController.getMessagesByChatId);
+
 module.exports = router;
