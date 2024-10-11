@@ -121,7 +121,7 @@ const HomePage: React.FC = () => {
                             }}>
                                 {adverts.map((advert: any) => {
                                     return (
-                                        <StyledAdvert key={advert.id} title={advert.name} location={advert.location} date={advert.creationDate} image={advert.pictures[0]} price={advert.price} onClick={
+                                        <StyledAdvert key={advert.id} title={advert.name} location={advert.location} date={advert.creationDate} image={advert.pictures[0]} price={advert.price} currency={advert.currencyId} onClick={
                                             () => {
                                                 window.location.href = `/advert/${advert.id}`;
                                             }
@@ -189,7 +189,7 @@ const HomePage: React.FC = () => {
                             }}>
                                 {vipAdverts.map((advert: any) => {
                                     return (
-                                        <StyledAdvert key={advert.id} title={advert.name} location={advert.location} date={advert.creationDate} image={advert.pictures[0]} price={advert.price} isVIP={true} onClick={
+                                        <StyledAdvert key={advert.id} title={advert.name} location={advert.location} date={advert.creationDate} image={advert.pictures[0]} price={advert.price} isVIP={true} currency={advert.currencyId} onClick={
                                             () => {
                                                 window.location.href = `/advert/${advert.id}`;
                                             }
@@ -236,7 +236,7 @@ const HomePage: React.FC = () => {
                             }}>
                                 {topAdverts.map((advert: any) => {
                                     return (
-                                        <StyledAdvert key={advert.id} title={advert.name} location={advert.location} date={advert.creationDate} image={advert.pictures[0]} price={advert.price} isTOP={true} onClick={
+                                        <StyledAdvert key={advert.id} title={advert.name} location={advert.location} date={advert.creationDate} image={advert.pictures[0]} price={advert.price} isTOP={true} currency={advert.currencyId} onClick={
                                             () => {
                                                 window.location.href = `/advert/${advert.id}`;
                                             }
@@ -279,7 +279,7 @@ const HomePage: React.FC = () => {
                             }}>
                                 {adverts.map((advert: any) => {
                                     return (
-                                        <StyledAdvert key={advert.id} title={advert.name} location={advert.location} date={advert.creationDate} image={advert.pictures[0]} price={advert.price} onClick={
+                                        <StyledAdvert key={advert.id} title={advert.name} location={advert.location} date={advert.creationDate} image={advert.pictures[0]} price={advert.price} currency={advert.currencyId} onClick={
                                             () => {
                                                 window.location.href = `/advert/${advert.id}`;
                                             }
