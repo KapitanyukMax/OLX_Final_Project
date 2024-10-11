@@ -111,7 +111,7 @@ const StyledInput: React.FC<StyledInputProps> = ({
                 />
                 {maxLength && (
                     <label className='label symbols'>
-                        {`${value.length}/${maxLength} символів`} // Використовуй value для підрахунку символів
+                        {`${value.length}/${maxLength} символів`}
                     </label>
                 )}
             </Box>

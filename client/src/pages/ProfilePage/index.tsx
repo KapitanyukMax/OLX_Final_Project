@@ -15,7 +15,6 @@ import IInCircleIcon from '../../components/icons/iInCircle';
 import { Link } from 'react-router-dom';
 import SearchIcon from '../../components/icons/search';
 import { StyledAdvert } from '../../components/advert';
-import Chat from '../../components/chat';
 
 const ProfilePage: React.FC = () => {
     const host = import.meta.env.VITE_HOST;

@@ -51,11 +51,6 @@ const AdvertPage: React.FC = () => {
     const [favoriteAdvertsIds, setFavoriteAdvertsIds] = useState<string[]>([]);
     const [open, setOpen] = useState(false);
 
-    const handleClickOpen = () => {
-        setOpen(true);
-    };
-
-
     const host = import.meta.env.VITE_HOST;
 
     useEffect(() => {
