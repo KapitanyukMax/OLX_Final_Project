@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Box, StyledEngineProvider } from '@mui/material';
-import { signInWithEmailAndPassword, signOut, onAuthStateChanged  } from 'firebase/auth';
+import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
 import { auth } from './../../../firebaseConfig';
 import StyledLabel from '../../components/lable';
 import { StyledInput } from '../../components/input';
@@ -26,7 +26,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ onSwitchToRegister, onSw
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const [rememberMe, setRememberMe] = useState<boolean>(false);
     const [currentUser, setCurrentUser] = useState<any>(null);
-    
+
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -48,7 +48,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ onSwitchToRegister, onSw
                 console.log('No user is logged in');
             }
         });
-    
+
         // Clean up subscription on unmount
         return () => unsubscribe();
     }, []);
@@ -57,7 +57,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ onSwitchToRegister, onSw
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             setCurrentUser(user);
         });
-    
+
         return () => unsubscribe();
     }, []);
 
@@ -121,7 +121,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ onSwitchToRegister, onSw
                 localStorage.removeItem('password');
             }
 
-            navigate('/components-preview');
+            navigate('/');
 
         } catch (error: unknown) {
             console.error('Error logging in:', error);
@@ -162,7 +162,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ onSwitchToRegister, onSw
                 body: JSON.stringify(userData),
             });
 
-            navigate('/components-preview');
+            navigate('/');
         }
         catch (error) {
             console.error('Google login error:', error);
