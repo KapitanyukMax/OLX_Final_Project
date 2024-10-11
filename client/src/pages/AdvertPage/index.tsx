@@ -902,6 +902,7 @@ const AdvertPage: React.FC = () => {
                                     handleHeartIconClick(advert.id);
                                 }}
                                 price={advert.price}
+                                currency={advert.currencyId}
                             />
                         ))
                     )}
@@ -947,6 +948,7 @@ const AdvertPage: React.FC = () => {
                                 handleHeartIconClick(advert.id);
                             }}
                             price={advert.price}
+                            currency={advert.currencyId}
                         />
                     ))}
                 </Box>
