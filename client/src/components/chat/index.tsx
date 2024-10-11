@@ -10,7 +10,6 @@ import EmojiSmileIcon from "../icons/emoji";
 import SendMessageIcon from "../icons/sendMessageIcon";
 import EmojiPicker from "emoji-picker-react";
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import {getFirestore } from "firebase/firestore";
 import { getAuth, onAuthStateChanged, User } from "firebase/auth";
 import axios from "axios";
 
@@ -38,7 +37,6 @@ interface Message {
 }
 
 const Chat: React.FC<ChatProps> = ({
-    onSend,
     width = '799px',
     height = '680px',
     userName = 'User  user',
@@ -55,7 +53,6 @@ const Chat: React.FC<ChatProps> = ({
     const [user, setUser] = useState<User | null>(null);
 
     const storage = getStorage();
-    const db = getFirestore();
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const host = import.meta.env.VITE_HOST;
 
