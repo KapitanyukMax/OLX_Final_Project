@@ -40,7 +40,7 @@ const getAllAdverts = async (req, res, next) => {
 
 const getAdvertById = async (req, res, next) => {
     try {
-        const advertsRef = await db.collection('adverts').doc(req.query.id);
+        const advertsRef = await db.collection('adverts').doc(req.params.id);
         const doc = await advertsRef.get();
 
         if (!doc.exists)
