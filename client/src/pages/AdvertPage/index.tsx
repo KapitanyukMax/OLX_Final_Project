@@ -75,7 +75,7 @@ const AdvertPage: React.FC = () => {
         const fetchData = async () => {
             try {
                 const advertResponse = await axios.get(
-                    `${host}/adverts/id/?id=${advertId}`
+                    `${host}/adverts/${advertId}`
                 );
                 setAdvertData(advertResponse.data);
 

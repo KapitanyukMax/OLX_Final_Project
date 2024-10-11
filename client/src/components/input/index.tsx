@@ -72,7 +72,7 @@ const StyledInput: React.FC<StyledInputProps> = ({
                 <Input
                     id='input'
                     placeholder={placeholder}
-                    value={currentValue}
+                    value={value}
                     type={type}
                     sx={sx}
                     disabled={disabled}
