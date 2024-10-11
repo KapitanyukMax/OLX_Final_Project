@@ -8,7 +8,7 @@ import { ProfilePage } from './pages/ProfilePage';
 import { HomePage } from './pages/HomePage';
 import { Layout } from './Layout';
 import { UserProfilePage } from './pages/UserProfilePage';
-import { AdvertsCategoryPage } from './pages/AdvertsCategoryPage';
+import { AllAdvertsPage } from './pages/AllAdvertsPage';
 import { FavoritesPage } from './pages/FavoritesPage';
 import { AdminPage } from './pages/AdminPage';
 import { CategoryEditPage } from './pages/AdminPage/categoryEdit';
@@ -64,7 +64,10 @@ function App() {
                     <Route path="/" element={<Layout />}>
                         <Route index element={<HomePage />} />
                         <Route path="home" element={<HomePage />} />
-                        <Route path="adverts/:categoryName" element={<AdvertsCategoryPage />} />
+                        <Route path="adverts/:categoryName" element={<AllAdvertsPage />} />
+                        <Route path="adverts" element={<AllAdvertsPage />} />
+                        <Route path="adverts-top" element={<AllAdvertsPage top />} />
+                        <Route path="adverts-vip" element={<AllAdvertsPage vip />} />
                         <Route path="advert/:advertId" element={<AdvertPage />} />
                         <Route path="profile-page" element={<ProfilePage />} />
                         <Route path="advert-create" element={<AdvertCreatePage />} />

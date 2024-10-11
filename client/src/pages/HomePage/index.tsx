@@ -248,7 +248,7 @@ const HomePage: React.FC = () => {
                             }}>
                                 <StyledButton text='Більше' type='outlined' className='button-medium'
                                     onClick={() => {
-                                        window.location.href = '/components-preview';
+                                        window.location.href = '/adverts-vip';
                                     }} />
                             </Box>
 
@@ -295,7 +295,7 @@ const HomePage: React.FC = () => {
                             }}>
                                 <StyledButton text='Більше' type='outlined' className='button-medium'
                                     onClick={() => {
-                                        window.location.href = '/components-preview';
+                                        window.location.href = '/adverts-top';
                                     }} />
                             </Box>
 
@@ -338,7 +338,7 @@ const HomePage: React.FC = () => {
                             }}>
                                 <StyledButton text='Більше' type='outlined' className='button-medium'
                                     onClick={() => {
-                                        window.location.href = '/components-preview';
+                                        window.location.href = '/adverts';
                                     }} />
                             </Box>
 
@@ -365,71 +365,91 @@ const HomePage: React.FC = () => {
                                 <StyledButton text='Велосипед' type='outlined' className='button-fit'
                                     onClick={() => {
                                         setSearchValue('Велосипед');
-                                        setIsSearching(true);
-                                        getAdverts(searchValue || '', 20);
+                                        window.scrollTo({
+                                            top: 0,
+                                            behavior: 'smooth'
+                                        });
                                     }} />
 
                                 <StyledButton text='Купальник' type='outlined' className='button-fit'
                                     onClick={() => {
                                         setSearchValue('Купальник');
-                                        setIsSearching(true);
-                                        getAdverts(searchValue || '', 20);
+                                        window.scrollTo({
+                                            top: 0,
+                                            behavior: 'smooth'
+                                        });
                                     }} />
 
                                 <StyledButton text='Кошенята' type='outlined' className='button-fit'
                                     onClick={() => {
                                         setSearchValue('Кошенята');
-                                        setIsSearching(true);
-                                        getAdverts(searchValue || '', 20);
+                                        window.scrollTo({
+                                            top: 0,
+                                            behavior: 'smooth'
+                                        });
                                     }} />
 
                                 <StyledButton text='Квартира' type='outlined' className='button-fit'
                                     onClick={() => {
                                         setSearchValue('Квартира');
-                                        setIsSearching(true);
-                                        getAdverts(searchValue || '', 20);
+                                        window.scrollTo({
+                                            top: 0,
+                                            behavior: 'smooth'
+                                        });
                                     }} />
 
                                 <StyledButton text='Генератор' type='outlined' className='button-fit'
                                     onClick={() => {
                                         setSearchValue('Генератор');
-                                        setIsSearching(true);
-                                        getAdverts(searchValue || '', 20);
+                                        window.scrollTo({
+                                            top: 0,
+                                            behavior: 'smooth'
+                                        });
                                     }} />
 
                                 <StyledButton text='Холодильник' type='outlined' className='button-fit'
                                     onClick={() => {
                                         setSearchValue('Холодильник');
-                                        setIsSearching(true);
-                                        getAdverts(searchValue || '', 20);
+                                        window.scrollTo({
+                                            top: 0,
+                                            behavior: 'smooth'
+                                        });
                                     }} />
 
                                 <StyledButton text='Акваріум' type='outlined' className='button-fit'
                                     onClick={() => {
                                         setSearchValue('Акваріум');
-                                        setIsSearching(true);
-                                        getAdverts(searchValue || '', 20);
+                                        window.scrollTo({
+                                            top: 0,
+                                            behavior: 'smooth'
+                                        });
                                     }} />
 
                                 <StyledButton text='Павербанк' type='outlined' className='button-fit'
                                     onClick={() => {
                                         setSearchValue('Павербанк');
-                                        setIsSearching(true);
-                                        getAdverts(searchValue || '', 20);
+                                        window.scrollTo({
+                                            top: 0,
+                                            behavior: 'smooth'
+                                        });
                                     }} />
 
                                 <StyledButton text='Дерева' type='outlined' className='button-fit'
                                     onClick={() => {
                                         setSearchValue('Дерева');
-                                        setIsSearching(true);
-                                        getAdverts(searchValue || '', 20);
+                                        window.scrollTo({
+                                            top: 0,
+                                            behavior: 'smooth'
+                                        });
                                     }} />
 
                                 <StyledButton text='Ноутбук' type='outlined' className='button-fit'
                                     onClick={() => {
                                         setSearchValue('Ноутбук');
-                                        setIsSearching(true);
-                                        getAdverts(searchValue || '', 20);
+                                        window.scrollTo({
+                                            top: 0,
+                                            behavior: 'smooth'
+                                        });
                                     }} />
                             </Box>
 
