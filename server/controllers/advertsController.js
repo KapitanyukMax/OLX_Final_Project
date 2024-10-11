@@ -6,8 +6,32 @@ const db = admin.firestore();
 
 const getAllAdverts = async (req, res, next) => {
     try {
-        const { limit = 10, startAfter } = req.query; // Default limit is 10
-        let query = db.collection('adverts').orderBy('creationDate').limit(parseInt(limit));
+        const { limit = 10, startAfter, searchTerm, city, sortBy = 'creationDate', sortOrder = 'desc', priceLow, priceHigh, state, currency, subcategoryIds = [] } = req.query;
+        let query = db.collection('adverts').orderBy(sortBy, sortOrder).limit(parseInt(limit));
+
+        if (priceLow) {
+            query = query.where('price', '>=', parseFloat(priceLow));
+        }
+
+        if (priceHigh) {
+            query = query.where('price', '<=', parseFloat(priceHigh));
+        }
+
+        if (state && state == 'Нове') {
+            query = query.where('status', '==', 'Нове');
+        }
+
+        if (state && state == 'Вживане') {
+            query = query.where('status', '==', 'Вживане');
+        }
+
+        if (currency) {
+            query = query.where('currencyId', '==', currency);
+        }
+
+        if (subcategoryIds.length > 0) {
+            query = query.where('subCategoryId', 'in', subcategoryIds);
+        }
 
         if (startAfter) {
             const lastDoc = await db.collection('adverts').doc(startAfter).get();
@@ -20,18 +44,32 @@ const getAllAdverts = async (req, res, next) => {
         const result = [];
 
         snapshot.forEach((doc) => {
-            result.push({
-                id: doc.id,
-                ...doc.data()
-            });
+            const data = doc.data();
+
+            const matchesSearchTerm = searchTerm ? data.name.toLowerCase().includes(searchTerm.toLowerCase()) : true;
+            const matchesCity = city ? data.location.toLowerCase().includes(city.toLowerCase()) : true;
+
+
+            if (matchesSearchTerm && matchesCity) {
+                result.push({
+                    id: doc.id,
+                    ...data
+                });
+            }
         });
 
         const lastVisible = snapshot.docs[snapshot.docs.length - 1];
+
+        const totalCountSnapshot = await db.collection('adverts')
+            .get();
+
+        const totalCount = totalCountSnapshot.size;
 
         logger.info(`Adverts received successfully`);
         res.status(200).json({
             adverts: result,
             lastVisibleId: lastVisible ? lastVisible.id : null,
+            totalCount,
         });
     } catch (error) {
         next(error);
@@ -58,28 +96,59 @@ const getAdvertById = async (req, res, next) => {
 
 const getAdvertsByCategoryId = async (req, res, next) => {
     try {
-        const { limit = 10, startAfter } = req.query;
-        const snapshot = await db.collection('subcategories')
-            .where('categoryId', '==', req.query.categoryId)
+        const { limit = 10, startAfter, searchTerm, categoryId, city, sortBy = 'creationDate', sortOrder = 'desc', priceLow, priceHigh, state, currency, isVip, isTop } = req.query;
+
+        // Fetch subcategories by categoryId
+        const subCategoriesSnapshot = await db.collection('subcategories')
+            .where('categoryId', '==', categoryId)
             .get();
 
-        if (snapshot.empty) {
+        if (subCategoriesSnapshot.empty) {
             return res.status(404).json({ error: 'Adverts not found' });
         }
 
         const subCategories = [];
-        snapshot.forEach((doc) => {
+        subCategoriesSnapshot.forEach((doc) => {
             subCategories.push(doc.id);
         });
 
         const result = [];
         let lastVisible = null;
 
+        // Paginated adverts query across all subcategories
         for (let i = 0; i < subCategories.length; i++) {
             let query = db.collection('adverts')
                 .where('subCategoryId', '==', subCategories[i])
-                .orderBy('creationDate')
+                .orderBy(sortBy, sortOrder)
                 .limit(parseInt(limit));
+
+            if (priceLow) {
+                query = query.where('price', '>=', parseFloat(priceLow));
+            }
+            if (priceHigh) {
+                query = query.where('price', '<=', parseFloat(priceHigh));
+            }
+
+            if (state && state == 'Нове') {
+                query = query.where('status', '==', 'Нове');
+            }
+
+            if (state && state == 'Вживане') {
+                query = query.where('status', '==', 'Вживане');
+            }
+
+            if (currency) {
+                query = query.where('currencyId', '==', currency);
+            }
+
+            if (isTop && isTop == 'true') {
+                query = query.orderBy('viewsCount', 'desc');
+
+            }
+
+            if (isVip && isVip == 'true') {
+                query = query.where('vipUntil', '>', formatDate.formatDate(new Date()));
+            }
 
             if (startAfter) {
                 const lastDoc = await db.collection('adverts').doc(startAfter).get();
@@ -91,10 +160,17 @@ const getAdvertsByCategoryId = async (req, res, next) => {
             const advertsSnapshot = await query.get();
 
             advertsSnapshot.forEach((doc) => {
-                result.push({
-                    id: doc.id,
-                    ...doc.data()
-                });
+                const advertData = doc.data();
+
+                const matchesSearchTerm = searchTerm ? advertData.name.toLowerCase().includes(searchTerm.toLowerCase()) : true;
+                const matchesCity = city ? advertData.location.toLowerCase().includes(city.toLowerCase()) : true;
+
+                if (matchesCity && matchesSearchTerm) {
+                    result.push({
+                        id: doc.id,
+                        ...advertData
+                    });
+                }
             });
 
             if (advertsSnapshot.docs.length > 0) {
@@ -102,24 +178,58 @@ const getAdvertsByCategoryId = async (req, res, next) => {
             }
         }
 
-        logger.info(`Adverts received successfully`);
+        // Calculate total count of adverts for all subcategories under the category
+        let totalCount = 0;
+        for (let i = 0; i < subCategories.length; i++) {
+            const totalSnapshot = await db.collection('adverts')
+                .where('subCategoryId', '==', subCategories[i])
+                .get();
+
+            totalCount += totalSnapshot.size;
+        }
+
+        // Send response with adverts, lastVisible document ID, and total count
         res.status(200).json({
             adverts: result,
             lastVisibleId: lastVisible ? lastVisible.id : null,
+            totalCount,  // Include total count in the response
         });
+
+        logger.info(`Adverts for categoryId ${categoryId} received successfully.`);
     } catch (error) {
         next(error);
     }
 };
 
 
+
 const getAdvertsByUserId = async (req, res, next) => {
     try {
-        const { limit = 10, startAfter } = req.query;
+        const { limit = 10, startAfter, searchTerm, userId, city, sortBy = 'creationDate', sortOrder = 'desc', priceLow, priceHigh, state, currency } = req.query;
+        logger.info(userId);
         let query = db.collection('adverts')
-            .where('userId', '==', req.query.userId)
-            .orderBy('creationDate')
+            .where('userId', '==', userId)
+            .orderBy(sortBy, sortOrder)
             .limit(parseInt(limit));
+
+        if (priceLow) {
+            query = query.where('price', '>=', parseFloat(priceLow));
+        }
+        if (priceHigh) {
+            query = query.where('price', '<=', parseFloat(priceHigh));
+        }
+
+        if (state && state == 'Нове') {
+            query = query.where('status', '==', 'Нове');
+        }
+
+        if (state && state == 'Вживане') {
+            query = query.where('status', '==', 'Вживане');
+        }
+
+        if (currency) {
+            query = query.where('currencyId', '==', currency);
+        }
 
         if (startAfter) {
             const lastDoc = await db.collection('adverts').doc(startAfter).get();
@@ -136,18 +246,32 @@ const getAdvertsByUserId = async (req, res, next) => {
 
         const result = [];
         snapshot.forEach((doc) => {
-            result.push({
-                id: doc.id,
-                ...doc.data()
-            });
+            const data = doc.data();
+
+            const matchesSearchTerm = searchTerm ? data.name.toLowerCase().includes(searchTerm.toLowerCase()) : true;
+            const matchesCity = city ? data.location.toLowerCase().includes(city.toLowerCase()) : true;
+
+            if (matchesSearchTerm && matchesCity) {
+                result.push({
+                    id: doc.id,
+                    ...data
+                });
+            }
         });
 
         const lastVisible = snapshot.docs[snapshot.docs.length - 1];
+
+        const totalCountSnapshot = await db.collection('adverts')
+            .where('userId', '==', userId)
+            .get();
+
+        const totalCount = totalCountSnapshot.size;
 
         logger.info(`Adverts received successfully`);
         res.status(200).json({
             adverts: result,
             lastVisibleId: lastVisible ? lastVisible.id : null,
+            totalCount,
         });
     } catch (error) {
         next(error);
@@ -157,11 +281,32 @@ const getAdvertsByUserId = async (req, res, next) => {
 
 const getAdvertsBySubcategoryId = async (req, res, next) => {
     try {
-        const { limit = 10, startAfter } = req.query;
+        const { limit = 10, startAfter, searchTerm, subcategoryId, city, sortBy = 'creationDate', sortOrder = 'desc', priceLow, priceHigh, state, currency } = req.query;
+
+        // Query for paginated adverts
         let query = db.collection('adverts')
-            .where('subCategoryId', '==', req.query.subcategoryId)
-            .orderBy('creationDate')
+            .where('subCategoryId', '==', subcategoryId)
+            .orderBy(sortBy, sortOrder)
             .limit(parseInt(limit));
+
+        if (priceLow) {
+            query = query.where('price', '>=', parseFloat(priceLow));
+        }
+        if (priceHigh) {
+            query = query.where('price', '<=', parseFloat(priceHigh));
+        }
+
+        if (state && state == 'Нове') {
+            query = query.where('status', '==', 'Нове');
+        }
+
+        if (state && state == 'Вживане') {
+            query = query.where('status', '==', 'Вживане');
+        }
+
+        if (currency) {
+            query = query.where('currencyId', '==', currency);
+        }
 
         if (startAfter) {
             const lastDoc = await db.collection('adverts').doc(startAfter).get();
@@ -178,23 +323,41 @@ const getAdvertsBySubcategoryId = async (req, res, next) => {
 
         const result = [];
         snapshot.forEach((doc) => {
-            result.push({
-                id: doc.id,
-                ...doc.data()
-            });
+            const advertData = doc.data();
+
+            const matchesSearchTerm = searchTerm ? advertData.name.toLowerCase().includes(searchTerm.toLowerCase()) : true;
+            const matchesCity = city ? advertData.location.toLowerCase().includes(city.toLowerCase()) : true;
+
+            if (matchesCity && matchesSearchTerm) {
+                result.push({
+                    id: doc.id,
+                    ...advertData
+                });
+            }
         });
 
         const lastVisible = snapshot.docs[snapshot.docs.length - 1];
 
-        logger.info(`Adverts received successfully`);
+        // Calculate the total number of adverts in the subcategory
+        const totalCountSnapshot = await db.collection('adverts')
+            .where('subCategoryId', '==', subcategoryId)
+            .get();
+        const totalCount = totalCountSnapshot.size;
+
+        logger.info(`Adverts for subCategoryId ${subcategoryId} received successfully.`);
+
+        // Return the result along with total count and lastVisibleId
         res.status(200).json({
             adverts: result,
             lastVisibleId: lastVisible ? lastVisible.id : null,
+            totalCount,  // Include total count for pagination purposes
         });
+
     } catch (error) {
         next(error);
     }
 };
+
 
 
 const createAdvert = async (req, res, next) => {
@@ -271,13 +434,14 @@ const updateAdvert = async (req, res, next) => {
 
 const deleteAdvert = async (req, res, next) => {
     try {
-        const advertRef = await db.collection('adverts').doc(req.params.id);
+        const advertRef = db.collection('adverts').doc(req.params.id);
         const doc = await advertRef.get();
 
-        if (!doc.exists)
+        if (!doc.exists) {
             return res.status(404).json({ error: 'Advert not found' });
+        }
 
-        const response = await db.collection('adverts').doc(req.query.id).delete();
+        await advertRef.delete();
 
         logger.info(`Advert deleted successfully`);
         res.sendStatus(204);
@@ -286,12 +450,36 @@ const deleteAdvert = async (req, res, next) => {
     }
 };
 
+
 const getAdvertsByTOP = async (req, res, next) => {
     try {
-        const { limit = 10, startAfter } = req.query;
+        const { limit = 10, startAfter, searchTerm, city, priceLow, priceHigh, state, currency, subcategoryIds = [] } = req.query;
         let query = db.collection('adverts')
             .orderBy('viewsCount', 'desc')
             .limit(parseInt(limit));
+
+        if (priceLow) {
+            query = query.where('price', '>=', parseFloat(priceLow));
+        }
+        if (priceHigh) {
+            query = query.where('price', '<=', parseFloat(priceHigh));
+        }
+
+        if (state && state == 'Нове') {
+            query = query.where('status', '==', 'Нове');
+        }
+
+        if (state && state == 'Вживане') {
+            query = query.where('status', '==', 'Вживане');
+        }
+
+        if (currency) {
+            query = query.where('currencyId', '==', currency);
+        }
+
+        if (subcategoryIds.length > 0) {
+            query = query.where('subCategoryId', 'in', subcategoryIds);
+        }
 
         if (startAfter) {
             const lastDoc = await db.collection('adverts').doc(startAfter).get();
@@ -308,10 +496,17 @@ const getAdvertsByTOP = async (req, res, next) => {
 
         const result = [];
         snapshot.forEach((doc) => {
-            result.push({
-                id: doc.id,
-                ...doc.data()
-            });
+            const data = doc.data();
+
+            const matchesSearchTerm = searchTerm ? data.name.toLowerCase().includes(searchTerm.toLowerCase()) : true;
+            const matchesCity = city ? data.location.toLowerCase().includes(city.toLowerCase()) : true;
+
+            if (matchesCity && matchesSearchTerm) {
+                result.push({
+                    id: doc.id,
+                    ...data
+                });
+            }
         });
 
         const lastVisible = snapshot.docs[snapshot.docs.length - 1];
@@ -329,11 +524,34 @@ const getAdvertsByTOP = async (req, res, next) => {
 
 const getAdvertsByVIP = async (req, res, next) => {
     try {
-        const { limit = 10, startAfter } = req.query;
+        const { limit = 10, startAfter, searchTerm, city, priceLow, priceHigh, state, currency, subcategoryIds = [] } = req.query;
         let query = db.collection('adverts')
             .where('vipUntil', '!=', null)
             .orderBy('vipUntil', 'desc')
             .limit(parseInt(limit));
+
+        if (priceLow) {
+            query = query.where('price', '>=', parseFloat(priceLow));
+        }
+        if (priceHigh) {
+            query = query.where('price', '<=', parseFloat(priceHigh));
+        }
+
+        if (state && state == 'Нове') {
+            query = query.where('status', '==', 'Нове');
+        }
+
+        if (state && state == 'Вживане') {
+            query = query.where('status', '==', 'Вживане');
+        }
+
+        if (currency) {
+            query = query.where('currencyId', '==', currency);
+        }
+
+        if (subcategoryIds.length > 0) {
+            query = query.where('subCategoryId', 'in', subcategoryIds);
+        }
 
         if (startAfter) {
             const lastDoc = await db.collection('adverts').doc(startAfter).get();
@@ -350,10 +568,17 @@ const getAdvertsByVIP = async (req, res, next) => {
 
         const result = [];
         snapshot.forEach((doc) => {
-            result.push({
-                id: doc.id,
-                ...doc.data()
-            });
+            const data = doc.data();
+
+            const matchesSearchTerm = searchTerm ? data.name.toLowerCase().includes(searchTerm.toLowerCase()) : true;
+            const matchesCity = city ? data.location.toLowerCase().includes(city.toLowerCase()) : true;
+
+            if (matchesCity && matchesSearchTerm) {
+                result.push({
+                    id: doc.id,
+                    ...data
+                });
+            }
         });
 
         const lastVisible = snapshot.docs[snapshot.docs.length - 1];

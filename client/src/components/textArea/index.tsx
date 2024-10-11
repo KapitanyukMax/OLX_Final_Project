@@ -6,6 +6,7 @@ import './styles.css';
 interface TextAreaProps {
     label: string;
     value: string;
+    placeholder?: string;
     minRows?: number;
     maxRows?: number;
     maxLength?: number;
@@ -13,7 +14,7 @@ interface TextAreaProps {
     onChange?: (event: React.ChangeEvent<HTMLTextAreaElement>) => void;
 }
 
-const StyledTextArea: React.FC<TextAreaProps> = ({ label, value, minRows, maxRows, maxLength, required, onChange }) => {
+const StyledTextArea: React.FC<TextAreaProps> = ({ label, value, placeholder, minRows, maxRows, maxLength, required, onChange }) => {
     const [currentValue, setCurrentValue] = useState(value);
 
     const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -30,11 +31,12 @@ const StyledTextArea: React.FC<TextAreaProps> = ({ label, value, minRows, maxRow
                     {required ? `${label} *` : label}
                 </label>
                 <TextareaAutosize
+                    value={currentValue}
                     maxLength={maxLength}
                     minRows={minRows}
                     maxRows={maxRows}
                     required={required}
-                    placeholder={currentValue}
+                    placeholder={placeholder}
                     onChange={handleChange}
                     className='textArea'
                 />

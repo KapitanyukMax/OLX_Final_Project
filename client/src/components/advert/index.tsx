@@ -1,15 +1,17 @@
-import React from "react";
+import React, { useState } from "react";
 import { StyledEngineProvider } from "@mui/material/styles";
-import { Box } from "@mui/material";
+import { Box, Button, IconButton } from "@mui/material";
 import ImageComponent from "../image";
 import StyledLabel from "../lable";
 import LocationIcon from "../icons/location";
 import CalendarIcon from "../icons/calendarSolid";
-import HeartIcon from "../icons/heart";
+import { Favorite, FavoriteBorder } from "@mui/icons-material";
+import PenFluentIcon from "../icons/penFluent";
+import DeleteIcon from "@mui/icons-material/Delete";
 import "./styles.css";
-import StyledIconButton from "../iconButton";
 
 interface StyledAdvertProps {
+    key?: string;
     title: string;
     location: string;
     date: string;
@@ -18,15 +20,41 @@ interface StyledAdvertProps {
     isTOP?: boolean;
     onClick: () => void;
     onHeartClick?: () => void;
+    isFavorite?: boolean;
     price: number;
+    onEdit?: () => void;
+    onDelete?: () => void;
 };
 
-const StyledAdvert: React.FC<StyledAdvertProps> = ({ title, location, date, image, isVIP, isTOP, price, onClick, onHeartClick }) => {
+const StyledAdvert: React.FC<StyledAdvertProps> = ({ key, title, location, date, image, isVIP, isTOP, price, isFavorite, onClick, onHeartClick, onDelete, onEdit }) => {
+    const [isHeartActive, setIsHeartActive] = useState(false);
+
+    const handleHeartClick = (event: React.MouseEvent) => {
+        event.stopPropagation();
+        setIsHeartActive(prev => !prev);
+        if (onHeartClick) {
+            onHeartClick();
+        }
+    };
+
     return (
         <StyledEngineProvider injectFirst>
-            <Box className='advert' onClick={onClick} style={{ cursor: 'pointer' }}>
+            <Box className='advert' onClick={onClick} style={{ cursor: 'pointer' }} key={key}>
                 <Box className='imageContainer'>
                     <ImageComponent src={image} alt={title} />
+                    {
+                        onEdit && onDelete &&
+                        <Box className='edit-delete'>
+                            <Button onClick={(event) => {
+                                event.stopPropagation();
+                                onDelete();
+                            }} startIcon={<DeleteIcon />} sx={{ background: 'red', color: 'white', height: '57px', borderRadius: '8px' }}>Видалити</Button>
+                            <Button onClick={(event) => {
+                                event.stopPropagation();
+                                onEdit();
+                            }} startIcon={PenFluentIcon()} sx={{ background: 'orange', color: 'white', height: '57px', borderRadius: '8px' }}>Змінити</Button>
+                        </Box>
+                    }
                     {
                         isVIP && isTOP &&
                         <Box className='vip-top'>
@@ -50,12 +78,10 @@ const StyledAdvert: React.FC<StyledAdvertProps> = ({ title, location, date, imag
                             <StyledLabel text={isTOP ? "TOP" : ""} textType="small" type="status" textColor="white" backgroundColor="#049ce4" />
                         </Box>
                     }
-                    <Box className='heart' onClick={
-                        (event) => {
-                            event.stopPropagation();
-                        }
-                    }>
-                        <StyledIconButton icon={HeartIcon} onClick={onHeartClick} />
+                    <Box className='heart' onClick={handleHeartClick} sx={{ wigth: '35px', height: '35px' }}>
+                        <IconButton sx={{ padding: '0px', width: '35px', height: '35px' }}>
+                            {isFavorite ? <Favorite sx={{ width: '35px', height: '35px' }} /> : <FavoriteBorder sx={{ width: '35px', height: '35px' }} />}
+                        </IconButton>
                     </Box>
                 </Box>
                 <Box className='advertText'>

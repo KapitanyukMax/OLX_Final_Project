@@ -6,19 +6,21 @@ import './styles.css';
 
 interface CheckBoxProps {
     label: string;
+    sx?: any;
     checked?: boolean;
     disabled?: boolean;
     required?: boolean;
     onChange?: () => void;
 }
 
-const StyledCheckBox: React.FC<CheckBoxProps> = ({ label, checked, disabled, required, onChange }) => {
+const StyledCheckBox: React.FC<CheckBoxProps> = ({ label, sx, checked, disabled, required, onChange }) => {
     return (
         <StyledEngineProvider injectFirst>
             <Box className='box1'>
                 <FormControlLabel
                     disabled={disabled}
                     required={required}
+                    sx={sx}
                     control={
                         <Checkbox
                             id='input'
@@ -34,4 +36,4 @@ const StyledCheckBox: React.FC<CheckBoxProps> = ({ label, checked, disabled, req
     );
 };
 
-export {StyledCheckBox};
+export { StyledCheckBox };

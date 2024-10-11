@@ -5,12 +5,15 @@ import './styles.css';
 
 interface StyledInputProps {
     value: string;
+    placeholder?: string;
     widthType?: 'small' | 'middle' | 'big' | 'large';
     width?: string;
     label?: string;
+    sx?: any;
     required?: boolean;
     maxLength?: number;
     type?: 'password' | 'text';
+    disabled?: boolean;
     onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
     iconStart?: React.ElementType;
     iconEnd?: React.ElementType;
@@ -22,12 +25,15 @@ interface StyledInputProps {
 const StyledInput: React.FC<StyledInputProps> = ({
     label,
     value,
+    placeholder,
+    sx,
     required,
     widthType,
     width,
     maxLength,
     iconStart: IconStart,
     iconEnd: IconEnd,
+    disabled,
     iconEndClick,
     iconStartClick,
     type = 'text', // За замовчуванням 'text'
@@ -65,9 +71,11 @@ const StyledInput: React.FC<StyledInputProps> = ({
                 }
                 <Input
                     id='input'
-                    value={value} // Використовуй value замість placeholder
-                    placeholder="Введіть повідомлення" // Встанови звичайний текст заповнення
+                    placeholder={placeholder}
+                    value={currentValue}
                     type={type}
+                    sx={sx}
+                    disabled={disabled}
                     className='basic-input'
                     onChange={onChange} // Використовуй onChange прямо
                     required={required}
