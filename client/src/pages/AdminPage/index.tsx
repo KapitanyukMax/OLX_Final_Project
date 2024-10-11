@@ -339,7 +339,7 @@ const AdminPage: React.FC = () => {
                                     return (
                                         <StyledAdvert key={advert.id} onDelete={() => deleteAdvert(advert.id)} onEdit={() => {
                                             window.location.href = `/advert-edit/${advert.id}`;
-                                        }} title={advert.name} location={advert.location} image={advert.pictures[0]} date={advert.creationDate} price={advert.price} onClick={() => { window.location.href = `/advert/${advert.id}` }} />
+                                        }} title={advert.name} location={advert.location} image={advert.pictures[0]} date={advert.creationDate} price={advert.price} currency={advert.currencyId} onClick={() => { window.location.href = `/advert/${advert.id}` }} />
                                     );
                                 })
                             }

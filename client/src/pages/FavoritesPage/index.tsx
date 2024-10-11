@@ -248,6 +248,7 @@ const FavoritesPage: React.FC = () => {
                                                 date={advert.creationDate}
                                                 image={advert.pictures[0]}
                                                 price={advert.price}
+                                                currency={advert.currencyId}
                                                 isFavorite={favoriteAdvertsIds.includes(advert.id)}
                                                 onClick={
                                                     () => {
