@@ -97,9 +97,33 @@ const getMessageById = async (req, res,next) => {
     }
 };
 
+const getMessagesByChatId = async (req, res, next) => {
+    try {
+        const chatId = req.params.chatId;
+
+        if (!chatId) {
+            return res.status(400).json({ error: 'Chat ID is required' });
+        }
+
+        const messagesRef = db.collection('messages').where('chatId', '==', chatId);
+        const snapshot = await messagesRef.get();
+
+        if (snapshot.empty) {
+            return res.status(404).json({ error: 'No messages found for this chat' });
+        }
+
+        const messages = snapshot.docs.map(doc => doc.data());
+        res.status(200).json(messages);
+    } catch (error) {
+        next(error);
+    }
+};
+
+
 module.exports ={
     createMessage,
     updateMessage,
     deleteMessage,
-    getMessageById
+    getMessageById,
+    getMessagesByChatId
 }

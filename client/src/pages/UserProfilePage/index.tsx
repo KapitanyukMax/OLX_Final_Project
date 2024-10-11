@@ -20,11 +20,13 @@ const UserProfilePage: React.FC = () => {
     const [userData, setUserData] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(true);
 
+    const host = import.meta.env.VITE_HOST;
+
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const userResponse = await axios.get(
-                    `http://localhost:5000/users/${userId}`
+                    `${host}/users/${userId}`
                 );
                 setUserData(userResponse.data);
 

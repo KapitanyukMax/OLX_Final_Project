@@ -25,6 +25,7 @@ app.use('/cities', require('./routes/cities.js'));
 app.use('/currencies', require('./routes/currencies.js'));
 app.use('/resetPass', require('./routes/resetPass.js'));
 app.use('/advertReports', require('./routes/advertReports.js'))
+app.use('/favorites', require('./routes/favorites.js'))
 app.use(errorHandler);
 
 

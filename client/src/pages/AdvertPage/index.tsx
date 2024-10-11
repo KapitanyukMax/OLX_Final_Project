@@ -1,6 +1,12 @@
 import {
     Box,
+    Button,
+    CircularProgress,
     Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
     IconButton,
     Paper,
     Rating,
@@ -13,24 +19,25 @@ import StyledButton from "../../components/button";
 import ImageComponent from "../../components/image";
 import StyledLabel from "../../components/lable";
 import "./styles.css";
-import HeartIcon from "../../components/icons/heart";
 import Carousel from "react-material-ui-carousel";
 import SearchIcon from "../../components/icons/search";
-import { Close } from "@mui/icons-material";
+import { Close, Favorite, FavoriteBorder } from "@mui/icons-material";
 import VipCrownIcon from "../../components/icons/vipCrown";
 import TopFluentIcon from "../../components/icons/topFluent";
 import CarFillIcon from "../../components/icons/carFill";
 import LocationIcon from "../../components/icons/location";
 import TimeFillIcon from "../../components/icons/timeFill";
 import { StyledAdvert } from "../../components/advert";
-import { onAuthStateChanged, User } from "firebase/auth";
+import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../../../firebaseConfig";
 import axios from "axios";
 import { Link, useParams } from "react-router-dom";
+import { ReportDialog } from "../../components/reportDialog";
+import Chat from "../../components/chat";
 
 const AdvertPage: React.FC = () => {
     const { advertId } = useParams<{ advertId: string }>();
-    const [currentUser, setCurrentUser] = useState<User | null>(null);
+    const [currentUser, setCurrentUser] = useState<any>(null);
     const [isAuthorized, setIsAuthorized] = useState(false);
     const [advertData, setAdvertData] = useState<any>(null);
     const [userData, setUserData] = useState<any>(null);
@@ -40,13 +47,23 @@ const AdvertPage: React.FC = () => {
     const [selectedImage, setSelectedImage] = useState<string>("");
     const [isLoading, setIsLoading] = useState(true);
     const [showPhoneNumber, setShowPhoneNumber] = useState(false);
+    const [openReportDialog, setOpenReportDialog] = useState(false);
+    const [favoriteAdvertsIds, setFavoriteAdvertsIds] = useState<string[]>([]);
+    const [open, setOpen] = useState(false);
+
+    const host = import.meta.env.VITE_HOST;
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
             if (user) {
-                setCurrentUser(user);
                 setIsAuthorized(true);
-                console.log(user);
+                if (user?.email) {
+                    const response = await axios.get(
+                        `${host}/users/email?email=${user.email}`
+                    );
+                    setCurrentUser(response.data);
+                    console.log(response.data);
+                }
             } else {
                 setIsAuthorized(false);
             }
@@ -56,26 +73,28 @@ const AdvertPage: React.FC = () => {
     }, []);
 
     useEffect(() => {
+        fetchFavorites();
+    }, [userData]);
+
+    useEffect(() => {
         const fetchData = async () => {
             try {
                 const advertResponse = await axios.get(
-                    `http://localhost:5000/adverts/id/?id=${advertId}`
+                    `${host}/adverts/${advertId}`
                 );
                 setAdvertData(advertResponse.data);
 
                 const userId = advertResponse.data.userId;
-                const userResponse = await axios.get(
-                    `http://localhost:5000/users/${userId}`
-                );
+                const userResponse = await axios.get(`${host}/users/${userId}`);
                 setUserData(userResponse.data);
 
                 const userAdvertsResponse = await axios.get(
-                    `http://localhost:5000/adverts/userId/?userId=${userId}`
+                    `${host}/adverts/userId/?userId=${userId}`
                 );
                 setUserAdverts(userAdvertsResponse.data.adverts);
 
                 const advertsResponse = await axios.get(
-                    `http://localhost:5000/adverts`
+                    `${host}/adverts?limit=8`
                 );
                 setAdverts(advertsResponse.data.adverts);
 
@@ -92,6 +111,41 @@ const AdvertPage: React.FC = () => {
 
         fetchData();
     }, [advertId]);
+
+    const fetchFavorites = async () => {
+        try {
+            if (!userData) return;
+            const response = await axios.get(
+                `${host}/favorites/userId?userId=${userData.id}`
+            );
+            const favoriteAdvertIds = response.data.adverts.map(
+                (advert: any) => advert.id
+            );
+            setFavoriteAdvertsIds(favoriteAdvertIds);
+            console.log(`favorite: \n${favoriteAdvertIds}`);
+        } catch (error) {
+            console.error("Error fetching favorites", error);
+        }
+    };
+
+    const handleHeartIconClick = async (advertId: string) => {
+        if (!isAuthorized) {
+            window.location.href = "/registration";
+        }
+        if (favoriteAdvertsIds.includes(advertId)) {
+            await axios.get(
+                `${host}/favorites/remove?userId=${userData.id}&advertId=${advertId}`
+            );
+            setFavoriteAdvertsIds(
+                favoriteAdvertsIds.filter((id) => id !== advertId)
+            );
+        } else {
+            await axios.get(
+                `${host}/favorites/add?userId=${userData.id}&advertId=${advertId}`
+            );
+            setFavoriteAdvertsIds([...favoriteAdvertsIds, advertId]);
+        }
+    };
 
     const handleClickImageOpen = (image: string) => {
         setSelectedImage(image);
@@ -111,8 +165,31 @@ const AdvertPage: React.FC = () => {
         setShowPhoneNumber(true);
     };
 
+    const handleOpenReportDialog = () => {
+        setOpenReportDialog(true);
+    };
+
+    const handleCloseReportDialog = () => {
+        setOpenReportDialog(false);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
+
     if (isLoading) {
-        return <Box>Завантаження...</Box>;
+        return (
+            <Box
+                sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    minHeight: "17.8vh",
+                }}
+            >
+                <CircularProgress />
+            </Box>
+        );
     }
 
     return (
@@ -270,6 +347,7 @@ const AdvertPage: React.FC = () => {
                                 display: "flex",
                                 width: "100%",
                                 justifyContent: "space-between",
+                                alignItems: "center",
                             }}
                         >
                             <Typography
@@ -283,13 +361,31 @@ const AdvertPage: React.FC = () => {
                                 {new Date(
                                     advertData.creationDate
                                 ).toLocaleDateString() ===
-                                new Date().toLocaleDateString()
+                                    new Date().toLocaleDateString()
                                     ? "сьогодні"
                                     : new Date(
-                                          advertData.creationDate
-                                      ).toLocaleDateString()}
+                                        advertData.creationDate
+                                    ).toLocaleDateString()}
                             </Typography>
-                            <HeartIcon />
+                            <IconButton
+                                onClick={() =>
+                                    handleHeartIconClick(advertData.id)
+                                }
+                            >
+                                {favoriteAdvertsIds.includes(advertData.id) ? (
+                                    <Favorite
+                                        sx={{
+                                            width: "35px",
+                                            height: "35px",
+                                            color: "#ff0054",
+                                        }}
+                                    />
+                                ) : (
+                                    <FavoriteBorder
+                                        sx={{ width: "35px", height: "35px" }}
+                                    />
+                                )}
+                            </IconButton>
                         </Box>
                         <Box
                             sx={{
@@ -321,8 +417,8 @@ const AdvertPage: React.FC = () => {
                                 {advertData.currencyId == "USD"
                                     ? `${advertData.price}$`
                                     : advertData.currencyId == "EUR"
-                                    ? `${advertData.price}€`
-                                    : `${advertData.price} грн.`}
+                                        ? `${advertData.price}€`
+                                        : `${advertData.price} грн.`}
                             </Typography>
                         </Box>
                         {isAuthorized ? (
@@ -341,6 +437,9 @@ const AdvertPage: React.FC = () => {
                                     sx={{
                                         height: "65px",
                                         width: "436px",
+                                    }}
+                                    onClick={() => {
+                                        setOpen(true);
                                     }}
                                 />
                                 <StyledButton
@@ -445,16 +544,27 @@ const AdvertPage: React.FC = () => {
                             >
                                 {<TopFluentIcon />}Підняти оголошення
                             </Typography>
-                            <Typography
+                            <Button
+                                onClick={handleOpenReportDialog}
                                 sx={{
+                                    textTransform: "none",
                                     fontFamily: "Nunito",
                                     fontSize: "18px",
                                     fontWeight: "600",
                                     color: "#E23030",
                                 }}
+                                style={{
+                                    backgroundColor: "transparent",
+                                }}
                             >
                                 Поскаржитися
-                            </Typography>
+                            </Button>
+                            <ReportDialog
+                                open={openReportDialog}
+                                advertId={advertData.id}
+                                userId={userData.id}
+                                handleClose={handleCloseReportDialog}
+                            />
                         </Box>
                         <Box
                             sx={{
@@ -794,10 +904,17 @@ const AdvertPage: React.FC = () => {
                                 location={advert.location}
                                 date={advert.creationDate}
                                 image={advert.pictures[0]}
+                                isFavorite={favoriteAdvertsIds.includes(
+                                    advert.id
+                                )}
                                 onClick={() => {
                                     handleAdvertClick(advert.id);
                                 }}
+                                onHeartClick={() => {
+                                    handleHeartIconClick(advert.id);
+                                }}
                                 price={advert.price}
+                                currency={advert.currencyId}
                             />
                         ))
                     )}
@@ -835,14 +952,35 @@ const AdvertPage: React.FC = () => {
                             location={advert.location}
                             date={advert.creationDate}
                             image={advert.pictures[0]}
+                            isFavorite={favoriteAdvertsIds.includes(advert.id)}
                             onClick={() => {
                                 handleAdvertClick(advert.id);
                             }}
+                            onHeartClick={() => {
+                                handleHeartIconClick(advert.id);
+                            }}
                             price={advert.price}
+                            currency={advert.currencyId}
                         />
                     ))}
                 </Box>
             </Box>
+            <Dialog
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="confirm-delete-title"
+                aria-describedby="confirm-delete-description"
+            >
+                <DialogTitle id="confirm-delete-title">Чат</DialogTitle>
+                <DialogContent>
+                    <Chat advertId={advertData.id} advertHeader={advertData.name} sellerId={advertData.userId} width="500px" />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleClose} color="primary">
+                        Вийти
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </StyledEngineProvider>
     );
 };

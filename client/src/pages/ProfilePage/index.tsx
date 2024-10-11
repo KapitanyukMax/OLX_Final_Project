@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button } from '@mui/material';
-import { auth } from '../../../firebaseConfig';
+import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
 import axios from 'axios';
+import { auth } from '../../../firebaseConfig';
 import { User, onAuthStateChanged, updateProfile } from 'firebase/auth';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { StyledEngineProvider, Box } from '@mui/material';
@@ -13,14 +13,17 @@ import StyledLabel from '../../components/lable';
 import StyledIconButton from '../../components/iconButton';
 import IInCircleIcon from '../../components/icons/iInCircle';
 import { Link } from 'react-router-dom';
-import { StyledDropdown } from '../../components/dropdown';
 import SearchIcon from '../../components/icons/search';
 import { StyledAdvert } from '../../components/advert';
 
 const ProfilePage: React.FC = () => {
+    const host = import.meta.env.VITE_HOST;
+
     const [currentUser, setCurrentUser] = useState<User | null>(null);
     const [userData, setUserData] = useState<any>(null);
+
     const [isEditable, setIsEditable] = useState(true);
+
     const [adverts, setAdverts] = useState<any[]>([]);
     const [searchTerm, setSearchTerm] = useState<string | null>(null);
 
@@ -35,6 +38,14 @@ const ProfilePage: React.FC = () => {
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [totalPages, setTotalPages] = useState<number>(1);
 
+    const [sortValue, setSortValue] = useState<string>('По даті(спадання)');
+    const sortValues = ['По даті(спадання)', 'По даті(зростання)', 'По ціні(спадання)', 'По ціні(зростання)'];
+
+    const [categories, setCategories] = useState<{ id: string; name: string; picture: string; subcategories: [] }[]>([]);
+    const [category, setCategory] = useState<string>('');
+
+    const [favoriteAdvertsIds, setFavoriteAdvertsIds] = useState<string[]>([]);
+
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
             setCurrentUser(user);
@@ -44,28 +55,74 @@ const ProfilePage: React.FC = () => {
         return () => unsubscribe();
     }, []);
 
+    const fetchFavorites = async () => {
+        try {
+            if (!userData) return;
+            const response = await axios.get(`${host}/favorites/userId?userId=${userData.id}`);
+            const favoriteAdvertIds = response.data.adverts.map((advert: any) => advert.id);
+            setFavoriteAdvertsIds(favoriteAdvertIds);
+        } catch (error) {
+            console.error('Error fetching favorites', error);
+        }
+    };
+
+    const handleHeartIconClick = async (advertId: string) => {
+        if (currentUser === null) {
+            window.location.href = '/registration';
+        }
+        if (favoriteAdvertsIds.includes(advertId)) {
+            await axios.get(`${host}/favorites/remove?userId=${userData.id}&advertId=${advertId}`);
+            setFavoriteAdvertsIds(favoriteAdvertsIds.filter(id => id !== advertId));
+        } else {
+            await axios.get(`${host}/favorites/add?userId=${userData.id}&advertId=${advertId}`);
+            setFavoriteAdvertsIds([...favoriteAdvertsIds, advertId]);
+        }
+    };
+
     const getAdverts = async (page: number = 1, searchTerm?: string) => {
         if (userData) {
             let response;
             const limit = 8;
             let startAfterParam = page > 1 ? adverts[adverts.length - 1].id : null;
 
+            const sortQuery = sortValue === 'По даті(спадання)' ? 'sortBy=creationDate&sortOrder=desc' :
+                sortValue === 'По даті(зростання)' ? 'sortBy=creationDate&sortOrder=asc' :
+                    sortValue === 'По ціні(спадання)' ? 'sortBy=price&sortOrder=desc' :
+                        sortValue === 'По ціні(зростання)' ? 'sortBy=price&sortOrder=asc' : '';
+
             if (searchTerm && searchTerm.length > 0) {
                 startAfterParam = null;
-                response = await axios.get(`http://localhost:5000/adverts/userId?userId=${userData.id}&searchTerm=${searchTerm}`);
+                response = await axios.get(`${host}/adverts/userId?userId=${userData.id}&searchTerm=${searchTerm}&${sortQuery}`);
             } else {
-                response = await axios.get(`http://localhost:5000/adverts/userId?userId=${userData.id}&limit=${limit}&startAfter=${startAfterParam}`);
+                response = await axios.get(`${host}/adverts/userId?userId=${userData.id}&limit=${limit}&startAfter=${startAfterParam}&${sortQuery}`);
             }
 
             if (response) {
-                const { adverts: data, totalCount } = response.data;
-                setAdverts(data);
+                if (category === '' || category === 'Всі категорії') {
+                    const { adverts: data, totalCount } = response.data;
+                    setAdverts(data);
 
-                if (!searchTerm || searchTerm.length === 0) {
-                    setTotalPages(Math.ceil(totalCount / limit));
+                    if (!searchTerm || searchTerm.length === 0) {
+                        setTotalPages(Math.ceil(totalCount / limit));
+                    }
+
+                    console.log(data);
                 }
+                else {
+                    const { adverts: data, totalCount } = response.data;
+                    const subcategoriesRef = await axios.get(`${host}/subcategories/by-category/${category}`);
+                    if (subcategoriesRef.data.length > 0) {
+                        const subcategories = subcategoriesRef.data.map((subcategory: any) => subcategory.id);
+                        const filteredData = data.filter((advert: any) => subcategories.includes(advert.subCategoryId));
+                        setAdverts(filteredData);
+                    }
 
-                console.log(data);
+                    if (!searchTerm || searchTerm.length === 0) {
+                        setTotalPages(Math.ceil(totalCount / limit));
+                    }
+
+                    console.log(data);
+                }
             } else {
                 return;
             }
@@ -76,6 +133,7 @@ const ProfilePage: React.FC = () => {
 
     useEffect(() => {
         getAdverts();
+        fetchFavorites();
     }, [userData]);
 
     useEffect(() => {
@@ -85,6 +143,47 @@ const ProfilePage: React.FC = () => {
     useEffect(() => {
         getAdverts(currentPage, searchTerm || '');
     }, [searchTerm]);
+
+    useEffect(() => {
+        const setUser = async () => {
+            if (currentUser) {
+                try {
+                    const response = await axios.get(`${host}/users/email?email=${currentUser.email}`);
+                    setUserData(response.data);
+                    setDisplayName(response.data.name);
+                    setPhoneNumber(response.data.phone);
+                    setImage(response.data.picture);
+                } catch (error) {
+                    console.error('Error getting user data:', error);
+                }
+            }
+        }
+
+        setUser();
+    }, [currentUser]);
+
+    useEffect(() => {
+        getAdverts(currentPage, searchTerm || '');
+    }, [sortValue]);
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const response = await axios.get(`${host}/categories`);
+
+                setCategories(response.data);
+                setCategories([{ id: '', name: 'Всі категорії', picture: '', subcategories: [] }, ...response.data]);
+            } catch (error) {
+                console.error('Error fetching categories', error);
+            }
+        };
+
+        fetchCategories();
+    }, []);
+
+    useEffect(() => {
+        getAdverts(currentPage, searchTerm || '');
+    }, [category]);
 
     const handlePageChange = (pageNumber: number) => {
         setCurrentPage(pageNumber);
@@ -104,24 +203,6 @@ const ProfilePage: React.FC = () => {
         }
         return buttons;
     };
-
-    useEffect(() => {
-        const setUser = async () => {
-            if (currentUser) {
-                try {
-                    const response = await axios.get(`http://localhost:5000/users/email?email=${currentUser.email}`);
-                    setUserData(response.data);
-                    setDisplayName(response.data.name);
-                    setPhoneNumber(response.data.phone);
-                    setImage(response.data.picture);
-                } catch (error) {
-                    console.error('Error getting user data:', error);
-                }
-            }
-        }
-
-        setUser();
-    }, [currentUser]);
 
     const handleEditClick = () => {
         setIsEditable((prevState) => !prevState);
@@ -167,7 +248,7 @@ const ProfilePage: React.FC = () => {
                 photoURL: typeof downloadURL === 'string' ? downloadURL : ''
             });
 
-            await axios.put('http://localhost:5000/users', {
+            await axios.put(`${host}/users`, {
                 id: userData.id,
                 name: displayName,
                 phone: phoneNumber,
@@ -191,6 +272,8 @@ const ProfilePage: React.FC = () => {
 
         try {
             await auth.signOut();
+            localStorage.removeItem('email');
+            localStorage.removeItem('password');
             window.location.href = '/registration';
             console.log('User signed out successfully');
         } catch (error) {
@@ -207,7 +290,7 @@ const ProfilePage: React.FC = () => {
         if (!adId) return;
 
         try {
-            await axios.delete(`http://localhost:5000/adverts/${adId}`);
+            await axios.delete(`${host}/adverts/${adId}`);
             console.log('Advert deleted successfully');
             window.location.reload();
         } catch (error) {
@@ -227,6 +310,14 @@ const ProfilePage: React.FC = () => {
         setOpen(false);
         setSelectedAd(null);
     };
+
+    const handleSortChange = (value: string) => {
+        setSortValue(value);
+    };
+
+    const handleCategoryChange = (value: string) => {
+        setCategory(value);
+    }
 
     return (
         <StyledEngineProvider injectFirst>
@@ -258,7 +349,7 @@ const ProfilePage: React.FC = () => {
                                 <input
                                     id="fileInput"
                                     type="file"
-                                    style={{ display: 'none' }} // Приховуємо цей елемент
+                                    style={{ display: 'none' }}
                                     onChange={(e) => handleImageChange(e)}
                                     accept="image/*"
                                 />
@@ -283,16 +374,13 @@ const ProfilePage: React.FC = () => {
                                 ) : (
                                     <p>Loading user data...</p>
                                 )}
-                                {/* <StyledInput value='Рівненська область' label="Регіон" widthType='middle' disabled={isEditable} /> */}
                             </Box>
                             <Box sx={{ display: 'flex', flexDirection: 'row', gap: '50px' }}>
-                                {/* <StyledInput value='Ромашко' label="Прізвище" widthType='middle' disabled={isEditable} /> */}
                                 {userData ? (
                                     <StyledInput value={userData?.email || 'Електронна пошта не вказана'} label="Електронна пошта" widthType='middle' disabled={true} />
                                 ) : (
                                     <p>Loading user data...</p>
                                 )}
-                                {/* <StyledInput value='Рівне' label="Назва населеного пункту" widthType='middle' disabled={isEditable} /> */}
                             </Box>
                             {
                                 !isEditable ? (
@@ -328,19 +416,18 @@ const ProfilePage: React.FC = () => {
                         <Link to='#'>Дізнатись більше</Link>
                     </Box>
 
-                    <Box sx={{
+                    {/* <Box sx={{
                         display: 'flex',
                         flexDirection: 'row',
                         gap: '42px',
                         marginTop: '80px',
                     }}>
-                        <StyledButton text='Мої оголошення' type='outlined' />
-                        <StyledButton text='Повідомлення' type='outlined' />
+                        <StyledButton text='Мої оголошення' type='outlined' onClick={() => handleWhatPageChange("Мої оголошення")} />
+                        <StyledButton text='Повідомлення' type='outlined' onClick={() => handleWhatPageChange("Повідомлення")} />
                         <StyledButton text='Платежі та рахунок DDX' type='outlined' />
                         <StyledButton text='Робота на DDX' type='outlined' />
                         <StyledButton text='DDX доставка' type='outlined' />
-                        <StyledButton text='Налаштуваня' type='outlined' />
-                    </Box>
+                    </Box> */}
                 </Box>
 
                 <Box sx={{
@@ -357,27 +444,62 @@ const ProfilePage: React.FC = () => {
                         width: '1400px',
                         height: '100%',
                     }}>
-                        <Box sx={{ display: 'flex', flexDirection: 'row', marginTop: '38px', gap: '30px' }}>
+                        {/* <Box sx={{ display: 'flex', flexDirection: 'row', marginTop: '38px', gap: '30px' }}>
                             <StyledButton text='Активні' type='outlined' />
                             <StyledButton text='Неактивні' type='outlined' />
                             <StyledButton text='Очікуючі' type='outlined' />
                             <StyledButton text='Неоплачені' type='outlined' />
                             <StyledButton text='Відхилені' type='outlined' />
                             <StyledButton text='Архів' type='outlined' />
-                        </Box>
+                        </Box> */}
 
                         <Box sx={{ display: 'flex', flexDirection: 'row', marginTop: '75px', gap: '60px' }}>
-                            <StyledDropdown values={[]} placeholder='Додати фільтр' type='small' />
-                            <StyledInput value={searchTerm ?? 'Заголовок, ID'} iconEnd={SearchIcon} widthType='small' onChange={(e) => { handleSearchChange(e.target.value) }} />
-                            <StyledDropdown values={[]} placeholder='Категорія' />
-                            <StyledDropdown values={[]} placeholder='Сортувати' />
+                            <StyledInput placeholder='Заголовок' value={searchTerm || ''} iconEnd={SearchIcon} widthType='small' onChange={(e) => { handleSearchChange(e.target.value) }} />
+                            <FormControl fullWidth sx={{ width: '267px' }}>
+                                <InputLabel id='category' sx={{ fontFamily: 'Nunito', fontSize: '18px', fontWeight: '400' }}>Категорія</InputLabel>
+                                <Select labelId='category' label='Категорія' sx={{ height: '50px', borderRadius: '10px', border: '1px solid #000', background: 'white', textAlign: 'left', fontFamily: 'Nunito', fontSize: '18px', fontWeight: '400' }} value={category} onChange={(e) => handleCategoryChange(e.target.value as string)}>
+                                    {categories.map((item, index) => (
+                                        <MenuItem
+                                            key={index}
+                                            value={item.id}
+                                            sx={{
+                                                fontFamily: "Nunito",
+                                                fontSize: "18px",
+                                                fontWeight: '400',
+                                                color: '#737070'
+                                            }}
+                                        >
+                                            {item.name}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                            <FormControl fullWidth sx={{ width: '267px' }}>
+                                <InputLabel id='sortValue'>Сортувати</InputLabel>
+                                <Select labelId='sortValue' label='Сортувати' sx={{ height: '50px', borderRadius: '10px', border: '1px solid #000', background: 'white', textAlign: 'left', fontFamily: 'Nunito', fontSize: '18px' }} value={sortValue} onChange={(e) => handleSortChange(e.target.value as string)}>
+                                    {sortValues.map((item, index) => (
+                                        <MenuItem
+                                            key={index}
+                                            value={item}
+                                            sx={{
+                                                fontFamily: "Nunito",
+                                                fontSize: "18px",
+                                                fontWeight: '400',
+                                                color: '#737070'
+                                            }}
+                                        >
+                                            {item}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
                         </Box>
 
                         <Box sx={{ display: 'flex', flexDirection: 'row', marginTop: '100px', width: '100%', marginBottom: '40px' }}>
                             {adverts.length === 0 ? (
                                 <Box sx={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
                                     <Box sx={{ display: 'flex', flexDirection: 'column', width: '831px', justifyContent: 'center', alignItems: 'center', gap: '30px' }}>
-                                        <ImageComponent src='https://via.placeholder.com/363' alt='user' width='363px' height='321px' />
+                                        <ImageComponent src='https://firebasestorage.googleapis.com/v0/b/olx-final-project-c6878.appspot.com/o/images%2F4901196-01%201.png?alt=media&token=46284f4a-985d-4b29-b06c-38f5f5784d8f' alt='user' width='363px' height='321px' />
                                         <StyledLabel text='Активні оголошення відображаються тут до закінчення їх терміну дії' type='primary' textType='middle' textColor='black' />
                                         <StyledLabel text='Ці оголошення доступні для перегляду всім і стають неактивними через 30 днів після їх активації' type='primary' textType='small' textColor='black' />
                                         <StyledButton text='Додати оголошення' type='contained' onClick={() => { window.location.href = '/advert-create' }} />
@@ -402,6 +524,8 @@ const ProfilePage: React.FC = () => {
                                                     date={advert.creationDate}
                                                     image={advert.pictures[0]}
                                                     price={advert.price}
+                                                    currency={advert.currencyId}
+                                                    isFavorite={favoriteAdvertsIds.includes(advert.id)}
                                                     onClick={
                                                         () => {
                                                             window.location.href = `/advert/${advert.id}`;
@@ -412,7 +536,10 @@ const ProfilePage: React.FC = () => {
                                                         () => {
                                                             window.location.href = `/advert-edit/${advert.id}`;
                                                         }
-                                                    } />
+                                                    }
+                                                    onHeartClick={() => {
+                                                        handleHeartIconClick(advert.id);
+                                                    }} />
                                             ))
                                         )}
                                     </Box>
@@ -423,6 +550,7 @@ const ProfilePage: React.FC = () => {
                                 </Box>
                             )}
                         </Box>
+
                     </Box>
                 </Box>
             </Box>

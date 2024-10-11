@@ -7,7 +7,7 @@ router.route('/')
     .post(advertsController.createAdvert)
     .put(advertsController.updateAdvert);
 
-router.route('/subcategoryId')
+router.route('/subCategoryId')
     .get(advertsController.getAdvertsBySubcategoryId);
 
 router.route('/categoryId')

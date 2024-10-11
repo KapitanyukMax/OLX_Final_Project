@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import SearchIcon from '@mui/icons-material/Search';
 import { StyledInput } from '../input';
 import StyledButton from '../button';
-import { Box, Input, InputAdornment } from '@mui/material';
+import { Box } from '@mui/material';
 import './styles.css';
 
 interface SearchProps {
@@ -17,6 +17,10 @@ const Search: React.FC<SearchProps> = ({ value, onSearch, onSearchTermChange }) 
     );
 
     const [searchTerm, setSearchTerm] = useState(value ?? '');
+
+    useEffect(() => {
+        setSearchTerm(value ?? '');
+    }, [value]);
 
     return (
         <Box sx={{
@@ -33,15 +37,13 @@ const Search: React.FC<SearchProps> = ({ value, onSearch, onSearchTermChange }) 
                 alignItems: 'flex-start',
                 textAlign: 'left'
             }}>
-                <Input value={searchTerm} placeholder={'Що шукаємо?'} className='basic-input'
+                <StyledInput value={searchTerm} placeholder='Що шукаємо'
+                    iconEnd={StyledSearchIcon} width='100%'
                     onChange={e => {
+                        console.log(searchTerm);
                         setSearchTerm(e.target.value);
                         onSearchTermChange?.(e.target.value);
-                    }}
-                    endAdornment={(
-                    <InputAdornment position='end'>
-                        <StyledSearchIcon />
-                    </InputAdornment>)} />
+                    }} />
             </Box>
             <StyledInput value='Вся Україна' iconEnd={StyledSearchIcon} width="254px" />
             <StyledInput value='Місто/село' iconEnd={StyledSearchIcon} width="254px" />

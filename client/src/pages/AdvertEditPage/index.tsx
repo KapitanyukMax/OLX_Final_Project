@@ -19,19 +19,28 @@ import './styles.css';
 import { useParams } from 'react-router-dom';
 
 const AdvertEditPage: React.FC = () => {
+    const host = import.meta.env.VITE_HOST;
+
     const { advertId } = useParams<{ advertId: string }>();
+
     const [currentUser, setCurrentUser] = useState<User | null>(null);
+
     const [openErrorDialog, setOpenErrorDialog] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
+    const [successMessage, setSuccessMessage] = useState('');
+    const [openSuccessDialog, setOpenSuccessDialog] = useState(false);
+
     const [selectedImages, setSelectedImages] = useState<File[]>([]);
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
+
     const [cities, setCities] = useState<string[]>([]);
+
     const [category, setCategory] = useState('');
     const [categories, setCategories] = useState<{ id: string; name: string; picture: string; subcategories: [] }[]>([]);
     const [subCategories, setSubCategories] = useState<{ id: string, name: string }[]>([]);
+
     const [currencies, setCurrencies] = useState<string[]>([]);
-    const fileInputRef = useRef<HTMLInputElement | null>(null);
-    const [successMessage, setSuccessMessage] = useState('');
-    const [openSuccessDialog, setOpenSuccessDialog] = useState(false);
+
     const [loading, setLoading] = useState(true);
 
     const storage = getStorage();
@@ -44,7 +53,6 @@ const AdvertEditPage: React.FC = () => {
         image: '',
     });
 
-    const host = import.meta.env.VITE_HOST;
 
     const [formData, setFormData] = useState<{
         userId: string;
@@ -211,7 +219,7 @@ const AdvertEditPage: React.FC = () => {
         }
 
         try {
-            const response = await axios.put(`http://localhost:5000/adverts`, formData);
+            const response = await axios.put(`${host}/adverts`, formData);
             console.log('Advert updated successfully', response.data);
 
             setSuccessMessage('Оголошення оновлено успішно!');
@@ -228,7 +236,7 @@ const AdvertEditPage: React.FC = () => {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/categories');
+                const response = await axios.get(`${host}/categories`);
 
                 setCategories(response.data);
             } catch (error) {
@@ -242,7 +250,7 @@ const AdvertEditPage: React.FC = () => {
     useEffect(() => {
         const fetchCurrency = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/currencies');
+                const response = await axios.get(`${host}/currencies`);
                 const currencies = response.data.map((currency: { abbrEng: string }) => currency.abbrEng);
 
                 setCurrencies(currencies);
@@ -258,7 +266,7 @@ const AdvertEditPage: React.FC = () => {
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
             console.log(user);
             if (user?.email) {
-                const response = await axios.get(`http://localhost:5000/users/email?email=${user.email}`);
+                const response = await axios.get(`${host}/users/email?email=${user.email}`);
                 setCurrentUser(response.data);
                 setFormData((prevFormData) => ({
                     ...prevFormData,
@@ -274,10 +282,10 @@ const AdvertEditPage: React.FC = () => {
         const fetchAdvert = async () => {
             setLoading(true);
             try {
-                const response = await axios.get(`http://localhost:5000/adverts/id/?id=${advertId}`);
+                const response = await axios.get(`${host}/adverts/${advertId}`);
                 if (response.data.subCategoryId) {
-                    const subCategoryResponse = await axios.get(`http://localhost:5000/subcategories/${response.data.subCategoryId}`);
-                    const categoryResponse = await axios.get(`http://localhost:5000/categories/${subCategoryResponse.data.categoryId}`);
+                    const subCategoryResponse = await axios.get(`${host}/subcategories/${response.data.subCategoryId}`);
+                    const categoryResponse = await axios.get(`${host}/categories/${subCategoryResponse.data.categoryId}`);
                     handleCategory(categoryResponse.data.id);
                 }
                 setFormData(response.data);
@@ -297,7 +305,7 @@ const AdvertEditPage: React.FC = () => {
 
     const fetchCities = async (value: string) => {
         try {
-            const response = await axios.post('http://localhost:5000/cities', {
+            const response = await axios.post(`${host}/cities`, {
                 apiKey: '15d0f1b8de9dc0f5370abcf1906f03cd',
                 modelName: "AddressGeneral",
                 calledMethod: "getSettlements",
@@ -343,7 +351,7 @@ const AdvertEditPage: React.FC = () => {
     const handleCategory = async (value: string) => {
         setSubCategories([]);
         setCategory(value);
-        const res = await axios.get("http://localhost:5000/subcategories/by-category/" + value);
+        const res = await axios.get(`${host}/subcategories/by-category/${value}`);
         if (res.data === undefined) {
             setSubCategories([]);
         } else {
@@ -368,7 +376,7 @@ const AdvertEditPage: React.FC = () => {
                     <Box sx={{
                         margin: '60px',
                     }}>
-                        <StyledLabel text="Створити оголошення" type='head' textType='head' textColor='var(--blue)' />
+                        <StyledLabel text="Редагувати оголошення" type='head' textType='head' textColor='var(--blue)' />
                     </Box>
                     <Box sx={{
                         width: '100%',
@@ -383,7 +391,7 @@ const AdvertEditPage: React.FC = () => {
                     }}>
                         <Box>
                             <StyledLabel text="Заголовок" type='head' textType='head' textColor='black' />
-                            <StyledInput value={formData.name} label='Вкажіть назву' required widthType='large' maxLength={80} onChange={(e) => handleNameChange(e.target.value)} />
+                            <StyledInput placeholder="Вкажіть назву" value={formData.name} label='Вкажіть назву' required widthType='large' maxLength={80} onChange={(e) => handleNameChange(e.target.value)} />
                             {errors.name && <div className="error-message">{errors.name}</div>}
                         </Box>
                         <Box sx={{
@@ -395,7 +403,7 @@ const AdvertEditPage: React.FC = () => {
                             <StyledLabel text="Вкажіть категорію*" type='primary' textType='small' textColor='black' />
                             <FormControl fullWidth sx={{ width: '600px' }}>
                                 <InputLabel id='category' className='modified' sx={{ fontSize: '16px', fontWeight: '400' }}>Категорія</InputLabel>
-                                <Select labelId='category' className='modified' sx={{ borderRadius: '10px', border: '1px solid #000' }} label='Категорія' value={category} onChange={(e) => handleCategory(e.target.value as string)}>
+                                <Select labelId='category' className='modified' sx={{ borderRadius: '10px', border: '0px solid #000' }} label='Категорія' value={category} onChange={(e) => handleCategory(e.target.value as string)}>
                                     {categories.map((item, index) => (
                                         <MenuItem
                                             key={index}
@@ -414,7 +422,7 @@ const AdvertEditPage: React.FC = () => {
                             </FormControl>
                             <FormControl fullWidth sx={{ width: '600px' }}>
                                 <InputLabel id='subCategory'>Підкатегорія</InputLabel>
-                                <Select labelId='subCategory' label='Категорія' sx={{ borderRadius: '10px', border: '1px solid #000' }} value={formData.subCategoryId} onChange={(e) => handleSubCategoryChange(e.target.value as string)}>
+                                <Select labelId='subCategory' label='Категорія' sx={{ borderRadius: '10px', border: '0px solid #000' }} value={formData.subCategoryId} onChange={(e) => handleSubCategoryChange(e.target.value as string)}>
                                     {subCategories.map((item, index) => (
                                         <MenuItem
                                             key={index}
@@ -516,10 +524,10 @@ const AdvertEditPage: React.FC = () => {
                             gap: '36px',
                             alignItems: 'end',
                         }}>
-                            <StyledInput label='Вкажіть ціну' value={formData.price.toString()} widthType='middle' onChange={(e) => handlePriceChange(e.target.value)} />
+                            <StyledInput label='Вкажіть ціну' placeholder="1080" value={formData.price == 0 ? '' : formData.price.toString()} widthType='middle' onChange={(e) => handlePriceChange(e.target.value)} />
                             <FormControl fullWidth sx={{ width: '300px' }}>
                                 <InputLabel id='currency'>Валюта</InputLabel>
-                                <Select labelId='currency' label='Валюта' sx={{ borderRadius: '10px', border: '1px solid #000' }} value={formData.currencyId} onChange={(e) => handleCurrencyChange(e.target.value as string)}>
+                                <Select labelId='currency' label='Валюта' sx={{ borderRadius: '10px', border: '0px solid #000' }} value={formData.currencyId} onChange={(e) => handleCurrencyChange(e.target.value as string)}>
                                     {currencies.map((item, index) => (
                                         <MenuItem
                                             key={index}
@@ -534,7 +542,6 @@ const AdvertEditPage: React.FC = () => {
                                     ))}
                                 </Select>
                             </FormControl>
-                            <StyledCheckBox label='Договірна' />
                         </Box>
                     </Box>
                     <Box sx={{
@@ -624,7 +631,7 @@ const AdvertEditPage: React.FC = () => {
                         marginBottom: '120px',
                     }}>
                         <StyledLabel text="Опис оголошення" type='head' textType='head' textColor='black' />
-                        <StyledTextArea label='Введіть опис' required value={formData.description} maxLength={9000} minRows={18} onChange={(e) => handleDescriptionChange(e.target.value)} />
+                        <StyledTextArea label='Введіть опис' required placeholder="Будь ласка, додайте опис оголошення" value={formData.description} maxLength={9000} minRows={18} onChange={(e) => handleDescriptionChange(e.target.value)} />
                         {errors.description && <div className="error-message">{errors.description}</div>}
                         <StyledButton text='Оновити оголошення' type='contained' primaryColor='var(--light-blue)' secondaryColor='white' hoverBackColor='var(--green)' onClick={handleSubmit} />
                         <StyledButton text='Скасувати' type='contained' primaryColor='red' secondaryColor='white' hoverBackColor='var(--green)' onClick={
