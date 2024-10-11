@@ -7,6 +7,9 @@ router.route('/')
     .post(categoriesController.createCategory)
     .put(categoriesController.updateCategory);
 
+router.route('/name')
+    .get(categoriesController.getCategoryByName);
+
 router.route('/:id')
     .get(categoriesController.getCategoryById)
     .delete(categoriesController.deleteCategory);

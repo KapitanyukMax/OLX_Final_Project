@@ -6,7 +6,7 @@ const db = admin.firestore();
 const getAllCategories = async (req, res, next) => {
     try {
         const collection = await db.collection('categories').get();
-        
+
         logger.info('Categories received successfully');
         res.status(200).json(collection.docs.map(doc => {
             return {
@@ -38,9 +38,32 @@ const getCategoryById = async (req, res, next) => {
     }
 };
 
+const getCategoryByName = async (req, res, next) => {
+    try {
+        const categoriesSnapshot = await db.collection('categories')
+            .where('name', '==', req.query.name)
+            .limit(1)
+            .get();
+
+        const doc = categoriesSnapshot.docs[0];
+        if (!doc || !doc.exists) {
+            logger.info(`Bad Request - category with name "${req.query.name}" does not exist`);
+            return res.status(400).json({ message: `The category with name "${req.query.name}" does not exist.` });
+        }
+
+        logger.info('Category received successfully');
+        res.status(200).json({
+            id: doc.id,
+            ...doc.data()
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
 const createCategory = async (req, res, next) => {
     try {
-        const { name, picture } = req.body;
+        const { name, picture, subcategories } = req.body;
         if (!name) {
             logger.info('Bad Request - category name is required');
             return res.status(400).json({ message: 'Category name is required.' });
@@ -50,7 +73,7 @@ const createCategory = async (req, res, next) => {
             return res.status(400).json({ message: 'Category picture url is required.' });
         }
 
-        const docRef = await db.collection('categories').add({ name, picture });
+        const docRef = await db.collection('categories').add({ name, picture, subcategories });
         const doc = await docRef.get();
 
         logger.info('Category created successfully');
@@ -65,7 +88,7 @@ const createCategory = async (req, res, next) => {
 
 const updateCategory = async (req, res, next) => {
     try {
-        let { id, name, picture } = req.body;
+        let { id, name, picture, subcategories } = req.body;
         if (!id) {
             logger.info('Bad Request - category id is required');
             return res.status(400).json({ message: 'Category id is required.' });
@@ -81,7 +104,7 @@ const updateCategory = async (req, res, next) => {
         name ??= doc.data().name;
         picture ??= doc.data().picture;
 
-        await docRef.update({ name, picture });
+        await docRef.update({ name, picture, subcategories: Array.isArray(subcategories) ? subcategories : Array.of(subcategories) });
         doc = await docRef.get();
 
         logger.info('Category updated successfully');
@@ -115,6 +138,7 @@ const deleteCategory = async (req, res, next) => {
 module.exports = {
     getAllCategories,
     getCategoryById,
+    getCategoryByName,
     createCategory,
     updateCategory,
     deleteCategory
