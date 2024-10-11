@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, Input, InputLabel, InputAdornment, IconButton, SvgIconProps } from '@mui/material';
 import { StyledEngineProvider } from '@mui/material/styles';
 import './styles.css';
@@ -55,6 +55,12 @@ const StyledInput: React.FC<StyledInputProps> = ({
         }
     }
 
+    const [inputValue, setInputValue] = useState(value);
+
+    useEffect(() => {
+        setInputValue(value);
+    }, [value]);
+
     return (
         <StyledEngineProvider injectFirst>
             <Box className={widthType ? getInputWidth() : 'middle-input'}
@@ -72,7 +78,7 @@ const StyledInput: React.FC<StyledInputProps> = ({
                 <Input
                     id='input'
                     placeholder={placeholder}
-                    value={value}
+                    value={inputValue}
                     type={type}
                     sx={sx}
                     disabled={disabled}

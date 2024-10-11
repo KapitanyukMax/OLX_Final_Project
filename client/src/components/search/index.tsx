@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import SearchIcon from '@mui/icons-material/Search';
 import { StyledInput } from '../input';
 import StyledButton from '../button';
@@ -18,6 +18,10 @@ const Search: React.FC<SearchProps> = ({ value, onSearch, onSearchTermChange }) 
 
     const [searchTerm, setSearchTerm] = useState(value ?? '');
 
+    useEffect(() => {
+        setSearchTerm(value ?? '');
+    }, [value]);
+
     return (
         <Box sx={{
             display: 'flex',
@@ -34,8 +38,9 @@ const Search: React.FC<SearchProps> = ({ value, onSearch, onSearchTermChange }) 
                 textAlign: 'left'
             }}>
                 <StyledInput value={searchTerm} placeholder='Що шукаємо'
-                iconEnd={StyledSearchIcon} width='100%'
+                    iconEnd={StyledSearchIcon} width='100%'
                     onChange={e => {
+                        console.log(searchTerm);
                         setSearchTerm(e.target.value);
                         onSearchTermChange?.(e.target.value);
                     }} />
