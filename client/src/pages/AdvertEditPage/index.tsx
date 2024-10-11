@@ -282,7 +282,7 @@ const AdvertEditPage: React.FC = () => {
         const fetchAdvert = async () => {
             setLoading(true);
             try {
-                const response = await axios.get(`${host}/adverts/id/?id=${advertId}`);
+                const response = await axios.get(`${host}/adverts/${advertId}`);
                 if (response.data.subCategoryId) {
                     const subCategoryResponse = await axios.get(`${host}/subcategories/${response.data.subCategoryId}`);
                     const categoryResponse = await axios.get(`${host}/categories/${subCategoryResponse.data.categoryId}`);
@@ -403,7 +403,7 @@ const AdvertEditPage: React.FC = () => {
                             <StyledLabel text="Вкажіть категорію*" type='primary' textType='small' textColor='black' />
                             <FormControl fullWidth sx={{ width: '600px' }}>
                                 <InputLabel id='category' className='modified' sx={{ fontSize: '16px', fontWeight: '400' }}>Категорія</InputLabel>
-                                <Select labelId='category' className='modified' sx={{ borderRadius: '10px', border: '1px solid #000' }} label='Категорія' value={category} onChange={(e) => handleCategory(e.target.value as string)}>
+                                <Select labelId='category' className='modified' sx={{ borderRadius: '10px', border: '0px solid #000' }} label='Категорія' value={category} onChange={(e) => handleCategory(e.target.value as string)}>
                                     {categories.map((item, index) => (
                                         <MenuItem
                                             key={index}
@@ -422,7 +422,7 @@ const AdvertEditPage: React.FC = () => {
                             </FormControl>
                             <FormControl fullWidth sx={{ width: '600px' }}>
                                 <InputLabel id='subCategory'>Підкатегорія</InputLabel>
-                                <Select labelId='subCategory' label='Категорія' sx={{ borderRadius: '10px', border: '1px solid #000' }} value={formData.subCategoryId} onChange={(e) => handleSubCategoryChange(e.target.value as string)}>
+                                <Select labelId='subCategory' label='Категорія' sx={{ borderRadius: '10px', border: '0px solid #000' }} value={formData.subCategoryId} onChange={(e) => handleSubCategoryChange(e.target.value as string)}>
                                     {subCategories.map((item, index) => (
                                         <MenuItem
                                             key={index}
@@ -527,7 +527,7 @@ const AdvertEditPage: React.FC = () => {
                             <StyledInput label='Вкажіть ціну' placeholder="1080" value={formData.price == 0 ? '' : formData.price.toString()} widthType='middle' onChange={(e) => handlePriceChange(e.target.value)} />
                             <FormControl fullWidth sx={{ width: '300px' }}>
                                 <InputLabel id='currency'>Валюта</InputLabel>
-                                <Select labelId='currency' label='Валюта' sx={{ borderRadius: '10px', border: '1px solid #000' }} value={formData.currencyId} onChange={(e) => handleCurrencyChange(e.target.value as string)}>
+                                <Select labelId='currency' label='Валюта' sx={{ borderRadius: '10px', border: '0px solid #000' }} value={formData.currencyId} onChange={(e) => handleCurrencyChange(e.target.value as string)}>
                                     {currencies.map((item, index) => (
                                         <MenuItem
                                             key={index}
@@ -542,7 +542,6 @@ const AdvertEditPage: React.FC = () => {
                                     ))}
                                 </Select>
                             </FormControl>
-                            <StyledCheckBox label='Договірна' />
                         </Box>
                     </Box>
                     <Box sx={{
