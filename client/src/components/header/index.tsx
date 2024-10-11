@@ -3,7 +3,7 @@ import axios from 'axios';
 import { auth } from '../../../firebaseConfig';
 import { User, onAuthStateChanged } from 'firebase/auth';
 import { StyledEngineProvider } from '@mui/material/styles'
-import { Box, IconButton, Link } from "@mui/material";
+import { Box, FormControl, IconButton, InputLabel, Link, MenuItem, Select } from "@mui/material";
 import { Typography } from '@mui/material';
 import StyledIconButton from '../iconButton';
 import HeartWhiteIcon from '../icons/heartWhite';
@@ -20,6 +20,9 @@ const Header: React.FC = () => {
     const [currentUser, setCurrentUser] = useState<User | null>(null);
     const [userData, setUserData] = useState<any>(null);
     const [isAdmin, setIsAdmin] = useState<boolean>(true);
+
+    const [categories, setCategories] = useState<{ id: string, name: string, picture: string, subcategories: [] }[]>([]);
+    const [selectedCategory, setSelectedCategory] = useState<string>('');
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -41,14 +44,31 @@ const Header: React.FC = () => {
         }
     }
 
+    const fetchCategories = async () => {
+        try {
+            const response = await axios.get(`${host}/categories`);
+            console.log(response.data);
+            const data = response.data;
+            setCategories(data);
+        } catch (error) {
+            console.error('Error getting categories:', error);
+        }
+    }
+
     useEffect(() => {
         setUser();
+        fetchCategories();
     }, [currentUser]);
 
     useEffect(() => {
         setIsAdmin(userData?.isAdmin);
         console.log("Admin " + isAdmin);
     }, [userData]);
+
+    const handleCategoryChange = (category: string) => {
+        console.log(category);
+        window.location.href = `/adverts/${category}`;
+    }
 
     return (
         <StyledEngineProvider injectFirst>
@@ -86,7 +106,26 @@ const Header: React.FC = () => {
                         }}>
                             Головна
                         </Link>
-                        <StyledHeaderDropdown placeholder={'Категорії'} values={["Електроніка", "Одяг"]} />
+                        {/* <StyledHeaderDropdown placeholder={'Категорії'} values={categories} onChange={(e) => handleCategoryChange(e.target.value)} /> */}
+                        <FormControl fullWidth sx={{ width: '115px' }}>
+                            <InputLabel id='category' sx={{ fontFamily: 'Nunito', fontSize: '18px', fontWeight: '400', color: 'white' }}>Категорія</InputLabel>
+                            <Select labelId='category' label='Категорія' sx={{ height: '50px', borderRadius: '10px', border: '0px solid white', background: '#011034', textAlign: 'left', fontFamily: 'Nunito', fontSize: '18px', fontWeight: '400', color: 'white' }} value={selectedCategory} onChange={(e) => handleCategoryChange(e.target.value as string)}>
+                                {categories.map((item, index) => (
+                                    <MenuItem
+                                        key={index}
+                                        value={item.name}
+                                        sx={{
+                                            fontFamily: "Nunito",
+                                            fontSize: "18px",
+                                            fontWeight: '400',
+                                            color: '#737070'
+                                        }}
+                                    >
+                                        {item.name}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
                     </Box>
                     <Box sx={{
                         display: 'flex',

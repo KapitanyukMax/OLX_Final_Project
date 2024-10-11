@@ -25,15 +25,75 @@ import { StyledAdvert } from "../../components/advert";
 import InformationSection from "../../components/informationSection";
 import { Search } from "../../components/search";
 import { advertType } from "../../interfaces/advertType";
+import { onAuthStateChanged, User } from "firebase/auth";
+import { auth } from "../../../firebaseConfig";
 
 const HomePage: React.FC = () => {
+    const [currentUser, setCurrentUser] = useState<User | null>(null);
+    const [userData, setUserData] = useState<any>(null);
+
     const [adverts, setAdverts] = useState<advertType[]>([]);
     const [vipAdverts, setVipAdverts] = useState<advertType[]>([]);
     const [topAdverts, setTopAdverts] = useState<advertType[]>([]);
     const [isSearching, setIsSearching] = useState(false);
     const [searchValue, setSearchValue] = useState('');
 
+    const [favoriteAdvertsIds, setFavoriteAdvertsIds] = useState<string[]>([]);
+
     const host = import.meta.env.VITE_HOST;
+
+    const fetchFavorites = async () => {
+        try {
+            if (!userData) return;
+            const response = await axios.get(`${host}/favorites/userId?userId=${userData.id}`);
+            const favoriteAdvertIds = response.data.adverts.map((advert: any) => advert.id);
+            setFavoriteAdvertsIds(favoriteAdvertIds);
+        } catch (error) {
+            console.error('Error fetching favorites', error);
+        }
+    };
+
+    const handleHeartIconClick = async (advertId: string) => {
+        if (currentUser === null) {
+            window.location.href = '/registration';
+        }
+        if (favoriteAdvertsIds.includes(advertId)) {
+            await axios.get(`${host}/favorites/remove?userId=${userData.id}&advertId=${advertId}`);
+            setFavoriteAdvertsIds(favoriteAdvertsIds.filter(id => id !== advertId));
+        } else {
+            await axios.get(`${host}/favorites/add?userId=${userData.id}&advertId=${advertId}`);
+            setFavoriteAdvertsIds([...favoriteAdvertsIds, advertId]);
+        }
+    };
+
+    useEffect(() => {
+        getAdverts();
+        fetchFavorites();
+    }, [userData]);
+
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, async (user) => {
+            setCurrentUser(user);
+            console.log(user?.uid);
+        });
+
+        return () => unsubscribe();
+    }, []);
+
+    useEffect(() => {
+        const setUser = async () => {
+            if (currentUser) {
+                try {
+                    const response = await axios.get(`${host}/users/email?email=${currentUser.email}`);
+                    setUserData(response.data);
+                } catch (error) {
+                    console.error('Error getting user data:', error);
+                }
+            }
+        }
+
+        setUser();
+    }, [currentUser]);
 
     const getAdverts = async (search?: string, limit?: number) => {
         limit ??= 8;
@@ -118,11 +178,12 @@ const HomePage: React.FC = () => {
                             }}>
                                 {adverts.map((advert: advertType) => {
                                     return (
-                                        <StyledAdvert key={advert.id} title={advert.name} location={advert.location} date={advert.creationDate} image={advert.pictures[0]} price={advert.price} currency={advert.currencyId} onClick={
+                                        <StyledAdvert key={advert.id} isFavorite={favoriteAdvertsIds.includes(advert.id)} title={advert.name} location={advert.location} date={advert.creationDate} image={advert.pictures[0]} price={advert.price} currency={advert.currencyId} onClick={
                                             () => {
                                                 window.location.href = `/advert/${advert.id}`;
                                             }
-                                        } />
+                                        }
+                                            onHeartClick={() => handleHeartIconClick(advert.id)} />
                                     );
                                 })}
                             </Box>
@@ -234,11 +295,12 @@ const HomePage: React.FC = () => {
                             }}>
                                 {vipAdverts.map((advert: advertType) => {
                                     return (
-                                        <StyledAdvert key={advert.id} title={advert.name} location={advert.location} date={advert.creationDate} image={advert.pictures[0]} price={advert.price} isVIP={true} currency={advert.currencyId} onClick={
+                                        <StyledAdvert key={advert.id} isFavorite={favoriteAdvertsIds.includes(advert.id)} title={advert.name} location={advert.location} date={advert.creationDate} image={advert.pictures[0]} price={advert.price} isVIP={true} currency={advert.currencyId} onClick={
                                             () => {
                                                 window.location.href = `/advert/${advert.id}`;
                                             }
-                                        } />
+                                        }
+                                            onHeartClick={() => handleHeartIconClick(advert.id)} />
                                     );
                                 })}
                             </Box>
@@ -281,11 +343,12 @@ const HomePage: React.FC = () => {
                             }}>
                                 {topAdverts.map((advert: advertType) => {
                                     return (
-                                        <StyledAdvert key={advert.id} title={advert.name} location={advert.location} date={advert.creationDate} image={advert.pictures[0]} price={advert.price} isTOP={true} currency={advert.currencyId} onClick={
+                                        <StyledAdvert key={advert.id} isFavorite={favoriteAdvertsIds.includes(advert.id)} title={advert.name} location={advert.location} date={advert.creationDate} image={advert.pictures[0]} price={advert.price} isTOP={true} currency={advert.currencyId} onClick={
                                             () => {
                                                 window.location.href = `/advert/${advert.id}`;
                                             }
-                                        } />
+                                        }
+                                            onHeartClick={() => handleHeartIconClick(advert.id)} />
                                     );
                                 })}
                             </Box>
@@ -324,11 +387,12 @@ const HomePage: React.FC = () => {
                             }}>
                                 {adverts.map((advert: advertType) => {
                                     return (
-                                        <StyledAdvert key={advert.id} title={advert.name} location={advert.location} date={advert.creationDate} image={advert.pictures[0]} price={advert.price} currency={advert.currencyId} onClick={
+                                        <StyledAdvert key={advert.id} isFavorite={favoriteAdvertsIds.includes(advert.id)} title={advert.name} location={advert.location} date={advert.creationDate} image={advert.pictures[0]} price={advert.price} currency={advert.currencyId} onClick={
                                             () => {
                                                 window.location.href = `/advert/${advert.id}`;
                                             }
-                                        } />
+                                        }
+                                            onHeartClick={() => { handleHeartIconClick(advert.id) }} />
                                     );
                                 })}
                             </Box>
