@@ -24,11 +24,12 @@ import { List, ListItem, Typography } from "@mui/material";
 import { StyledAdvert } from "../../components/advert";
 import InformationSection from "../../components/informationSection";
 import { Search } from "../../components/search";
+import { advertType } from "../../interfaces/advertType";
 
 const HomePage: React.FC = () => {
-    const [adverts, setAdverts] = useState([]);
-    const [vipAdverts, setVipAdverts] = useState([]);
-    const [topAdverts, setTopAdverts] = useState([]);
+    const [adverts, setAdverts] = useState<advertType[]>([]);
+    const [vipAdverts, setVipAdverts] = useState<advertType[]>([]);
+    const [topAdverts, setTopAdverts] = useState<advertType[]>([]);
     const [isSearching, setIsSearching] = useState(false);
     const [searchValue, setSearchValue] = useState('');
 
@@ -46,7 +47,6 @@ const HomePage: React.FC = () => {
         if (response) {
             const data = response.data.adverts;
             setAdverts(data);
-            console.log(data);
         }
     };
 
@@ -56,7 +56,6 @@ const HomePage: React.FC = () => {
         if (response) {
             const data = response.data.adverts;
             setVipAdverts(data);
-            console.log(data);
         }
     };
 
@@ -66,12 +65,10 @@ const HomePage: React.FC = () => {
         if (response) {
             const data = response.data.adverts;
             setTopAdverts(data);
-            console.log(data);
         }
     };
 
     const onSearch = (searchTerm: string) => {
-        console.log(searchTerm);
         if (searchTerm) {
             setIsSearching(true);
             getAdverts(searchTerm, 20);
@@ -119,7 +116,7 @@ const HomePage: React.FC = () => {
                                 flexWrap: 'wrap',
                                 marginTop: '70px'
                             }}>
-                                {adverts.map((advert: any) => {
+                                {adverts.map((advert: advertType) => {
                                     return (
                                         <StyledAdvert key={advert.id} title={advert.name} location={advert.location} date={advert.creationDate} image={advert.pictures[0]} price={advert.price} currency={advert.currencyId} onClick={
                                             () => {
@@ -142,22 +139,70 @@ const HomePage: React.FC = () => {
                                 rowGap: '47px',
                                 columnGap: '24px'
                             }}>
-                                <StyledButton text='Транспорт' type='category' icon={CarIcon} />
-                                <StyledButton text='Запчастини для транспорту' type='category' icon={TransportSparePartIcon} />
-                                <StyledButton text='Електроніка для блекауту' type='category' icon={GeneratorIcon} />
-                                <StyledButton text='Бізнес та послуги' type='category' icon={BusinessManIcon} />
-                                <StyledButton text='Допомога' type='category' icon={HeartFilledIcon} />
-                                <StyledButton text='Дитячі товари' type='category' icon={ChildrenToyIcon} />
-                                <StyledButton text='Електроніка' type='category' icon={PhoneIcon} />
-                                <StyledButton text='Робота' type='category' icon={WorkIcon} />
-                                <StyledButton text='Оренда та прокат' type='category' icon={CalendarIcon} />
-                                <StyledButton text='Дім і сад' type='category' icon={HomeAndGardenIcon} />
-                                <StyledButton text='Нерухомість' type='category' icon={RealEstateAgentIcon} />
-                                <StyledButton text="Меблі та інтер'єр" type='category' icon={FurnitureIcon} />
-                                <StyledButton text='Тварини' type='category' icon={CatIcon} />
-                                <StyledButton text='Хобі, спорт' type='category' icon={SportsIcon} />
-                                <StyledButton text='Одяг та аксесуари' type='category' icon={ClothesIcon} />
-                                <StyledButton text='Віддам безкоштовно' type='category' icon={HandIcon} />
+                                <StyledButton text='Транспорт' type='category' icon={CarIcon}
+                                    onClick={() => {
+                                        window.location.href = '/adverts/Транспорт';
+                                    }} />
+                                <StyledButton text='Запчастини для транспорту' type='category' icon={TransportSparePartIcon}
+                                    onClick={() => {
+                                        window.location.href = '/adverts/Запчастини для транспорту';
+                                    }} />
+                                <StyledButton text='Електроніка для блекауту' type='category' icon={GeneratorIcon}
+                                    onClick={() => {
+                                        window.location.href = '/adverts/Електроніка для блекауту';
+                                    }} />
+                                <StyledButton text='Бізнес та послуги' type='category' icon={BusinessManIcon}
+                                    onClick={() => {
+                                        window.location.href = '/adverts/Бізнес та послуги';
+                                    }} />
+                                <StyledButton text='Допомога' type='category' icon={HeartFilledIcon}
+                                    onClick={() => {
+                                        window.location.href = '/adverts/Допомога';
+                                    }} />
+                                <StyledButton text='Дитячі товари' type='category' icon={ChildrenToyIcon}
+                                    onClick={() => {
+                                        window.location.href = '/adverts/Дитячі товари';
+                                    }} />
+                                <StyledButton text='Електроніка' type='category' icon={PhoneIcon}
+                                    onClick={() => {
+                                        window.location.href = '/adverts/Електроніка';
+                                    }} />
+                                <StyledButton text='Робота' type='category' icon={WorkIcon}
+                                    onClick={() => {
+                                        window.location.href = '/adverts/Робота';
+                                    }} />
+                                <StyledButton text='Оренда та прокат' type='category' icon={CalendarIcon}
+                                    onClick={() => {
+                                        window.location.href = '/adverts/Оренда та прокат';
+                                    }} />
+                                <StyledButton text='Дім і сад' type='category' icon={HomeAndGardenIcon}
+                                    onClick={() => {
+                                        window.location.href = '/adverts/Дім і сад';
+                                    }} />
+                                <StyledButton text='Нерухомість' type='category' icon={RealEstateAgentIcon}
+                                    onClick={() => {
+                                        window.location.href = '/adverts/Нерухомість';
+                                    }} />
+                                <StyledButton text="Меблі та інтер'єр" type='category' icon={FurnitureIcon}
+                                    onClick={() => {
+                                        window.location.href = '/adverts/Дім і сад';
+                                    }} />
+                                <StyledButton text='Тварини' type='category' icon={CatIcon}
+                                    onClick={() => {
+                                        window.location.href = '/adverts/Тварини';
+                                    }} />
+                                <StyledButton text='Хобі, спорт' type='category' icon={SportsIcon}
+                                    onClick={() => {
+                                        window.location.href = '/adverts/Хобі, спорт';
+                                    }} />
+                                <StyledButton text='Одяг та аксесуари' type='category' icon={ClothesIcon}
+                                    onClick={() => {
+                                        window.location.href = '/adverts/Одяг та аксесуари';
+                                    }} />
+                                <StyledButton text='Віддам безкоштовно' type='category' icon={HandIcon}
+                                    onClick={() => {
+                                        window.location.href = '/adverts/Віддам безкоштовно';
+                                    }} />
                             </Box>
 
                             <Box sx={{ marginTop: '120px' }}>
@@ -187,7 +232,7 @@ const HomePage: React.FC = () => {
                                 flexWrap: 'wrap',
                                 marginTop: '70px'
                             }}>
-                                {vipAdverts.map((advert: any) => {
+                                {vipAdverts.map((advert: advertType) => {
                                     return (
                                         <StyledAdvert key={advert.id} title={advert.name} location={advert.location} date={advert.creationDate} image={advert.pictures[0]} price={advert.price} isVIP={true} currency={advert.currencyId} onClick={
                                             () => {
@@ -234,7 +279,7 @@ const HomePage: React.FC = () => {
                                 flexWrap: 'wrap',
                                 marginTop: '70px'
                             }}>
-                                {topAdverts.map((advert: any) => {
+                                {topAdverts.map((advert: advertType) => {
                                     return (
                                         <StyledAdvert key={advert.id} title={advert.name} location={advert.location} date={advert.creationDate} image={advert.pictures[0]} price={advert.price} isTOP={true} currency={advert.currencyId} onClick={
                                             () => {
@@ -277,7 +322,7 @@ const HomePage: React.FC = () => {
                                 flexWrap: 'wrap',
                                 marginTop: '70px'
                             }}>
-                                {adverts.map((advert: any) => {
+                                {adverts.map((advert: advertType) => {
                                     return (
                                         <StyledAdvert key={advert.id} title={advert.name} location={advert.location} date={advert.creationDate} image={advert.pictures[0]} price={advert.price} currency={advert.currencyId} onClick={
                                             () => {
