@@ -19,10 +19,12 @@ interface AllAdvertsPageProps {
     top?: boolean
 }
 
-const AllAdvertsPage: React.FC<AllAdvertsPageProps> = (vip: boolean = false, top: boolean = false) => {
+const AllAdvertsPage: React.FC<AllAdvertsPageProps> = ({ vip = false, top = false }) => {
     const { categoryName } = useParams<{ categoryName?: string }>();
 
     const [isLoading, setIsLoading] = useState(true);
+    const [totalPages, setTotalPages] = useState(0);
+    const [currentPage, setCurrentPage] = useState(1);
     const [category, setCategory] = useState<categoryType | undefined>();
     const [categories, setCategories] = useState<categoryType[]>();
     const [subcategories, setSubcategories] = useState<subcategoryType[]>([]);
@@ -57,19 +59,21 @@ const AllAdvertsPage: React.FC<AllAdvertsPageProps> = (vip: boolean = false, top
     const pageLimit = 26;
 
     const getAdverts = async () => {
-        setIsLoading(true);
+        const startAfter = currentPage > 1 ? adverts[adverts.length - 1].id : null;
 
-        const response = await fetchAdverts(category?.id, searchTerm, pageLimit, selectedSubcategories, fromPrice,
+        setIsLoading(true);
+        const response = await fetchAdverts(category?.id, searchTerm, pageLimit, startAfter, selectedSubcategories, fromPrice,
             toPrice, statesMap.get(advertsState), sortByMap.get(sortBy), currency, isVip, isTop);
         setIsLoading(false);
 
         console.log(response);
 
-        const data = response.data.adverts;
+        const { adverts: data, totalCount } = response.data;
 
         if (response && response.status === 200 && data?.length > 0) {
             setIsFound(true);
             setAdverts(data);
+            setTotalPages(Math.ceil(totalCount / pageLimit));
             console.log(data);
         }
         else {
@@ -134,6 +138,36 @@ const AllAdvertsPage: React.FC<AllAdvertsPageProps> = (vip: boolean = false, top
                 setIsTop(false);
                 break;
         }
+    };
+
+    const renderPaginationButtons = () => {
+        const buttons = [];
+        for (let i = 1; i <= totalPages; i++) {
+            buttons.push(
+                <Button key={i} onClick={() => setCurrentPage(i)} disableRipple sx={{
+                    display: 'inline',
+                    backgroundColor: 'transparent',
+                    border: 'none',
+                    padding: '15px 10px',
+                    margin: '0',
+                    textTransform: 'none',
+                    '&:hover': {
+                        backgroundColor: 'transparent'
+                    }
+                }}>
+                    <Typography sx={{
+                        display: 'inline',
+                        fontFamily: 'Nunito, sans-serif',
+                        fontSize: '20px',
+                        fontWeight: (currentPage === i) ? 'bold' : 'normal',
+                        color: (currentPage === i) ? 'black' : 'gray'
+                    }}>
+                        {i.toString()}
+                    </Typography>
+                </Button>
+            );
+        }
+        return buttons;
     };
 
     useEffect(() => {
@@ -657,6 +691,16 @@ const AllAdvertsPage: React.FC<AllAdvertsPageProps> = (vip: boolean = false, top
                                 )}
                     </Box>
 
+                    {(totalPages > 1) && (
+                        <Box sx={{
+                            display: 'flex',
+                            flexDirection: 'row',
+                            justifyContent: 'center',
+                            marginTop: '50px'
+                        }}>
+                            {renderPaginationButtons()}
+                        </Box>
+                    )}
 
                     <Typography sx={{
                         display: 'block',
