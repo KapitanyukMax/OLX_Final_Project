@@ -25,7 +25,7 @@ interface StyledAdvertProps {
     currency?: string;
     onEdit?: () => void;
     onDelete?: () => void;
-};
+}
 
 const StyledAdvert: React.FC<StyledAdvertProps> = ({ key, title, location, date, image, isVIP, isTOP, price, currency, isFavorite, onClick, onHeartClick, onDelete, onEdit }) => {
     const [isHeartActive, setIsHeartActive] = useState(false);
@@ -37,6 +37,8 @@ const StyledAdvert: React.FC<StyledAdvertProps> = ({ key, title, location, date,
             onHeartClick();
         }
     };
+    
+    console.log(price);
 
     return (
         <StyledEngineProvider injectFirst>
@@ -90,7 +92,7 @@ const StyledAdvert: React.FC<StyledAdvertProps> = ({ key, title, location, date,
                 </Box>
                 <StyledLabel text={location} textType="small" type="with-icon" icon={LocationIcon} textColor="black" />
                 <StyledLabel text={date} textType="small" type="with-icon" icon={CalendarIcon} textColor="black" />
-                <StyledLabel text={price.toString() + " " + currency == "UAH" ? "грн" : currency || ''} textType="middle" type="primary" textColor="blue" />
+                <StyledLabel text={price.toString() + " " + (currency == "UAH" ? "грн" : currency || '')} textType="middle" type="primary" textColor="blue" />
             </Box>
         </StyledEngineProvider>
     );
