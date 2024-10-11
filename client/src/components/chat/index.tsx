@@ -10,7 +10,6 @@ import EmojiSmileIcon from "../icons/emoji";
 import SendMessageIcon from "../icons/sendMessageIcon";
 import EmojiPicker from "emoji-picker-react";
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import {getFirestore } from "firebase/firestore";
 import { getAuth, onAuthStateChanged, User } from "firebase/auth";
 import axios from "axios";
 
@@ -38,7 +37,6 @@ interface Message {
 }
 
 const Chat: React.FC<ChatProps> = ({
-    onSend,
     width = '799px',
     height = '680px',
     userName = 'User  user',
@@ -55,7 +53,6 @@ const Chat: React.FC<ChatProps> = ({
     const [user, setUser] = useState<User | null>(null);
 
     const storage = getStorage();
-    const db = getFirestore();
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const host = import.meta.env.VITE_HOST;
 
@@ -76,10 +73,16 @@ const Chat: React.FC<ChatProps> = ({
         if (!chatId) return; 
     
         try {
-            console.log(chatId);
             const response = await axios.get(`${host}/messages/chat/${chatId}`);
             const messagesData = response.data;
-            setMessages(messagesData);
+            
+            setMessages((prevMessages) => {
+                
+                const newMessages = messagesData.filter(
+                    newMessage => !prevMessages.some(msg => msg.id === newMessage.id)
+                );
+                return [...prevMessages, ...newMessages];
+            });
         } catch (error) {
             console.error("Error loading messages:", error);
         }
@@ -90,8 +93,6 @@ const Chat: React.FC<ChatProps> = ({
             loadMessages(chatId);
         }
     }, [chatId]);
-
-
     const handleSendMessage = async () => {
         const buyerId = user?.uid;
     
@@ -123,7 +124,6 @@ const Chat: React.FC<ChatProps> = ({
     
             try {
                 let currentChatId = chatId;
-                console.log(buyerId);
     
                 const advertResponse = await axios.get(`${host}/adverts/${advertId}`);
                 if (advertResponse.status !== 200) {
@@ -137,7 +137,7 @@ const Chat: React.FC<ChatProps> = ({
                     console.error('sellerId is undefined');
                     return;
                 }
- 
+    
                 const createChatResponse = await axios.post(`${host}/chats`, {
                     advertId,
                     buyerId: user?.uid,
@@ -150,11 +150,6 @@ const Chat: React.FC<ChatProps> = ({
     
                 const chatData = createChatResponse.data;
                 currentChatId = chatData.id;
-                console.log("Current Chat ID:", currentChatId);
-    
-                if (currentChatId) {
-                    loadMessages(currentChatId);
-                }
     
                 message.chatId = currentChatId;
     
@@ -167,9 +162,9 @@ const Chat: React.FC<ChatProps> = ({
                 };
     
                 setMessages((prevMessages) => [...prevMessages, newMessageWithId]);
-                onSend(newMessage, imageUrl);
-    
                 setSelectedImage(null);
+                await loadMessages(currentChatId);
+    
             } catch (e) {
                 console.error("Error handling chat and message: ", e);
             }
