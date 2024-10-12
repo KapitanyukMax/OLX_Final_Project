@@ -34,6 +34,7 @@ import axios from "axios";
 import { Link, useParams } from "react-router-dom";
 import { ReportDialog } from "../../components/reportDialog";
 import Chat from "../../components/chat";
+import { subcategoryType } from "../../interfaces/categoryTypes";
 
 const AdvertPage: React.FC = () => {
     const { advertId } = useParams<{ advertId: string }>();
@@ -50,8 +51,20 @@ const AdvertPage: React.FC = () => {
     const [openReportDialog, setOpenReportDialog] = useState(false);
     const [favoriteAdvertsIds, setFavoriteAdvertsIds] = useState<string[]>([]);
     const [open, setOpen] = useState(false);
+    const [subcategory, setSubcategory] = useState<subcategoryType | undefined>();
 
     const host = import.meta.env.VITE_HOST;
+
+    const fetchSubcategory = async () => {
+        const response = await axios.get(`${host}/subcategories/${advertData.subCategoryId}`);
+        if (response.status === 200) {
+            setSubcategory(response.data);
+        }
+    }
+
+    useEffect(() => {
+        fetchSubcategory();
+    }, [advertData]);
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -572,6 +585,7 @@ const AdvertPage: React.FC = () => {
                                 display: "flex",
                                 justifyContent: "space-between",
                                 margin: "45px 0",
+                                gap: '20px'
                             }}
                         >
                             <Box
@@ -582,7 +596,7 @@ const AdvertPage: React.FC = () => {
                                     border: "1px solid #000",
                                     borderRadius: "5px",
                                     padding: "15px 14px",
-                                    width: "176px",
+                                    flexGrow: 1
                                 }}
                             >
                                 <Typography
@@ -607,7 +621,7 @@ const AdvertPage: React.FC = () => {
                                     border: "1px solid #000",
                                     borderRadius: "5px",
                                     padding: "15px 14px",
-                                    width: "176px",
+                                    flexGrow: 1
                                 }}
                             >
                                 <Typography
@@ -631,7 +645,7 @@ const AdvertPage: React.FC = () => {
                                     border: "1px solid #000",
                                     borderRadius: "5px",
                                     padding: "15px 14px",
-                                    width: "176px",
+                                    flexGrow: 2
                                 }}
                             >
                                 <Typography
@@ -644,7 +658,7 @@ const AdvertPage: React.FC = () => {
                                         alignItems: "center",
                                     }} // TODO
                                 >
-                                    Марка: Canon
+                                    Підкатегорія: {subcategory?.name}
                                 </Typography>
                             </Box>
                         </Box>

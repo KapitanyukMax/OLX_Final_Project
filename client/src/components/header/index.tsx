@@ -159,21 +159,21 @@ const Header: React.FC = () => {
                                 window.location.href = '/registration';
                             }
                         }} />
-                    <Box sx={{
+                    {/* <Box sx={{
                         display: 'flex',
                         gap: '8px',
                     }}>
                         <Link href="/components-preview" sx={{
-                            color: 'white',
+                            color: 'var(--dark-blue)',
                             fontSize: '20px',
                             fontWeight: '400',
                             textDecoration: 'none',
-                            alignSelf: 'center',
+                            alignSelf: 'center'
                         }}>
                             UA
                         </Link>
                         <Typography sx={{
-                            color: 'white',
+                            color: 'var(--dark-blue)',
                             fontSize: '20px',
                             fontWeight: '400',
                             textDecoration: 'none',
@@ -182,7 +182,7 @@ const Header: React.FC = () => {
                             |
                         </Typography>
                         <Link href="/components-preview" sx={{
-                            color: 'white',
+                            color: 'var(--dark-blue)',
                             fontSize: '20px',
                             fontWeight: '400',
                             textDecoration: 'none',
@@ -190,7 +190,7 @@ const Header: React.FC = () => {
                         }}>
                             EN
                         </Link>
-                    </Box>
+                    </Box> */}
                 </Box>
             </Box>
         </StyledEngineProvider>
