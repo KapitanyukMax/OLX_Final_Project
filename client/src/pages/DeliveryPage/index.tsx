@@ -86,7 +86,7 @@ const DeliveryPage: React.FC = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const advertResponse = await axios.get(`${host}/adverts/id/?id=${advertId}`);
+                const advertResponse = await axios.get(`${host}/adverts/${advertId}`);
                 setAdvertData(advertResponse.data);
 
                 const userId = advertResponse.data.userId;
