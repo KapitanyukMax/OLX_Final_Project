@@ -15,6 +15,7 @@ import { CategoryCreatePage } from './pages/AdminPage/categoryCreate';
 import { SubCategoryCreatePage } from './pages/AdminPage/subCategoryCreate';
 import './App.css';
 import { SubCategoryEditPage } from './pages/AdminPage/subCategoryEdit';
+import { DeliveryPage } from './pages/DeliveryPage';
 
 function App() {
     return (
@@ -35,6 +36,7 @@ function App() {
                         <Route path="user/:userId" element={<UserProfilePage />} />
                         <Route path="favorites/:userId" element={<FavoritesPage />} />
                         <Route path="admin-panel" element={<AdminPage />} />
+                        <Route path="delivery/:advertId" element={<DeliveryPage />} />
                     </Route>
 
                     <Route path="/components-preview" element={<ComponentsPreview />} />

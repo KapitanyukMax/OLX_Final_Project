@@ -69,7 +69,7 @@ const AdvertPage: React.FC = () => {
 
     useEffect(() => {
         fetchFavorites();
-    }, [userData]);
+    }, [currentUser]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -109,9 +109,9 @@ const AdvertPage: React.FC = () => {
 
     const fetchFavorites = async () => {
         try {
-            if (!userData) return;
+            if (!currentUser) return;
             const response = await axios.get(
-                `${host}/favorites/userId?userId=${userData.id}`
+                `${host}/favorites/userId?userId=${currentUser.id}`
             );
             const favoriteAdvertIds = response.data.adverts.map(
                 (advert: any) => advert.id
@@ -129,14 +129,14 @@ const AdvertPage: React.FC = () => {
         }
         if (favoriteAdvertsIds.includes(advertId)) {
             await axios.get(
-                `${host}/favorites/remove?userId=${userData.id}&advertId=${advertId}`
+                `${host}/favorites/remove?userId=${currentUser.id}&advertId=${advertId}`
             );
             setFavoriteAdvertsIds(
                 favoriteAdvertsIds.filter((id) => id !== advertId)
             );
         } else {
             await axios.get(
-                `${host}/favorites/add?userId=${userData.id}&advertId=${advertId}`
+                `${host}/favorites/add?userId=${currentUser.id}&advertId=${advertId}`
             );
             setFavoriteAdvertsIds([...favoriteAdvertsIds, advertId]);
         }
@@ -450,6 +450,7 @@ const AdvertPage: React.FC = () => {
                                         height: "65px",
                                         width: "436px",
                                     }}
+                                    onClick={() => { window.location.href = `/delivery/${advertId}`; }}
                                 />
                             </Box>
                         ) : (
