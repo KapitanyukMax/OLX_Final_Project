@@ -1,6 +1,7 @@
 import {
     Box,
     Button,
+    CircularProgress,
     Rating,
     StyledEngineProvider,
     Typography,
@@ -41,6 +42,21 @@ const UserProfilePage: React.FC = () => {
         fetchData();
     }, []);
 
+    if (isLoading) {
+        return (
+            <Box
+                sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    minHeight: "17.8vh",
+                }}
+            >
+                <CircularProgress />
+            </Box>
+        );
+    }
+
     return (
         <StyledEngineProvider injectFirst>
             <Box
@@ -71,7 +87,7 @@ const UserProfilePage: React.FC = () => {
                             width="136px"
                             height="136px"
                             borderRadius="50%"
-                            src={userData?.picture}
+                            src={userData.picture}
                             alt={"user-avatar"}
                         />
                         <Typography
@@ -80,7 +96,7 @@ const UserProfilePage: React.FC = () => {
                                 fontSize: "22px",
                             }}
                         >
-                            {userData?.name}
+                            {userData.name}
                         </Typography>
                     </Box>
                     <Box
@@ -104,11 +120,11 @@ const UserProfilePage: React.FC = () => {
                                 gap: "24px",
                             }}
                         >
-                            <Rating value={userData?.rating} readOnly />
+                            <Rating value={userData.rating} readOnly />
                             <Typography
                                 sx={{ fontFamily: "Nunito", fontSize: "18px" }}
                             >
-                                {userData?.rating}
+                                {userData.rating}
                             </Typography>
                         </Box>
                     </Box>
