@@ -4,50 +4,87 @@ import { StyledInput } from '../input';
 import StyledButton from '../button';
 import { Box } from '@mui/material';
 import './styles.css';
+import axios from 'axios';
+import { StyledDropdown } from '../dropdown';
 
 interface SearchProps {
     value?: string,
-    onSearchTermChange?: (searchTerm: string) => void,
-    onSearch: (searchTerm: string) => void
+    city?: string,
+    onSearchTermChange?: (searchTerm: string, city: string) => void,
+    onSearch: (searchTerm: string, city: string) => void
 }
 
-const Search: React.FC<SearchProps> = ({ value, onSearch, onSearchTermChange }) => {
+const Search: React.FC<SearchProps> = ({ value, city: initialCity, onSearch, onSearchTermChange }) => {
     const StyledSearchIcon: React.FC = () => (
         <SearchIcon sx={{ color: "black" }} />
     );
 
     const [searchTerm, setSearchTerm] = useState(value ?? '');
+    const [city, setCity] = useState<string>(initialCity ?? '');
+    const [cities, setCities] = useState<string[]>([]);
+
+    const host = import.meta.env.VITE_HOST;
+
+    const fetchCities = async (value: string) => {
+        try {
+            const response = await axios.post(`${host}/cities`, {
+                apiKey: '15d0f1b8de9dc0f5370abcf1906f03cd',
+                modelName: "AddressGeneral",
+                calledMethod: "getSettlements",
+                methodProperties: {
+                    FindByString: value
+                }
+            });
+            const cities: string[] = response.data.data.map((city: { Description: string }) => city.Description);
+            setCities([...new Set(cities)]);
+        } catch (error) {
+            console.error('Error fetching cities', error);
+        }
+    };
 
     useEffect(() => {
         setSearchTerm(value ?? '');
     }, [value]);
 
+    useEffect(() => {
+        setCity(initialCity ?? '');
+    }, [initialCity]);
+
     return (
         <Box sx={{
             display: 'flex',
             flexDirection: 'row',
-            gap: '60px',
             justifyContent: 'space-between',
-            alignItems: 'center'
+            alignItems: 'center',
+            width: '100%',
+            gap: '60px'
         }}>
             <Box sx={{
-                width: '522px',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'flex-start',
-                textAlign: 'left'
+                textAlign: 'left',
+                width: '522px',
+                flexGrow: 1
             }}>
                 <StyledInput value={searchTerm} placeholder='Що шукаємо'
                     iconEnd={StyledSearchIcon} width='100%'
                     onChange={e => {
-                        console.log(searchTerm);
                         setSearchTerm(e.target.value);
-                        onSearchTermChange?.(e.target.value);
+                        onSearchTermChange?.(e.target.value, city);
                     }} />
             </Box>
-            <StyledInput value='Вся Україна' iconEnd={StyledSearchIcon} width="254px" />
-            <StyledInput value='Місто/село' iconEnd={StyledSearchIcon} width="254px" />
-            <StyledButton text='Пошук' type='contained' primaryColor='var(--dark-blue)' hoverColor='black' className='button-small' onClick={() => onSearch(searchTerm)} />
+
+            <Box sx={{
+                flexGrow: 1
+            }}>
+                <StyledDropdown placeholder="Оберіть місто" type='middle' values={cities} onInput={(e) => {
+                    const value = e.target.value;
+                    fetchCities(value);
+                }} onChange={(e) => setCity(e.target.value)} />
+            </Box>
+
+            <StyledButton text='Пошук' type='contained' primaryColor='var(--dark-blue)' hoverColor='black' className='button-small' onClick={() => onSearch(searchTerm, city)} />
         </Box>
     );
 };
