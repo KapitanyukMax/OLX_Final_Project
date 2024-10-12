@@ -83,7 +83,7 @@ const StyledAdvert: React.FC<StyledAdvertProps> = ({ key, title, location, date,
                     }
                     <Box className='heart' onClick={handleHeartClick} sx={{ wigth: '35px', height: '35px' }}>
                         <IconButton sx={{ padding: '0px', width: '35px', height: '35px' }}>
-                            {isFavorite ? <Favorite sx={{ width: '35px', height: '35px' }} /> : <FavoriteBorder sx={{ width: '35px', height: '35px' }} />}
+                            {isFavorite ? <Favorite sx={{ width: '35px', height: '35px', color: "#ff0054" }} /> : <FavoriteBorder sx={{ width: '35px', height: '35px' }} />}
                         </IconButton>
                     </Box>
                 </Box>

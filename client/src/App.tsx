@@ -16,6 +16,7 @@ import { CategoryCreatePage } from './pages/AdminPage/categoryCreate';
 import { SubCategoryCreatePage } from './pages/AdminPage/subCategoryCreate';
 import './App.css';
 import { SubCategoryEditPage } from './pages/AdminPage/subCategoryEdit';
+import { DeliveryPage } from './pages/DeliveryPage';
 import { useEffect, useState } from 'react';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { auth } from '../firebaseConfig';
@@ -74,6 +75,8 @@ function App() {
                         <Route path="advert-edit/:advertId" element={<AdvertEditPage />} />
                         <Route path="user/:userId" element={<UserProfilePage />} />
                         <Route path="favorites/:userId" element={<FavoritesPage />} />
+                        <Route path="admin-panel" element={<AdminPage />} />
+                        <Route path="delivery/:advertId" element={<DeliveryPage />} />
                     </Route>
 
                     {
