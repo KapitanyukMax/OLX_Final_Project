@@ -2,7 +2,7 @@ import { Box, Button, Link, MenuItem, Select, Typography } from '@mui/material';
 import { StyledEngineProvider } from '@mui/material/styles';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import { Search } from '../../components/search';
 import { StyledAdvert } from '../../components/advert';
 import { categoryType, subcategoryType } from '../../interfaces/categoryTypes';
@@ -22,6 +22,11 @@ interface AllAdvertsPageProps {
 const AllAdvertsPage: React.FC<AllAdvertsPageProps> = ({ vip = false, top = false }) => {
     const { categoryName } = useParams<{ categoryName?: string }>();
 
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+    const initialSearchTerm = queryParams.get('searchTerm');
+    const initialCity = queryParams.get('city'); 
+
     const [isLoading, setIsLoading] = useState(true);
     const [totalPages, setTotalPages] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
@@ -30,7 +35,8 @@ const AllAdvertsPage: React.FC<AllAdvertsPageProps> = ({ vip = false, top = fals
     const [subcategories, setSubcategories] = useState<subcategoryType[]>([]);
     const [adverts, setAdverts] = useState<advertType[]>([]);
     const [currencies, setCurrencies] = useState<string[]>([]);
-    const [searchTerm, setSearchTerm] = useState('');
+    const [searchTerm, setSearchTerm] = useState(initialSearchTerm ?? '');
+    const [city, setCity] = useState(initialCity ?? '');
     const [fromPrice, setFromPrice] = useState<number | undefined>();
     const [toPrice, setToPrice] = useState<number | undefined>();
     const [advertsState, setAdvertsState] = useState<string>('Всі оголошення');
@@ -62,11 +68,13 @@ const AllAdvertsPage: React.FC<AllAdvertsPageProps> = ({ vip = false, top = fals
         const startAfter = currentPage > 1 ? adverts[adverts.length - 1].id : null;
 
         setIsLoading(true);
-        const response = await fetchAdverts(category?.id, searchTerm, pageLimit, startAfter, selectedSubcategories, fromPrice,
-            toPrice, statesMap.get(advertsState), sortByMap.get(sortBy), currency, isVip, isTop);
+        const response = await fetchAdverts(
+            {
+                categoryId: category?.id, search: searchTerm, limit: pageLimit, startAfter, city,
+                subcategories: selectedSubcategories, fromPrice, toPrice, stateParams: statesMap.get(advertsState),
+                sortParams: sortByMap.get(sortBy), currency, isVip, isTop
+            });
         setIsLoading(false);
-
-        console.log(response);
 
         const { adverts: data, totalCount } = response.data;
 
@@ -107,8 +115,9 @@ const AllAdvertsPage: React.FC<AllAdvertsPageProps> = ({ vip = false, top = fals
         }
     };
 
-    const onSearch = (newSearchTerm: string) => {
+    const onSearch = (newSearchTerm: string, newCity: string) => {
         setSearchTerm(newSearchTerm);
+        setCity(newCity);
     };
 
     const onTabChange = async () => {
@@ -171,6 +180,14 @@ const AllAdvertsPage: React.FC<AllAdvertsPageProps> = ({ vip = false, top = fals
     };
 
     useEffect(() => {
+        setSearchTerm(initialSearchTerm ?? '');
+    }, [initialSearchTerm]);
+
+    useEffect(() => {
+        setCity(initialCity ?? '');
+    }, [initialCity]);
+
+    useEffect(() => {
         onTabChange();
     }, [selectedTab, vip, top]);
 
@@ -212,7 +229,7 @@ const AllAdvertsPage: React.FC<AllAdvertsPageProps> = ({ vip = false, top = fals
 
     useEffect(() => {
         getAdverts();
-    }, [category, searchTerm, selectedSubcategories, fromPrice, toPrice, advertsState, sortBy, currency, isVip, isTop]);
+    }, [category, searchTerm, city, selectedSubcategories, fromPrice, toPrice, advertsState, sortBy, currency, isVip, isTop]);
 
     return (
         <StyledEngineProvider injectFirst>

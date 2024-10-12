@@ -86,7 +86,7 @@ const AdvertCreatePage: React.FC = () => {
             const originalRef = ref(storage, `${path}/original-${timestamp}.jpg`);
             await uploadBytes(originalRef, file);
 
-            for (let size of sizes) {
+            for (const size of sizes) {
                 const options = {
                     maxWidthOrHeight: size,
                     useWebWorker: true,
@@ -272,8 +272,8 @@ const AdvertCreatePage: React.FC = () => {
                     FindByString: value
                 }
             });
-            const cities = response.data.data.map((city: any) => city.Description);
-            setCities(cities);
+            const cities: string[] = response.data.data.map((city: { Description: string }) => city.Description);
+            setCities([...new Set(cities)]);
         } catch (error) {
             console.error('Error fetching cities', error);
         }
