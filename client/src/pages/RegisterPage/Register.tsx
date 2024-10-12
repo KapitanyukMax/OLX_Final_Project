@@ -1,12 +1,12 @@
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { signInWithPopup } from "firebase/auth";
+import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { auth, db } from "../../firebase/firebase.ts";
 import { doc, setDoc } from "firebase/firestore";
 import React, { FormEvent } from "react";
 import "./register.css";
 
 const logGoogleUser = async () => {
-  const response = await signInWithPopup(auth);
+  const response = await signInWithPopup(auth, new GoogleAuthProvider());
   console.log(response);
 }
 

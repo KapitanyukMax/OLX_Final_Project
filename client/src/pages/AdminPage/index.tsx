@@ -145,16 +145,38 @@ const AdminPage: React.FC = () => {
         if (!confirmed) return;
 
         try {
+            // Отримання підкатегорії для отримання її categoryId
+            const { data: subcategory } = await axios.get(`${host}/subcategories/${subCategoryId}`);
+
+            // Видалення підкатегорії
             await axios.delete(`${host}/subcategories/${subCategoryId}`);
             setSubcategories(prevSubcategories => prevSubcategories.filter(subcategory => subcategory.id !== subCategoryId));
+
+            // Оновлення категорії: видалення підкатегорії з масиву subcategories
+            const categoryId = subcategory.categoryId;
+            const categoryRes = await axios.get(`${host}/categories/${categoryId}`);
+            const category = categoryRes.data;
+
+            // Видалення підкатегорії з категорії
+            const updatedSubcategories = category.subcategories.filter((id: string) => id !== subCategoryId);
+            category.subcategories = updatedSubcategories;
+
+            // Оновлення категорії з вказівкою ID
+            console.log('Updated subcategories:', updatedSubcategories);
+            console.log('Updated category:', category);
+            await axios.put(`${host}/categories`, category);
+
             alert('Підкатегорію видалено успішно!');
         } catch (error) {
             console.error('Error deleting subcategory:', error);
             alert('Не вдалося видалити підкатегорію');
+        } finally {
+            // Оновлення категорій та підкатегорій
+            fetchCategories();
+            fetchSubcategories();
         }
+    };
 
-        fetchSubcategories();
-    }
 
     const renderPaginationButtons = () => {
         const buttons = [];
@@ -173,6 +195,9 @@ const AdminPage: React.FC = () => {
 
     const deleteAdvert = async (adId: string | null) => {
         if (!adId) return;
+
+        const confirmed = window.confirm('Ви впевнені, що хочете видалити це оголошення?');
+        if (!confirmed) return;
 
         try {
             await axios.delete(`${host}/adverts/${adId}`);
@@ -290,14 +315,14 @@ const AdminPage: React.FC = () => {
                                                             ) : null;
                                                         })
                                                     }
-                                                    {/* <StyledButton text="Додати підкатегорію" type="contained" onClick={() => window.location.href = `/subcategory-create/${category.id}`} /> */}
+                                                    <StyledButton text="Додати підкатегорію" type="contained" onClick={() => window.location.href = `/subcategory-create/${category.id}`} />
                                                 </Box>
                                             )}
                                         </>
                                     );
                                 })
                             }
-                            {/* <StyledButton text="Додати категорію" type="contained" onClick={() => window.location.href = '/category-create'} /> */}
+                            <StyledButton text="Додати категорію" type="contained" onClick={() => window.location.href = '/category-create'} />
                         </Box>
                     </Box>
 
@@ -314,7 +339,7 @@ const AdminPage: React.FC = () => {
                                     return (
                                         <StyledAdvert key={advert.id} onDelete={() => deleteAdvert(advert.id)} onEdit={() => {
                                             window.location.href = `/advert-edit/${advert.id}`;
-                                        }} title={advert.name} location={advert.location} image={advert.pictures[0]} date={advert.creationDate} price={advert.price} onClick={() => { window.location.href = `/advert/${advert.id}` }} />
+                                        }} title={advert.name} location={advert.location} image={advert.pictures[0]} date={advert.creationDate} price={advert.price} currency={advert.currencyId} onClick={() => { window.location.href = `/advert/${advert.id}` }} />
                                     );
                                 })
                             }

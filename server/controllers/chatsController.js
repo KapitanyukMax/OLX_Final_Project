@@ -11,7 +11,7 @@ const createChat = async(req, res,next)=>{
         };
         const docRef = await db.collection("chats").add(newChat);
         console.log("Document written with ID: ", docRef.id);
-        res.status(201).json(newChat);
+        res.status(201).json({ id: docRef.id, ...newChat });
     }
     catch(error){
         next(error);
@@ -148,8 +148,6 @@ const getChatsByUserIdAsBuyer = async (req, res, next) => {
         next(error);
     }
 };
-
-
 
 
 

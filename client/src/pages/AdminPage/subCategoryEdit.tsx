@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { auth } from '../../../firebaseConfig';
 import { User, onAuthStateChanged } from 'firebase/auth';
-import { StyledEngineProvider, Box, Button, IconButton } from '@mui/material';
+import { StyledEngineProvider, Box, Button } from '@mui/material';
 import StyledLabel from '../../components/lable';
 import { StyledInput } from '../../components/input';
 import StyledButton from '../../components/button';
@@ -21,23 +21,48 @@ const SubCategoryEditPage: React.FC = () => {
     const [successMessage, setSuccessMessage] = useState('');
     const [openSuccessDialog, setOpenSuccessDialog] = useState(false);
 
+    const [isLoading, setIsLoading] = useState(true);
+
     const [errors, setErrors] = useState({
         name: ''
     });
 
     const [formData, setFormData] = useState<{
         id: string,
-        name: string
+        name: string,
+        picture: string,
+        categoryId: string
     }>({
         id: subcategoryId || '',
-        name: ''
+        name: '',
+        picture: '',
+        categoryId: ''
     });
 
+    useEffect(() => {
+        const fetchSubCategory = async () => {
+            try {
+                const response = await axios.get(`${host}/subcategories/${subcategoryId}`);
+                console.log('SubCategory fetched successfully', response.data);
+                setFormData((prevFormData) => ({
+                    ...prevFormData,
+                    name: response.data.name
+                }));
+            } catch (error) {
+                console.error('Error fetching subCategory', error);
+            }
+        };
+
+        if (subcategoryId) fetchSubCategory();
+        setIsLoading(false);
+    }, [subcategoryId]);
+
     const handleSubmit = async () => {
+        setErrors({ name: '' });
+
         let formIsValid = true;
         const newErrors = {
-            name: '',
-            picture: ''
+            name: ''
         };
 
         if (!formData.name) {
@@ -69,7 +94,6 @@ const SubCategoryEditPage: React.FC = () => {
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
-            console.log(user);
             if (user?.email) {
                 const response = await axios.get(`${host}/users/email?email=${user.email}`);
                 setCurrentUser(response.data);
@@ -86,6 +110,10 @@ const SubCategoryEditPage: React.FC = () => {
     const handleNameChange = (value: string) => {
         setFormData({ ...formData, name: value });
     };
+
+    if (isLoading) {
+        return <div>Завантаження...</div>;
+    }
 
     return (
         <StyledEngineProvider injectFirst>
@@ -116,7 +144,7 @@ const SubCategoryEditPage: React.FC = () => {
                     }}>
                         <Box>
                             <StyledLabel text="Заголовок" type='head' textType='head' textColor='black' />
-                            <StyledInput value={formData.name} label='Вкажіть назву' required widthType='large' maxLength={80} onChange={(e) => handleNameChange(e.target.value)} />
+                            <StyledInput value={formData?.name} label='Вкажіть назву' required widthType='large' maxLength={80} onChange={(e) => handleNameChange(e.target.value)} />
                             {errors.name && <div className="error-message">{errors.name}</div>}
                         </Box>
                         <Box sx={{
@@ -141,7 +169,7 @@ const SubCategoryEditPage: React.FC = () => {
             </Box>
             <Dialog
                 open={openSuccessDialog}
-                onClose={() => setOpenErrorDialog(false)}
+                onClose={() => setOpenSuccessDialog(false)}
                 aria-labelledby="success-message"
             >
                 <DialogTitle id="success-message">Категорія успішно оновлена</DialogTitle>
@@ -169,10 +197,8 @@ const SubCategoryEditPage: React.FC = () => {
                     </Button>
                 </DialogActions>
             </Dialog>
-        </StyledEngineProvider >
+        </StyledEngineProvider>
     );
 };
 
-export {
-    SubCategoryEditPage,
-}
+export { SubCategoryEditPage };

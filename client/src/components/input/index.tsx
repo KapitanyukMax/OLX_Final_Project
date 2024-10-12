@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, Input, InputLabel, InputAdornment, IconButton, SvgIconProps } from '@mui/material';
 import { StyledEngineProvider } from '@mui/material/styles';
 import './styles.css';
 
 interface StyledInputProps {
     value: string;
+    placeholder?: string;
     widthType?: 'small' | 'middle' | 'big' | 'large';
     width?: string;
     label?: string;
@@ -14,15 +15,17 @@ interface StyledInputProps {
     type?: 'password' | 'text';
     disabled?: boolean;
     onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
-    iconStart?: React.ElementType<SvgIconProps>;
-    iconEnd?: React.ElementType<SvgIconProps>;
+    iconStart?: React.ElementType;
+    iconEnd?: React.ElementType;
     iconStartClick?: () => void;
     iconEndClick?: () => void;
+    onKeyDown?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
 const StyledInput: React.FC<StyledInputProps> = ({
     label,
     value,
+    placeholder,
     sx,
     required,
     widthType,
@@ -34,17 +37,9 @@ const StyledInput: React.FC<StyledInputProps> = ({
     iconEndClick,
     iconStartClick,
     type = 'text', // За замовчуванням 'text'
-    onChange
+    onChange,
+    onKeyDown
 }) => {
-    const [currentValue, setCurrentValue] = useState(value);
-
-    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setCurrentValue(event.target.value);
-        if (onChange) {
-            onChange(event);
-        }
-    };
-
     const getInputWidth = () => {
         switch (widthType) {
             case 'small':
@@ -59,6 +54,12 @@ const StyledInput: React.FC<StyledInputProps> = ({
                 return 'middle-input';
         }
     }
+
+    const [inputValue, setInputValue] = useState(value);
+
+    useEffect(() => {
+        setInputValue(value);
+    }, [value]);
 
     return (
         <StyledEngineProvider injectFirst>
@@ -76,13 +77,15 @@ const StyledInput: React.FC<StyledInputProps> = ({
                 }
                 <Input
                     id='input'
-                    placeholder={currentValue}
+                    placeholder={placeholder}
+                    value={inputValue}
                     type={type}
                     sx={sx}
                     disabled={disabled}
                     className='basic-input'
-                    onChange={handleChange}
+                    onChange={onChange} // Використовуй onChange прямо
                     required={required}
+                    onKeyDown={onKeyDown}
                     startAdornment={IconStart ? (
                         <InputAdornment position="start">
                             {iconStartClick ? (
@@ -108,7 +111,7 @@ const StyledInput: React.FC<StyledInputProps> = ({
                 />
                 {maxLength && (
                     <label className='label symbols'>
-                        {`${currentValue.length}/${maxLength} символів`}
+                        {`${value.length}/${maxLength} символів`}
                     </label>
                 )}
             </Box>

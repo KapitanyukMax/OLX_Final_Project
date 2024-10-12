@@ -86,7 +86,7 @@ const AdvertCreatePage: React.FC = () => {
             const originalRef = ref(storage, `${path}/original-${timestamp}.jpg`);
             await uploadBytes(originalRef, file);
 
-            for (let size of sizes) {
+            for (const size of sizes) {
                 const options = {
                     maxWidthOrHeight: size,
                     useWebWorker: true,
@@ -272,8 +272,8 @@ const AdvertCreatePage: React.FC = () => {
                     FindByString: value
                 }
             });
-            const cities = response.data.data.map((city: any) => city.Description);
-            setCities(cities);
+            const cities: string[] = response.data.data.map((city: { Description: string }) => city.Description);
+            setCities([...new Set(cities)]);
         } catch (error) {
             console.error('Error fetching cities', error);
         }
@@ -346,7 +346,7 @@ const AdvertCreatePage: React.FC = () => {
                     }}>
                         <Box>
                             <StyledLabel text="Заголовок" type='head' textType='head' textColor='black' />
-                            <StyledInput value="Вкажіть назву" label='Вкажіть назву' required widthType='large' maxLength={80} onChange={(e) => handleNameChange(e.target.value)} />
+                            <StyledInput placeholder="Вкажіть назву" value={formData.name} label='Вкажіть назву' required widthType='large' maxLength={80} onChange={(e) => handleNameChange(e.target.value)} />
                             {errors.name && <div className="error-message">{errors.name}</div>}
                         </Box>
                         <Box sx={{
@@ -358,7 +358,7 @@ const AdvertCreatePage: React.FC = () => {
                             <StyledLabel text="Вкажіть категорію*" type='primary' textType='small' textColor='black' />
                             <FormControl fullWidth sx={{ width: '600px' }}>
                                 <InputLabel id='category' className='modified' sx={{ fontFamily: 'Nunito', fontSize: '18px', fontWeight: '400' }}>Категорія</InputLabel>
-                                <Select labelId='category' className='modified' sx={{ borderRadius: '10px', border: '1px solid #000' }} label='Категорія' value={category} onChange={(e) => handleCategory(e.target.value as string)}>
+                                <Select labelId='category' className='modified' sx={{ borderRadius: '10px', border: '0px solid #000' }} label='Категорія' value={category} onChange={(e) => handleCategory(e.target.value as string)}>
                                     {categories.map((item, index) => (
                                         <MenuItem
                                             key={index}
@@ -378,7 +378,7 @@ const AdvertCreatePage: React.FC = () => {
                             </FormControl>
                             <FormControl fullWidth sx={{ width: '600px' }}>
                                 <InputLabel id='subCategory' sx={{ fontFamily: 'Nunito', fontSize: '18px', fontWeight: '400' }}>Підкатегорія</InputLabel>
-                                <Select labelId='subCategory' label='Категорія' sx={{ borderRadius: '10px', border: '1px solid #000' }} value={formData.subCategoryId} onChange={(e) => handleSubCategoryChange(e.target.value as string)}>
+                                <Select labelId='subCategory' label='Категорія' sx={{ borderRadius: '10px', border: '0px solid #000' }} value={formData.subCategoryId} onChange={(e) => handleSubCategoryChange(e.target.value as string)}>
                                     {subCategories.map((item, index) => (
                                         <MenuItem
                                             key={index}
@@ -480,10 +480,10 @@ const AdvertCreatePage: React.FC = () => {
                             gap: '36px',
                             alignItems: 'end',
                         }}>
-                            <StyledInput label='Вкажіть ціну' value="1080" widthType='middle' onChange={(e) => handlePriceChange(e.target.value)} />
+                            <StyledInput label='Вкажіть ціну' placeholder="1080" value={formData.price == 0 ? '' : formData.price.toString()} widthType='middle' onChange={(e) => handlePriceChange(e.target.value)} />
                             <FormControl fullWidth sx={{ width: '300px' }}>
                                 <InputLabel id='currency' sx={{ fontFamily: 'Nunito', fontSize: '18px', fontWeight: '400' }}>Валюта</InputLabel>
-                                <Select labelId='currency' label='Валюта' sx={{ borderRadius: '10px', border: '1px solid #000' }} value={formData.currencyId} onChange={(e) => handleCurrencyChange(e.target.value as string)}>
+                                <Select labelId='currency' label='Валюта' sx={{ borderRadius: '10px', border: '0px solid #000' }} value={formData.currencyId} onChange={(e) => handleCurrencyChange(e.target.value as string)}>
                                     {currencies.map((item, index) => (
                                         <MenuItem
                                             key={index}
@@ -498,7 +498,6 @@ const AdvertCreatePage: React.FC = () => {
                                     ))}
                                 </Select>
                             </FormControl>
-                            <StyledCheckBox label='Договірна' />
                         </Box>
                     </Box>
                     <Box sx={{
@@ -588,7 +587,7 @@ const AdvertCreatePage: React.FC = () => {
                         marginBottom: '120px',
                     }}>
                         <StyledLabel text="Опис оголошення" type='head' textType='head' textColor='black' />
-                        <StyledTextArea label='Введіть опис' required value="Будь ласка, додайте опис оголошення" maxLength={9000} minRows={18} onChange={(e) => handleDescriptionChange(e.target.value)} />
+                        <StyledTextArea label='Введіть опис' required placeholder="Будь ласка, додайте опис оголошення" value={formData.description} maxLength={9000} minRows={18} onChange={(e) => handleDescriptionChange(e.target.value)} />
                         {errors.description && <div className="error-message">{errors.description}</div>}
                         <StyledButton text='Додати оголошення' type='contained' primaryColor='var(--light-blue)' secondaryColor='white' hoverBackColor='var(--green)' onClick={handleSubmit} />
                     </Box>

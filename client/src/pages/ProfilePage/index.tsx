@@ -416,18 +416,18 @@ const ProfilePage: React.FC = () => {
                         <Link to='#'>Дізнатись більше</Link>
                     </Box>
 
-                    <Box sx={{
+                    {/* <Box sx={{
                         display: 'flex',
                         flexDirection: 'row',
                         gap: '42px',
                         marginTop: '80px',
                     }}>
-                        <StyledButton text='Мої оголошення' type='outlined' />
-                        <StyledButton text='Повідомлення' type='outlined' />
+                        <StyledButton text='Мої оголошення' type='outlined' onClick={() => handleWhatPageChange("Мої оголошення")} />
+                        <StyledButton text='Повідомлення' type='outlined' onClick={() => handleWhatPageChange("Повідомлення")} />
                         <StyledButton text='Платежі та рахунок DDX' type='outlined' />
                         <StyledButton text='Робота на DDX' type='outlined' />
                         <StyledButton text='DDX доставка' type='outlined' />
-                    </Box>
+                    </Box> */}
                 </Box>
 
                 <Box sx={{
@@ -444,17 +444,17 @@ const ProfilePage: React.FC = () => {
                         width: '1400px',
                         height: '100%',
                     }}>
-                        <Box sx={{ display: 'flex', flexDirection: 'row', marginTop: '38px', gap: '30px' }}>
+                        {/* <Box sx={{ display: 'flex', flexDirection: 'row', marginTop: '38px', gap: '30px' }}>
                             <StyledButton text='Активні' type='outlined' />
                             <StyledButton text='Неактивні' type='outlined' />
                             <StyledButton text='Очікуючі' type='outlined' />
                             <StyledButton text='Неоплачені' type='outlined' />
                             <StyledButton text='Відхилені' type='outlined' />
                             <StyledButton text='Архів' type='outlined' />
-                        </Box>
+                        </Box> */}
 
                         <Box sx={{ display: 'flex', flexDirection: 'row', marginTop: '75px', gap: '60px' }}>
-                            <StyledInput value={searchTerm ?? 'Заголовок'} iconEnd={SearchIcon} widthType='small' onChange={(e) => { handleSearchChange(e.target.value) }} />
+                            <StyledInput placeholder='Заголовок' value={searchTerm || ''} iconEnd={SearchIcon} widthType='small' onChange={(e) => { handleSearchChange(e.target.value) }} />
                             <FormControl fullWidth sx={{ width: '267px' }}>
                                 <InputLabel id='category' sx={{ fontFamily: 'Nunito', fontSize: '18px', fontWeight: '400' }}>Категорія</InputLabel>
                                 <Select labelId='category' label='Категорія' sx={{ height: '50px', borderRadius: '10px', border: '1px solid #000', background: 'white', textAlign: 'left', fontFamily: 'Nunito', fontSize: '18px', fontWeight: '400' }} value={category} onChange={(e) => handleCategoryChange(e.target.value as string)}>
@@ -499,7 +499,7 @@ const ProfilePage: React.FC = () => {
                             {adverts.length === 0 ? (
                                 <Box sx={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
                                     <Box sx={{ display: 'flex', flexDirection: 'column', width: '831px', justifyContent: 'center', alignItems: 'center', gap: '30px' }}>
-                                        <ImageComponent src='https://via.placeholder.com/363' alt='user' width='363px' height='321px' />
+                                        <ImageComponent src='https://firebasestorage.googleapis.com/v0/b/olx-final-project-c6878.appspot.com/o/images%2F4901196-01%201.png?alt=media&token=46284f4a-985d-4b29-b06c-38f5f5784d8f' alt='user' width='363px' height='321px' />
                                         <StyledLabel text='Активні оголошення відображаються тут до закінчення їх терміну дії' type='primary' textType='middle' textColor='black' />
                                         <StyledLabel text='Ці оголошення доступні для перегляду всім і стають неактивними через 30 днів після їх активації' type='primary' textType='small' textColor='black' />
                                         <StyledButton text='Додати оголошення' type='contained' onClick={() => { window.location.href = '/advert-create' }} />
@@ -524,6 +524,7 @@ const ProfilePage: React.FC = () => {
                                                     date={advert.creationDate}
                                                     image={advert.pictures[0]}
                                                     price={advert.price}
+                                                    currency={advert.currencyId}
                                                     isFavorite={favoriteAdvertsIds.includes(advert.id)}
                                                     onClick={
                                                         () => {
@@ -549,6 +550,7 @@ const ProfilePage: React.FC = () => {
                                 </Box>
                             )}
                         </Box>
+
                     </Box>
                 </Box>
             </Box>

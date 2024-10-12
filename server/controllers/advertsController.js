@@ -6,7 +6,7 @@ const db = admin.firestore();
 
 const getAllAdverts = async (req, res, next) => {
     try {
-        const { limit = 10, startAfter, searchTerm, city, sortBy = 'creationDate', sortOrder = 'desc', priceLow, priceHigh, state, currency } = req.query;
+        const { limit = 10, startAfter, searchTerm, city, sortBy = 'creationDate', sortOrder = 'desc', priceLow, priceHigh, state, currency, subcategoryIds = [] } = req.query;
         let query = db.collection('adverts').orderBy(sortBy, sortOrder).limit(parseInt(limit));
 
         if (priceLow) {
@@ -27,6 +27,10 @@ const getAllAdverts = async (req, res, next) => {
 
         if (currency) {
             query = query.where('currencyId', '==', currency);
+        }
+
+        if (subcategoryIds.length > 0) {
+            query = query.where('subCategoryId', 'in', subcategoryIds);
         }
 
         if (startAfter) {
@@ -74,7 +78,7 @@ const getAllAdverts = async (req, res, next) => {
 
 const getAdvertById = async (req, res, next) => {
     try {
-        const advertsRef = await db.collection('adverts').doc(req.query.id);
+        const advertsRef = await db.collection('adverts').doc(req.params.id);
         const doc = await advertsRef.get();
 
         if (!doc.exists)
@@ -92,7 +96,7 @@ const getAdvertById = async (req, res, next) => {
 
 const getAdvertsByCategoryId = async (req, res, next) => {
     try {
-        const { limit = 10, startAfter, searchTerm, categoryId, city, sortBy = 'creationDate', sortOrder = 'desc', priceLow, priceHigh, state, currency } = req.query;
+        const { limit = 10, startAfter, searchTerm, categoryId, city, sortBy = 'creationDate', sortOrder = 'desc', priceLow, priceHigh, state, currency, isVip, isTop } = req.query;
 
         // Fetch subcategories by categoryId
         const subCategoriesSnapshot = await db.collection('subcategories')
@@ -135,6 +139,15 @@ const getAdvertsByCategoryId = async (req, res, next) => {
 
             if (currency) {
                 query = query.where('currencyId', '==', currency);
+            }
+
+            if (isTop && isTop == 'true') {
+                query = query.orderBy('viewsCount', 'desc');
+
+            }
+
+            if (isVip && isVip == 'true') {
+                query = query.where('vipUntil', '>', formatDate.formatDate(new Date()));
             }
 
             if (startAfter) {
@@ -440,7 +453,7 @@ const deleteAdvert = async (req, res, next) => {
 
 const getAdvertsByTOP = async (req, res, next) => {
     try {
-        const { limit = 10, startAfter, searchTerm, city, priceLow, priceHigh, state, currency } = req.query;
+        const { limit = 10, startAfter, searchTerm, city, priceLow, priceHigh, state, currency, subcategoryIds = [] } = req.query;
         let query = db.collection('adverts')
             .orderBy('viewsCount', 'desc')
             .limit(parseInt(limit));
@@ -462,6 +475,10 @@ const getAdvertsByTOP = async (req, res, next) => {
 
         if (currency) {
             query = query.where('currencyId', '==', currency);
+        }
+
+        if (subcategoryIds.length > 0) {
+            query = query.where('subCategoryId', 'in', subcategoryIds);
         }
 
         if (startAfter) {
@@ -507,7 +524,7 @@ const getAdvertsByTOP = async (req, res, next) => {
 
 const getAdvertsByVIP = async (req, res, next) => {
     try {
-        const { limit = 10, startAfter, searchTerm, city, priceLow, priceHigh, state, currency } = req.query;
+        const { limit = 10, startAfter, searchTerm, city, priceLow, priceHigh, state, currency, subcategoryIds = [] } = req.query;
         let query = db.collection('adverts')
             .where('vipUntil', '!=', null)
             .orderBy('vipUntil', 'desc')
@@ -530,6 +547,10 @@ const getAdvertsByVIP = async (req, res, next) => {
 
         if (currency) {
             query = query.where('currencyId', '==', currency);
+        }
+
+        if (subcategoryIds.length > 0) {
+            query = query.where('subCategoryId', 'in', subcategoryIds);
         }
 
         if (startAfter) {

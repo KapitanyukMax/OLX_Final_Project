@@ -3,6 +3,10 @@ import {
     Button,
     CircularProgress,
     Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
     IconButton,
     Paper,
     Rating,
@@ -29,6 +33,7 @@ import { auth } from "../../../firebaseConfig";
 import axios from "axios";
 import { Link, useParams } from "react-router-dom";
 import { ReportDialog } from "../../components/reportDialog";
+import Chat from "../../components/chat";
 
 const AdvertPage: React.FC = () => {
     const { advertId } = useParams<{ advertId: string }>();
@@ -44,7 +49,7 @@ const AdvertPage: React.FC = () => {
     const [showPhoneNumber, setShowPhoneNumber] = useState(false);
     const [openReportDialog, setOpenReportDialog] = useState(false);
     const [favoriteAdvertsIds, setFavoriteAdvertsIds] = useState<string[]>([]);
-
+    const [open, setOpen] = useState(false);
 
     const host = import.meta.env.VITE_HOST;
 
@@ -75,7 +80,7 @@ const AdvertPage: React.FC = () => {
         const fetchData = async () => {
             try {
                 const advertResponse = await axios.get(
-                    `${host}/adverts/id/?id=${advertId}`
+                    `${host}/adverts/${advertId}`
                 );
                 setAdvertData(advertResponse.data);
 
@@ -166,6 +171,10 @@ const AdvertPage: React.FC = () => {
 
     const handleCloseReportDialog = () => {
         setOpenReportDialog(false);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
     };
 
     if (isLoading) {
@@ -428,6 +437,9 @@ const AdvertPage: React.FC = () => {
                                     sx={{
                                         height: "65px",
                                         width: "436px",
+                                    }}
+                                    onClick={() => {
+                                        setOpen(true);
                                     }}
                                 />
                                 <StyledButton
@@ -903,6 +915,7 @@ const AdvertPage: React.FC = () => {
                                     handleHeartIconClick(advert.id);
                                 }}
                                 price={advert.price}
+                                currency={advert.currencyId}
                             />
                         ))
                     )}
@@ -948,10 +961,27 @@ const AdvertPage: React.FC = () => {
                                 handleHeartIconClick(advert.id);
                             }}
                             price={advert.price}
+                            currency={advert.currencyId}
                         />
                     ))}
                 </Box>
             </Box>
+            <Dialog
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="confirm-delete-title"
+                aria-describedby="confirm-delete-description"
+            >
+                <DialogTitle id="confirm-delete-title">Чат</DialogTitle>
+                <DialogContent>
+                    <Chat advertId={advertData.id} advertHeader={advertData.name} sellerId={advertData.userId} width="500px" onSend={()=>{}} />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleClose} color="primary">
+                        Вийти
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </StyledEngineProvider>
     );
 };

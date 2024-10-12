@@ -83,6 +83,7 @@ import SendMessageIcon from './components/icons/sendMessageIcon';
 import MeestCorpIcon from './components/icons/meestIcon';
 import NovaPostIcon1 from './components/icons/novaPost1';
 import NovaPostIcon2 from './components/icons/novaPost2';
+import Payment from './components/payment';
 
 const ComponentsPreview = () => {
     return (
@@ -96,8 +97,24 @@ const ComponentsPreview = () => {
                 }}>
                 <Typography variant="h3">Components Preview</Typography>
                 <Box>
+                    <Payment/>
+                </Box>
+                <Box>
                     <Typography variant='h5' textAlign='start'>Chat</Typography>
-                    <Chat messages={['Hello', 'World']} onSend={(message) => { console.log(message)}} />
+                    <Chat messages={[{
+                        authorId: '1Z5PFa4YvbwvD2w2NQti',
+                        text: 'Hello',
+                        sendingDate: new Date(Date.now()),
+                        sellerId: '9Ed8kkBTF3jM7h9BQinl'
+                    }, {
+                        authorId: '1Z5PFa4YvbwvD2w2NQti',
+                        text: 'Bye',
+                        sendingDate: new Date(Date.now()),
+                        sellerId: '9Ed8kkBTF3jM7h9BQinl'
+                    }]} onSend={(message) => { console.log(message)}}
+                    advertId='1K12juVvtl5jrp7URpAS'
+                    sellerId='9Ed8kkBTF3jM7h9BQinl'
+                    advertHeader='Автомобіль Renault Megane' />
                 </Box>
                 <Box>
                     <Typography variant='h5' textAlign='start'>Information Section</Typography>
