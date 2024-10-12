@@ -94,7 +94,7 @@ export const RegisterModal: React.FC<RegisterModalProps> = ({ onSwitchToLogin })
                 setError(`Помилка реєстрації: ${errorData.message}`);
                 return;
             }
-            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            const userCredential = await createUserWithEmailAndPassword(auth, email ?? '', password);
             console.log("User was added to Firebase : ", userCredential);
             onSwitchToLogin();
             console.log('User registered and added to Firestore successfully');

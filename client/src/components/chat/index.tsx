@@ -69,17 +69,17 @@ const Chat: React.FC<ChatProps> = ({
         }
     }, [selectedImage]);
 
-    const loadMessages = async (chatId) => {
+    const loadMessages = async (chatId: string) => {
         if (!chatId) return; 
     
         try {
             const response = await axios.get(`${host}/messages/chat/${chatId}`);
             const messagesData = response.data;
             
-            setMessages((prevMessages) => {
+            setMessages((prevMessages: Message[]) => {
                 
                 const newMessages = messagesData.filter(
-                    newMessage => !prevMessages.some(msg => msg.id === newMessage.id)
+                    (newMessage: Message) => !prevMessages.some(msg => msg.id === newMessage.id)
                 );
                 return [...prevMessages, ...newMessages];
             });
@@ -151,7 +151,7 @@ const Chat: React.FC<ChatProps> = ({
                 const chatData = createChatResponse.data;
                 currentChatId = chatData.id;
     
-                message.chatId = currentChatId;
+                message.chatId = currentChatId ?? undefined;
     
                 const sendMessageResponse = await axios.post(`${host}/messages`, message);
                 console.log("SendmessageResponse", sendMessageResponse.data);

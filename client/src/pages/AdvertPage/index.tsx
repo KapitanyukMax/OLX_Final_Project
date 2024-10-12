@@ -973,7 +973,7 @@ const AdvertPage: React.FC = () => {
             >
                 <DialogTitle id="confirm-delete-title">Чат</DialogTitle>
                 <DialogContent>
-                    <Chat advertId={advertData.id} advertHeader={advertData.name} sellerId={advertData.userId} width="500px" />
+                    <Chat advertId={advertData.id} advertHeader={advertData.name} sellerId={advertData.userId} width="500px" onSend={()=>{}} />
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose} color="primary">
